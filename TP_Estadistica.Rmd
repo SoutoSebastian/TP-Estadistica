@@ -92,3 +92,37 @@ La segunda derivada confirma que se trata de un máximo, ya que
 $\hspace{7cm} \frac{\partial^2 \ell(\theta)}{\partial \theta^2}= -\frac{N_0}{(1-\theta)^2} - \frac{N_1}{\theta^2} < 0, \forall \theta \in (0,1).$
 
 $\hspace{16cm} \boxtimes$
+
+
+# Parte II: Test imperfecto con $S_{e}$ y $S_{p}$ conocidos
+
+### 2.0.1 Estimador $\hat{p}$ de $p$ con $T_{per}$
+En esta parte definimos
+
+$\hspace{7cm} p = P(T = 1),$
+
+donde $T$ denota el resultado del test diagnóstico aplicado a un individuo: $T = 1$ si el test da positivo y $T = 0$ si el test da negativo. Suponemos que
+
+$\hspace{7cm} T_1,\dots,T_n \sim i.i.d. Bernoulli(p),$
+
+de modo que $P(T_i=1)=p$ y $P(T_i=0)=1-p$ para todo $i=1,\dots,n$.
+
+Definimos la variable aleatoria
+
+$\hspace{7cm} T_{per} = \sum_{i=1}^n T_i,$
+
+que representa la cantidad de tests positivos observados en la muestra de tamaño $n$. Por ser suma de variables Bernoulli independientes con parámetro $p$, se tiene que
+
+$\hspace{7cm} T_{per} \sim Binomial(n,p).$
+
+
+Un estimador  para $p$ puede ser la proporción de individuos de la muestra cuyo test dio positivo. Por lo tanto, definimos
+
+$\hspace{7cm} \hat p = \frac{T_{per}}{n}.$
+
+
+Este estimador coincide además con el estimador de máxima verosimilitud (EMV) de $p$ en el modelo binomial, ya que la función de verosimilitud
+
+$\hspace{7cm} L(p) \approx p^{T_{per}}(1-p)^{n-T_{per}}$
+
+se maximiza en $p = T_{per}/n$.
