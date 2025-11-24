@@ -35,3 +35,60 @@ Por lo tanto, concluimos que
 $\hspace{7cm} T_{\text{per}} \sim \mathrm{Binomial}(n,\theta).$
 
 $\hspace{16cm} \boxtimes$
+
+### 1.2 Estimador de Máxima Verosimilitud de $\theta$
+
+Como en el punto anterior, recordemos que bajo un test perfecto se tiene
+
+$\hspace{7cm} T_{per} \sim Binomial(n,\theta),$
+
+y que podemos representar los datos mediante variables Bernoulli
+
+$\hspace{7cm} Y_1,\dots,Y_n \sim i.i.d. Bernoulli(\theta),$
+
+donde $Y_i = 1$ si la persona $i$ está enferma y $Y_i = 0$ si no lo está.
+
+Sea $N_1 = \sum_{i=1}^n Y_i$ la cantidad de individuos enfermos en la muestra y $N_0 = n - N_1$ la cantidad de individuos sanos.
+
+La función de verosimilitud viene dada por
+
+$\hspace{7cm} L(\theta)= \prod_{i=1}^n \theta^{Y_i}(1-\theta)^{1-Y_i}= (1-\theta)^{N_0}\,\theta^{N_1}.$
+
+La log-verosimilitud resulta entonces
+
+$\hspace{7cm} \ell(\theta) = \ln L(\theta)= N_0 \ln(1-\theta) + N_1 \ln(\theta).$
+
+
+Buscamos $\theta \in (0,1)$ tal que
+
+$\hspace{7cm} \frac{\partial \ell(\theta)}{\partial \theta} = 0.$
+
+Derivando:
+
+$\hspace{7cm} \frac{\partial \ell(\theta)}{\partial \theta}= \frac{N_0}{1-\theta}(-1) + \frac{N_1}{\theta}= -\frac{N_0}{1-\theta} + \frac{N_1}{\theta}.$
+
+Igualamos a cero:
+
+$\hspace{7cm} -\frac{N_0}{1-\theta} + \frac{N_1}{\theta} = 0 \quad \Longleftrightarrow \quad \frac{N_1}{\theta} = \frac{N_0}{1-\theta}.$
+
+Despejando:
+
+$\hspace{7cm} N_1(1-\theta) = N_0 \theta \quad \Longleftrightarrow \quad N_1 - N_1\theta = N_0\theta$
+
+$\hspace{11cm} \Longleftrightarrow \quad N_1 = (N_0 + N_1)\theta = n\theta.$
+
+Por lo tanto,
+
+$\hspace{7cm} \hat{\theta}_{EMV} = \frac{N_1}{n}.$
+
+
+Finalmente, como $N_1 = T_{per}$, obtenemos
+
+$\hspace{7cm} \hat{\theta}_{per} = \frac{T_{per}}{n}.$
+
+
+La segunda derivada confirma que se trata de un máximo, ya que
+
+$\hspace{7cm} \frac{\partial^2 \ell(\theta)}{\partial \theta^2}= -\frac{N_0}{(1-\theta)^2} - \frac{N_1}{\theta^2} < 0, \forall \theta \in (0,1).$
+
+$\hspace{16cm} \boxtimes$
