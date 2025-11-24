@@ -93,6 +93,91 @@ $\hspace{7cm} \frac{\partial^2 \ell(\theta)}{\partial \theta^2}= -\frac{N_0}{(1-
 
 $\hspace{16cm} \boxtimes$
 
+### 1.3 Sesgo, Varianza, Error cuadrático medio, consistencia y distribución asintótica
+
+* **Sesgo:**  
+  El estimador \(\hat{\theta}_{per} = \frac{T_{\text{per}}}{n}\) es insesgado porque
+  \[
+  \mathbb{E}[\hat{\theta}_{per}]
+    = \mathbb{E}\left[\frac{T_{\text{per}}}{n}\right]
+    = \frac{1}{n}\mathbb{E}[T_{\text{per}}]
+    = \frac{n\theta}{n}
+    = \theta.
+  \]
+  Usamos que \(T_{\text{per}} \sim \mathrm{Binomial}(n,\theta)\), por lo que  \(\mathbb{E}[T_{\text{per}}] = n\theta\).
+
+* **Varianza:**  
+  \[
+  \operatorname{Var}(\hat{\theta}_{per})
+    = \operatorname{Var}\left(\frac{T_{\text{per}}}{n}\right)
+    = \frac{1}{n^2}\operatorname{Var}(T_{\text{per}})
+    = \frac{n\theta(1-\theta)}{n^2}
+    = \frac{\theta(1-\theta)}{n}.
+  \]
+  También utilizamos que \(T_{\text{per}}\) es binomial.
+
+* **Error cuadrático medio (ECM):**  
+  Como el sesgo es cero,
+  \[
+  \text{ECM}(\hat{\theta}_{per})
+    = \operatorname{Var}(\hat{\theta}_{per})
+    + \mathbb{B}^2(\hat{\theta}_{per})
+    = \frac{\theta(1-\theta)}{n}.
+  \]
+
+* **Consistencia:**  
+  Observamos que \(\hat{\theta}_{per} = \frac{T_{\text{per}}}{n} = \frac{1}{n}\sum_{i=1}^n Y_i\),  donde \(\mathbb{E}[Y_i] = \theta\) y \(\operatorname{Var}(Y_i)=\theta(1-\theta)\).  
+  Por la Ley Fuerte de los Grandes Números,
+  \[
+  \hat{\theta}_{per} \xrightarrow{c.s.} \theta.
+  \]
+  Por lo tanto, \(\hat{\theta}_{per}\) es **fuertemente consistente**.
+
+* **Distribución asintótica:**  
+  Por el Teorema Central del Límite,
+  \[
+  \sqrt{n}\,(\hat{\theta}_{per} - \theta)
+  \xrightarrow{d} N\bigl(0,\theta(1-\theta)\bigr).
+  \]
+
+
+### 1.4 Intervalo de confianza para $\theta$.
+
+Sabemos que por TCL:
+
+\[
+\sqrt{n}\,\frac{(\hat{\theta}_{per} - \theta)}{\sqrt{\theta(1-\theta)}}
+\xrightarrow{d} N\bigl(0,1\bigr).
+\]
+
+Además, por ley débil de los grandes números:
+
+\[
+\hat{\theta}_{per} \xrightarrow{p} \theta
+\]
+
+Entonces, combinando los resultados anteriores con Slutsky:
+
+\[
+\sqrt{n}\,\frac{(\hat{\theta}_{per} - \theta)}{\sqrt{\hat{\theta}_{per}(1-\hat{\theta}_{per})}}
+\xrightarrow{d} N\bigl(0,1\bigr).
+\]
+
+Como $P(Z\ge1.96) = 0.025$, vale lo siguiente:
+
+\[
+P\!\left(-1.96 \le \sqrt{n}\,\frac{\hat{\theta}_{per} - \theta}{\sqrt{\hat{\theta}_{per}(1-\hat{\theta}_{per})}} \le 1.96\right)
+\xrightarrow[n\to\infty]{} 0.95.
+\]
+
+
+Finalmente, se deduce el siguiente intervalo de nivel asintótico 0.95:
+
+\[
+IC_{0.95}(\theta) = \hat{\theta}_{per} \pm 1.96\sqrt{\frac{\hat{\theta}_{per}(1-\hat{\theta}_{per})}{n}}
+\]
+
+<br><br>
 
 # Parte II: Test imperfecto con $S_{e}$ y $S_{p}$ conocidos
 
