@@ -1,0 +1,37 @@
+---
+title: "Trabajo Práctico– IECD"
+author: "Grupo 11"
+date: "2025-12-8"
+output: html_document
+---
+
+# Parte I: Test perfecto (baseline)
+
+### 1.1 Observe $T_{per} \sim Bi(n,\theta)$
+Consideremos una población en la que cada individuo puede estar o no enfermo. Sea la prevalencia verdadera de la enfermedad
+
+$\hspace{7cm} \theta = P(Y = 1)$,
+
+donde $Y$ es la variable aleatoria que indica el estado verdadero de una persona. Esto es, $Y = 1$ si la persona está enferma y $Y = 0$ si no lo está.
+
+Se asume, por enunciado, que el test diagnóstico es perfecto, es decir, tanto la sensibilidad como la especificidad valen uno ($Se = Sp = 1$). En este caso, el resultado del test coincide exactamente con el estado verdadero del individuo.
+
+Sea $Y_1, \dots, Y_n$ una muestra aleatoria de tamaño $n$ tomada de la población. Suponemos que las variables $Y_1, \dots, Y_n$ son independientes e idénticamente distribuidas, con
+
+
+$\hspace{7cm} Y_i \sim Bernoulli(\theta)$ con $i = 1,\dots,n.$
+
+
+Definimos la variable aleatoria que cuenta cuántas personas enfermas hay en la muestra como
+
+$\hspace{7cm} T_{per} = \sum_{i=1}^n Y_i.$
+
+Dado que $T_{per}$ es la suma de $n$ variables independientes con distribución Bernoulli$(\theta)$, se sigue que $T_{per}$ tiene una distribución binomial. En efecto, para $k = 0,1,\dots,n$ se cumple que
+
+$\hspace{7cm} P(T_{per} = k)= \binom{n}{k}\theta^{k}(1-\theta)^{n-k}.$
+
+Por lo tanto, concluimos que
+
+$\hspace{7cm} T_{\text{per}} \sim \mathrm{Binomial}(n,\theta).$
+
+$\hspace{16cm} \boxtimes$
