@@ -177,6 +177,34 @@ Finalmente, se deduce el siguiente intervalo de nivel asintótico 0.95:
 IC_{0.95}(\theta) = \hat{\theta}_{per} \pm 1.96\sqrt{\frac{\hat{\theta}_{per}(1-\hat{\theta}_{per})}{n}}
 \]
 
+<br>
+
+### 1.5 Cubrimiento empírico.
+
+Para evaluar el cubrimiento empírico del intervalo dado en $1.4$, se llevó a cabo una simulación Monte Carlo para los siguientes valores de n:
+
+\[
+10, 20, 50, 100, 1000, 10000
+\]
+
+Y se obtuvieron estos resultados:
+
+<div style="width: 50%; margin: auto;">
+
+| n     | Cubrimiento |
+|-------|-------------|
+| 10    | 0.9232      |
+| 20    | 0.8992      |
+| 50    | 0.9362      |
+| 100   | 0.9462      |
+| 1000  | 0.9472      |
+| 10000 | 0.9486      |
+
+</div>
+
+Los resultados obtenidos son coherentes con la teoría. Al tratarse de un intervalo asintótico, el cubrimiento empírico converge hacia el nivel nominal del 0.95 conforme aumenta el tamaño muestral
+n.
+
 <br><br>
 
 # Parte II: Test imperfecto con $S_{e}$ y $S_{p}$ conocidos
