@@ -239,3 +239,94 @@ Este estimador coincide además con el estimador de máxima verosimilitud (EMV) 
 $\hspace{7cm} L(p) \approx p^{T_{per}}(1-p)^{n-T_{per}}$
 
 se maximiza en $p = T_{per}/n$.
+
+<br>
+
+### 2.1.4 Estimador de momentos (MoM).
+
+Por item $2.0.2$, sabemos que:
+
+\[
+p = S_{e} \theta + (1-S_{p})(1-\theta)
+\]
+
+Reagrupando:
+\[
+p = (S_{e}+S_{p}-1)\theta + 1 - S_{p}
+\]
+
+Entonces:
+\[
+\theta = \frac{p + S_{p} - 1}{S_{e}+S_{p}-1}
+\]
+
+
+Como $\mathbb{E}[T_{i}] = p$, el estimador de momentos de $p$ es $\hat{p}_{MoM} = \frac{T_{per}}{n}$. Finalmente, el estiamdor plug-in de momentos de $\theta$ es el siguiente:
+
+\[
+\hat{\theta}_{MoM} = \frac{\hat{p}_{MoM} + S_{p} - 1}{S_{e}+S_{p}-1}
+\]
+
+<br>
+
+### 2.1.5 Sesgo, varianza y ECM.
+
+* **Sesgo**:
+
+  Primero se observa que: 
+  
+  \[
+  \mathbb{E}[\hat{p}_{MoM}] = \mathbb{E}\left[\frac{T_{\text{per}}}{n}\right]= p = (S_{e}+S_{p}-1)\theta + 1 - S_{p}
+  \]
+  
+  Luego:
+  
+  \[
+  \mathbb{E}[\hat{\theta}_{MoM}] = \mathbb{E}\left[\frac{\hat{p}_{MoM}+S_{p}-1}{S_{e}+S_{p}-1}\right] = \frac{\mathbb{E}[\hat{p}_{MoM}] + S_{p} - 1}{S_{e}+S_{p}-1} = \theta
+  \]
+  
+  Por lo tanto $\hat{\theta}_{MoM}$ es un estimador insesgado de $\theta$.
+
+* **Varianza**:
+
+  Primero se observa que:
+
+  \[
+  Var[\hat{p}_{MoM}] = Var\left[\frac{T_{\text{per}}}{n}\right]=\frac{np(1-p)}{n^2} = \frac{p(1-p)}{n}
+  \]
+  
+  Luego:
+  
+  \[
+  \operatorname{Var}[\hat{\theta}_{MoM}] = \operatorname{Var}\left[\frac{\hat{p}_{MoM}+S_{p}-1}{S_{e}+S_{p}-1}\right] = \frac{\operatorname{Var}[\hat{p}_{MoM} + S_{p} -1]}{(S_{e}+S_{p}-1)^2} = \frac{\operatorname{Var}[\hat{p}_{MoM}]}{(S_{e}+S_{p}-1)^2} = \frac{p(1-p)}{n(S_{e}+S_{p}-1)^2}
+\]
+
+* **ECM**:
+  
+  Como el sesgo es 0:
+  
+  \[
+  \text{ECM}(\hat{\theta}_{MoM})
+    = \operatorname{Var}[\hat{\theta}_{MoM}]
+    + \mathbb{B}^2[\hat{\theta}_{MoM}]
+    =\frac{p(1-p)}{n(S_{e}+S_{p}-1)^2}
+  \]
+
+* **Consistencia**
+  
+  Observemos que, por ley fuerte de los grandes números:
+  
+  \[
+  \hat{p}_{MoM} = \frac{T_{per}}{n} \xrightarrow{cs} p
+  \]
+  
+  Luego, como $\hat{\theta}_{MoM}$ es una función continua de $\hat{p}_{MoM}$:
+  
+  \[
+  \hat{\theta}_{MoM} \xrightarrow{cs} \frac{p + S_{p}-1}{S_{e}+S_{p}-1} = \theta
+  \]
+  
+  Por lo tanto, $\hat{\theta}_{MoM}$ es fuertemente consistente.
+
+(Para estimar estos valores se puede reemplazar $p$ por $\hat{p}_{MoM}$, si $p$ es desconocido.) 
+

@@ -608,6 +608,84 @@ modelo binomial, ya que la función de verosimilitud</p>
 p^{T_{per}}(1-p)^{n-T_{per}}\)</span></p>
 <p>se maximiza en <span class="math inline">\(p =
 T_{per}/n\)</span>.</p>
+<p><br></p>
+</div>
+<div id="estimador-de-momentos-mom." class="section level3">
+<h3>2.1.4 Estimador de momentos (MoM).</h3>
+<p>Por item <span class="math inline">\(2.0.2\)</span>, sabemos que:</p>
+<p><span class="math display">\[
+p = S_{e} \theta + (1-S_{p})(1-\theta)
+\]</span></p>
+<p>Reagrupando: <span class="math display">\[
+p = (S_{e}+S_{p}-1)\theta + 1 - S_{p}
+\]</span></p>
+<p>Entonces: <span class="math display">\[
+\theta = \frac{p + S_{p} - 1}{S_{e}+S_{p}-1}
+\]</span></p>
+<p>Como <span class="math inline">\(\mathbb{E}[T_{i}] = p\)</span>, el
+estimador de momentos de <span class="math inline">\(p\)</span> es <span class="math inline">\(\hat{p}_{MoM} = \frac{T_{per}}{n}\)</span>.
+Finalmente, el estiamdor plug-in de momentos de <span class="math inline">\(\theta\)</span> es el siguiente:</p>
+<p><span class="math display">\[
+\hat{\theta}_{MoM} = \frac{\hat{p}_{MoM} + S_{p} - 1}{S_{e}+S_{p}-1}
+\]</span></p>
+<p><br></p>
+</div>
+<div id="sesgo-varianza-y-ecm." class="section level3">
+<h3>2.1.5 Sesgo, varianza y ECM.</h3>
+<ul>
+<li><p><strong>Sesgo</strong>:</p>
+<p>Primero se observa que:</p>
+<p><span class="math display">\[
+\mathbb{E}[\hat{p}_{MoM}] =
+\mathbb{E}\left[\frac{T_{\text{per}}}{n}\right]= p =
+(S_{e}+S_{p}-1)\theta + 1 - S_{p}
+\]</span></p>
+<p>Luego:</p>
+<p><span class="math display">\[
+\mathbb{E}[\hat{\theta}_{MoM}] =
+\mathbb{E}\left[\frac{\hat{p}_{MoM}+S_{p}-1}{S_{e}+S_{p}-1}\right] =
+\frac{\mathbb{E}[\hat{p}_{MoM}] + S_{p} - 1}{S_{e}+S_{p}-1} = \theta
+\]</span></p>
+<p>Por lo tanto <span class="math inline">\(\hat{\theta}_{MoM}\)</span>
+es un estimador insesgado de <span class="math inline">\(\theta\)</span>.</p></li>
+<li><p><strong>Varianza</strong>:</p>
+<p>Primero se observa que:</p>
+<p><span class="math display">\[
+Var[\hat{p}_{MoM}] =
+Var\left[\frac{T_{\text{per}}}{n}\right]=\frac{np(1-p)}{n^2} =
+\frac{p(1-p)}{n}
+\]</span></p>
+<p>Luego:</p>
+<p><span class="math display">\[
+\operatorname{Var}[\hat{\theta}_{MoM}] =
+\operatorname{Var}\left[\frac{\hat{p}_{MoM}+S_{p}-1}{S_{e}+S_{p}-1}\right]
+= \frac{\operatorname{Var}[\hat{p}_{MoM} + S_{p} -1]}{(S_{e}+S_{p}-1)^2}
+= \frac{\operatorname{Var}[\hat{p}_{MoM}]}{(S_{e}+S_{p}-1)^2} =
+\frac{p(1-p)}{n(S_{e}+S_{p}-1)^2}
+\]</span></p></li>
+<li><p><strong>ECM</strong>:</p>
+<p>Como el sesgo es 0:</p>
+<p><span class="math display">\[
+\text{ECM}(\hat{\theta}_{MoM})
+  = \operatorname{Var}[\hat{\theta}_{MoM}]
+  + \mathbb{B}^2[\hat{\theta}_{MoM}]
+  =\frac{p(1-p)}{n(S_{e}+S_{p}-1)^2}
+\]</span></p></li>
+<li><p><strong>Consistencia</strong></p>
+<p>Observemos que, por ley fuerte de los grandes números:</p>
+<p><span class="math display">\[
+\hat{p}_{MoM} = \frac{T_{per}}{n} \xrightarrow{cs} p
+\]</span></p>
+<p>Luego, como <span class="math inline">\(\hat{\theta}_{MoM}\)</span>
+es una función continua de <span class="math inline">\(\hat{p}_{MoM}\)</span>:</p>
+<p><span class="math display">\[
+\hat{\theta}_{MoM} \xrightarrow{cs} \frac{p + S_{p}-1}{S_{e}+S_{p}-1} =
+\theta
+\]</span></p>
+<p>Por lo tanto, <span class="math inline">\(\hat{\theta}_{MoM}\)</span>
+es fuertemente consistente.</p></li>
+</ul>
+<p>(Para estimar estos valores se puede reemplazar <span class="math inline">\(p\)</span> por <span class="math inline">\(\hat{p}_{MoM}\)</span>, si <span class="math inline">\(p\)</span> es desconocido.)</p>
 </div>
 </div>
 
