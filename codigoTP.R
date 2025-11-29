@@ -67,122 +67,104 @@ legend("topright",
 #### 2.1.7 ####
 
 
-ns <- c(30, 50, 100, 200, 500, 1000)   # tamaños muestrales
-R  <- 10000                            # número de simulaciones
 
-### Función para el estimador de momentos
-tita_momentos <- function(p_hat, Se, Sp){
+# Función estimador de momentos
+tita_corregida <- function(p_hat, Se, Sp) {
   (p_hat - (1 - Sp)) / (Se + Sp - 1)
 }
 
-### TABLA PARA GUARDAR RESULTADOS
-
-
-resultados <- data.frame(
+# resultados
+resultados_imp <- data.frame(
   n = ns,
-  sesg_perf = NA,
-  var_perf  = NA,
-  ecm_perf  = NA,
-  sesg_imp  = NA,
-  var_imp   = NA,
-  ecm_imp   = NA
+  bias_sim = NA,
+  var_sim  = NA,
+  ecm_sim  = NA,
+  var_teo  = NA,
+  ecm_teo  = NA
 )
 
-### SIMULACIONES
 
-
-for (i in 1:length(ns)) {
-  
+for (i in seq_along(ns)) {
   n <- ns[i]
-  
-  # vectores para guardar simulaciones
-  est_perf <- numeric(R)
-  est_imp  <- numeric(R)
+  est_imp <- numeric(R)
   
   for (r in 1:R) {
-    
-    ###Simulo Y ~ Bernoulli(theta)
+    # generar Y y T condicional en Y
     Y <- rbinom(n, 1, tita)
+    probs_T <- ifelse(Y == 1, Se, 1 - Sp)
+    T <- rbinom(n, 1, probs_T)
     
-    ### Simulo T dado Y
-    T <- ifelse(Y == 1, 
-                rbinom(n, 1, Se),
-                rbinom(n, 1, 1 - Sp))
-    
-    ### Estimador perfecto
-    est_perf[r] <- mean(Y)
-    
-    ### Estimador imperfecto
     p_hat <- mean(T)
-    est_imp[r] <- tita_momentos(p_hat, Se, Sp)
+    est_imp[r] <- tita_corregida(p_hat, Se, Sp)
   }
   
+  # cuantiles o recortes opcionales: truncar a [0,1] si querés:
+  # est_imp <- pmin(pmax(est_imp, 0), 1)
   
-  # test perfecto
-  sesg_p <- mean(est_perf) - tita
-  var_p  <- var(est_perf)
-  ecm_p  <- var_p + sesg_p^2
+  # estadísticos simulados
+  bias_sim <- mean(est_imp) - tita
+  var_sim  <- var(est_imp)
+  ecm_sim  <- mean((est_imp - tita)^2)
   
-  # test imperfecto
-  sesg_i <- mean(est_imp) - tita
-  var_i  <- var(est_imp)
-  ecm_i  <- var_i + sesg_i^2
+  # valores teóricos (para el estimador corregido, Se,Sp conocidos)
+  p_true <- (Se + Sp - 1) * tita + (1 - Sp)   # P(T=1)
+  denom  <- Se + Sp - 1
+  var_teo <- (p_true * (1 - p_true)) / (n * denom^2)
+  ecm_teo <- var_teo   # insesgado => ECM = Var
   
-  # guardo
-  resultados$sesg_perf[i] <- sesg_p
-  resultados$var_perf[i]  <- var_p
-  resultados$ecm_perf[i]  <- ecm_p
-  
-  resultados$sesg_imp[i] <- sesg_i
-  resultados$var_imp[i]  <- var_i
-  resultados$ecm_imp[i]  <- ecm_i
+  # guardar
+  resultados_imp$bias_sim[i] <- bias_sim
+  resultados_imp$var_sim[i]  <- var_sim
+  resultados_imp$ecm_sim[i]  <- ecm_sim
+  resultados_imp$var_teo[i]  <- var_teo
+  resultados_imp$ecm_teo[i]  <- ecm_teo
 }
 
-
-print(resultados)
-
-### GRAFICAR ECM PARA COMPARAR
-
-plot(resultados$n, resultados$ecm_perf,
-     type="b", pch=19, ylim=c(0, max(resultados$ecm_perf)),
-     xlab="n", ylab="ECM",
-     main="ECM Test Perfecto vs Test Imperfecto")
-
-lines(resultados$n, resultados$ecm_imp, type="b", pch=19, col="red")
-
-legend("topright",
-       legend=c("Perfecto", "Imperfecto"),
-       col=c("black","red"), pch=19)
+# Mostrar tabla comparativa
+print(resultados_imp)
 
 
-### GRAFICAR SESGO
-# Calcular límites mínimos y máximos del sesgo en ambos tests, porque si no se corta el grafico a la mitad
-lim_inf <- min(resultados$sesg_perf, resultados$sesg_imp)
-lim_sup <- max(resultados$sesg_perf, resultados$sesg_imp)
-
-# Graficar el sesgo 
-plot(resultados$n, resultados$sesg_perf,
+## SESGO (teórico = 0)
+plot(resultados_imp$n, resultados_imp$bias_sim,
      type="b", pch=19,
      xlab="n", ylab="Sesgo",
-     ylim = c(lim_inf, lim_sup),
-     main="Sesgo Perfecto vs Imperfecto")
+     main="Sesgo: Simulado vs Teórico",
+     ylim=c(min(resultados_imp$bias_sim), max(resultados_imp$bias_sim)))
 
-lines(resultados$n, resultados$sesg_imp,
-      type="b", pch=19, col="red")
+# línea de sesgo teórico = 0
+abline(h = 0, col="blue", lwd=2, lty=2)
 
 legend("topright",
-       legend=c("Perfecto", "Imperfecto"),
-       col=c("black", "red"),
-       pch=19)
+       legend=c("Sesgo sim.", "Sesgo teórico (0)"),
+       col=c("black","blue"), pch=c(19, NA), lty=c(1,2))
 
-### GRAFICAR VARIANZA
 
-plot(resultados$n, resultados$var_perf,
-     type="b", pch=19, ylim=range(c(resultados$var_perf, resultados$var_imp)),
+## VARIANZA
+plot(resultados_imp$n, resultados_imp$var_sim,
+     type="b", pch=19,
      xlab="n", ylab="Varianza",
-     main="Varianza Perfecto vs Imperfecto")
-lines(resultados$n, resultados$var_imp, type="b", pch=19, col="red")
+     main="Varianza: Simulado vs Teórica",
+     ylim=c(0, max(resultados_imp$var_sim, resultados_imp$var_teo)))
+
+lines(resultados_imp$n, resultados_imp$var_teo,
+      type="b", pch=17, col="blue")
+
 legend("topright",
-       legend=c("Perfecto", "Imperfecto"),
-       col=c("black","red"), pch=19)
+       legend=c("Var sim.", "Var teórica"),
+       col=c("black","blue"), pch=c(19,17))
+
+
+## ECM
+plot(resultados_imp$n, resultados_imp$ecm_sim,
+     type="b", pch=19,
+     xlab="n", ylab="ECM",
+     main="ECM: Simulado vs Teórico",
+     ylim=c(0, max(resultados_imp$ecm_sim, resultados_imp$ecm_teo)))
+
+lines(resultados_imp$n, resultados_imp$ecm_teo,
+      type="b", pch=17, col="blue")
+
+legend("topright",
+       legend=c("ECM sim.", "ECM teórico"),
+       col=c("black","blue"), pch=c(19,17))
 
