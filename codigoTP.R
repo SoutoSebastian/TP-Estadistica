@@ -31,3 +31,33 @@ for (j in seq_along(ns)){
 }
 
 cubrimientoEmpirico <- data.frame(n = ns, cubrimiento = cubrimientoN)
+
+# Parámetros
+
+Se <- 0.9
+Sp <- 0.95
+
+# p real del test imperfecto
+p <- (Se + Sp - 1)*tita + (1 - Sp)
+
+# Rango de n
+ns <- 10:1000
+
+# ECM del test perfecto
+ECM_perfecto <- tita*(1 - tita) / ns
+
+# ECM del test imperfecto 
+ECM_imperfecto <- p*(1 - p) / (ns * (Se + Sp - 1)^2)
+
+# Gráfico
+plot(ns, ECM_imperfecto,
+     type="l", col="orange", lwd=2,
+     xlab="n", ylab="ECM",
+     main="ECM vs n: Test perfecto vs imperfecto")
+
+lines(ns, ECM_perfecto, col="blue", lwd=2)
+
+legend("topright",
+       legend=c("ECM test imperfecto", "ECM test perfecto"),
+       col=c("orange", "blue"), lwd=2)
+
