@@ -531,6 +531,34 @@ Carlo para los siguientes valores de n:</p>
 <p><span class="math display">\[
 10, 20, 50, 100, 1000, 10000
 \]</span></p>
+<pre class="r"><code>set.seed(43)
+
+tita &lt;- 0.25
+ns &lt;- c(10, 20, 50, 100, 1000, 10000) #valores de n para los cuales vamos a evaluar la cobertura
+Nrep &lt;- 5000                          #empirica
+z &lt;- qnorm(0.975)
+
+cubrimientoN &lt;- 0
+
+for (j in seq_along(ns)){
+  n &lt;- ns[j]
+  cubrimiento &lt;- 0
+  
+  for(i in 1:Nrep){                                         #repito el experimento 5000 veces.
+    muestra &lt;- rbinom(1,n,tita)
+    
+    estTita &lt;- muestra/n
+    termino &lt;- z * sqrt((estTita*(1-estTita))/n)
+    intervalo &lt;- c(estTita - termino, estTita + termino)
+    
+    cubrimiento[i] &lt;- intervalo[1] &lt;= tita &amp;&amp; tita &lt;= intervalo[2]
+  }
+  
+  cubrimientoN[j] &lt;- mean(cubrimiento)                  #promedio de veces que el valor real de 
+                                                        #tita cayó en el intervalo.
+}
+
+cubrimientoEmpirico &lt;- data.frame(n = ns, cubrimiento = cubrimientoN)</code></pre>
 <p>Y se obtuvieron estos resultados:</p>
 <div style="width: 50%; margin: auto;">
 <table>
