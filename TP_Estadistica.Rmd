@@ -407,3 +407,6 @@ legend("topright",
 Podemos ver que para todos los tamaños muestrales n, el ECM del test imperfecto es mayor que el del test perfecto.
 A medida que n crece, ambos ECM tienden a 0, pero el imperfecto siempre queda más arriba que el perfecto.
 Cuanto más pequeño sea $Se+Sp−1$ (es decir, cuanto peor sea el test), mayor será la brecha entre las dos curvas.
+
+
+### 2.1.7 Comparo valores teoricos hallados con los simulados
