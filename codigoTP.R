@@ -2,7 +2,7 @@ set.seed(43)
 
 #####PARTE 1#########
 
-#1.5 Cubrimiento empC-rico mediante simulaciC3n Monte Carlo
+#1.5 Cubrimiento empirico mediante simulacion Monte Carlo
 
 
 tita <- 0.25
@@ -250,3 +250,95 @@ hist(boot_est, breaks = 30, freq = TRUE,
 
 abline(v = tita, col = "red", lwd = 2)  # valor verdadero
 
+
+##### 2.1.9 ####
+
+tita <- 0.25
+Se <- 0.9
+Sp <- 0.95
+p_Y <- Se * tita + (1 - Sp) * (1 - tita)
+
+ns <-  c(10, 20, 50, 100, 1000)
+R <- 700 #replicas Monte Carlo
+B <- 1000 #remuestreos bootstrap
+
+z <- qnorm(0.975)
+
+res_list <- vector("list",length(ns))
+names(res_list) <- as.character(ns)
+
+for (j in seq_along(ns)){
+  n <- ns[j]
+  cubrimientos <- logical(R)
+  longitudes <- numeric(R)
+   
+  for (r in 1:R){
+     T <- rbinom(n,1,p_Y)
+     boot_est <- numeric(B)
+     
+     for (b in 1:B){
+       T_boot <- sample(T, size = n, replace = TRUE)
+       p_hat_boot <- mean(T_boot)
+       boot_est[b] <- tita_corregida(p_hat_boot, Se, Sp)
+     }
+     
+     lower <- quantile(boot_est, probs = 0.025, names = FALSE)
+     upper <- quantile(boot_est, probs = 0.975, names = FALSE)
+     
+     cubrimientos[r] <- (lower <= tita) && (tita <= upper)
+     longitudes[r] <- (upper - lower)
+  }
+  
+  res_list[[j]] <- list(
+    n = n,
+    cubrimiento = mean(cubrimientos),
+    longitud_media = mean(longitudes)
+  )
+   
+}
+
+res_df <- do.call(rbind, lapply(res_list, function(z){
+  data.frame(n = z$n,
+             cubrimiento = z$cubrimiento,
+             longitud_media = z$longitud_media)
+}))
+rownames(res_df) <- NULL
+
+#### 2.1.10 ####
+
+res_listAsint <- vector("list", length(ns))
+names(res_listAsint) <- as.character(ns)
+
+for (j in seq_along(ns)){
+  n <- ns[j]
+  cubrimientos <- logical(R)
+  longitudes <- numeric(R)
+  
+  for (r in 1:R){
+    T <- rbinom(n, 1, p_Y)
+    
+    p_hat <- mean(T)
+    tita_hat <- tita_corregida(p_hat,Se,Sp)
+    est_Var <- (p_hat*(1-p_hat))/(n*(Se+Sp-1)^2)
+    
+    termino <- z*sqrt(est_Var)
+    lower <- tita_hat - termino
+    upper <- tita_hat + termino
+    
+    cubrimientos[r] <- (lower <= tita) && (tita <= upper)
+    longitudes[r] <- (upper - lower)
+  }
+  
+  res_listAsint[[j]] <- list(
+    n = n,
+    cubrimiento = mean(cubrimientos),
+    longitud_media = mean(longitudes)
+  )
+}
+
+resAsint_df <- do.call(rbind, lapply(res_listAsint, function(z){
+  data.frame(n = z$n,
+             cubrimiento = z$cubrimiento,
+             longitud_media = z$longitud_media)
+}))
+rownames(resAsint_df) <- NULL

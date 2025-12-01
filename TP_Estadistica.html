@@ -861,7 +861,6 @@ es una función continua de <span class="math inline">\(\hat{p}_{MoM}\)</span>:<
 <p>Por lo tanto, <span class="math inline">\(\hat{\theta}_{MoM}\)</span>
 es fuertemente consistente.</p></li>
 </ul>
-<p>(Para estimar estos valores se puede reemplazar <span class="math inline">\(p\)</span> por <span class="math inline">\(\hat{p}_{MoM}\)</span>, si <span class="math inline">\(p\)</span> es desconocido.)</p>
 </div>
 <div id="ecm-del-test-perfecto-y-test-imprefecto-en-funcion-de-n" class="section level3">
 <h3>2.1.6 ECM del test perfecto y test imprefecto en funcion de n</h3>
@@ -1110,6 +1109,252 @@ discreta y “a saltos”. En conjunto, el gráfico muestra que para <span class
 impreciso y altamente variable, por lo que no es confiable en muestras
 tan pequeñas. Se recomendaria aumentar el tamaño de la muestra para
 obtener estimaciones mas utiles.</p>
+<p><br></p>
+</div>
+<div id="intervalos-de-confianza-bootstrap." class="section level3">
+<h3>2.2.9 Intervalos de confianza bootstrap.</h3>
+<p>Se quiere calcular intervalos de confianza bootstrap para <span class="math inline">\(\theta\)</span> basandose en <span class="math inline">\(\hat{\theta}_{MoM}\)</span>. A partir de la
+técnica bootstrap no paramétrico obtenemos <span class="math inline">\(1000\)</span> estimaciones de <span class="math inline">\(\theta\)</span> y para construir el intervalo de
+confianza tomamos como límite inferior al cuantil 0.025 y como límite
+superior al cuantil 0.975.</p>
+<p>También se quieren realizar simulaciones, para evaluar el cubrimiento
+empirico y la longitud promedio de los intervalos.</p>
+<p>En el siguiente código se realiza lo mencionado anteriormente.</p>
+<pre class="r"><code>tita &lt;- 0.25
+Se &lt;- 0.9
+Sp &lt;- 0.95
+p_Y &lt;- Se * tita + (1 - Sp) * (1 - tita)
+
+ns &lt;-  c(10, 20, 50, 100, 1000)
+R &lt;- 700 #replicas Monte Carlo
+B &lt;- 1000 #remuestreos bootstrap
+
+z &lt;- qnorm(0.975)
+
+res_list &lt;- vector(&quot;list&quot;,length(ns))
+names(res_list) &lt;- as.character(ns)
+
+for (j in seq_along(ns)){
+  n &lt;- ns[j]
+  cubrimientos &lt;- logical(R)
+  longitudes &lt;- numeric(R)
+   
+  for (r in 1:R){
+     T &lt;- rbinom(n,1,p_Y)
+     boot_est &lt;- numeric(B)
+     
+     for (b in 1:B){
+       T_boot &lt;- sample(T, size = n, replace = TRUE)
+       p_hat_boot &lt;- mean(T_boot)
+       boot_est[b] &lt;- tita_corregida(p_hat_boot, Se, Sp)
+     }
+     
+     lower &lt;- quantile(boot_est, probs = 0.025, names = FALSE)
+     upper &lt;- quantile(boot_est, probs = 0.975, names = FALSE)
+     
+     cubrimientos[r] &lt;- (lower &lt;= tita) &amp;&amp; (tita &lt;= upper)
+     longitudes[r] &lt;- (upper - lower)
+  }
+  
+  res_list[[j]] &lt;- list(
+    n = n,
+    cubrimiento = mean(cubrimientos),
+    longitud_media = mean(longitudes)
+  )
+   
+}
+
+res_df &lt;- do.call(rbind, lapply(res_list, function(z){
+  data.frame(n = z$n,
+             cubrimiento = z$cubrimiento,
+             longitud_media = z$longitud_media)
+}))
+rownames(res_df) &lt;- NULL</code></pre>
+</div>
+<div id="intervalo-de-confianza-asintótico." class="section level3">
+<h3>2.2.10 Intervalo de confianza asintótico.</h3>
+<p>Recordemos que:</p>
+<ul>
+<li><p><span class="math inline">\(\hat{p}_{MoM} =
+\frac{T_{per}}{n}\)</span></p></li>
+<li><p><span class="math inline">\(\mathbb{E}[\hat{p}_{MoM}] =
+p\)</span></p></li>
+<li><p><span class="math inline">\(\operatorname{Var}[\hat{p}_{MoM}] =
+\frac{p(1-p)}{n}\)</span></p></li>
+<li><p><span class="math inline">\(\hat{\theta}_{MoM} =
+\frac{\hat{p}_{MoM} + S_{p} - 1}{S_{e}+S_{p}-1}\)</span></p></li>
+<li><p><span class="math inline">\(\mathbb{E}[\hat{\theta}_{MoM}] =
+\theta\)</span></p></li>
+<li><p><span class="math inline">\(\operatorname{Var}[\hat{\theta}_{MoM}] =
+\frac{p(1-p)}{n(S_{e}+S_{p}-1)^2}\)</span></p></li>
+</ul>
+<p>Entonces por TCL:</p>
+<p><span class="math display">\[
+\sqrt{n} (\hat{p}_{MoM} - p) \xrightarrow{D}  N\bigl(0,(p(1-p)\bigr)
+\]</span></p>
+<p>Defino <span class="math inline">\(g(x) =
+\frac{x+S_{p}-1}{S_{e}+S_{p}-1}\)</span> y <span class="math inline">\(g&#39;(x) = \frac{1}{S_{e} + S_{p} -1}\)</span>.
+Notar que <span class="math inline">\(g(x)\)</span> es <span class="math inline">\(C^1\)</span>.</p>
+<p>Entonces, por Método Delta:</p>
+<p><span class="math display">\[
+\sqrt{n}(g(\hat{p}_{MoM}) - g(p)) \xrightarrow{D} N\bigl(0,
+\frac{p(1-p)}{(S_{e}+S_{p}-1)^2}\bigr)
+\]</span></p>
+<p>Luego,</p>
+<p><span class="math display">\[
+\frac{\hat{\theta}_{MoM}-\theta}{\sqrt{\operatorname{Var}[\hat{\theta}_{MoM}]}}
+\xrightarrow{D} N\bigl(0,1\bigr)
+\]</span></p>
+<p>Además <span class="math inline">\(\hat{p}_{MoM} = \frac{T_{per}}{n}
+\xrightarrow{cs} p\)</span>, entonces:</p>
+<p><span class="math display">\[
+\sqrt{\frac{\hat{p}_{MoM}(1-\hat{p}_{MoM})}{p(1-p)}} \xrightarrow{P} 1
+\]</span></p>
+<p>debido a que <span class="math inline">\(h(x)=
+\sqrt{\frac{x(1-x)}{p(1-p)}}\)</span> es continua en <span class="math inline">\((0,1)\)</span>.</p>
+<p>Si <span class="math inline">\(\widehat{\operatorname{Var}}[\hat{\theta}_{MoM}]
+=\frac{\hat{p}_{MoM}(1-\hat{p}_{MoM})}{n(S_{e}+S_{p}-1)^2}\)</span>,
+usando teorema de Slutsky:</p>
+<p><span class="math display">\[
+\frac{\hat{\theta}_{MoM} -
+\theta}{\sqrt{\widehat{\operatorname{Var}}[\hat{\theta}_{MoM}]}} =
+\frac{\hat{\theta}_{MoM} -
+\theta}{\sqrt{\operatorname{Var}[\hat{\theta}_{MoM}]}\sqrt{\frac{\hat{p}_{MoM}(1-\hat{p}_{MoM})}{p(1-p)}}}
+\xrightarrow{D}  N\bigl(0,1\bigr)
+\]</span></p>
+<p>Por lo tanto, se deduce el siguiente intervalo de nivel asintótico
+<span class="math inline">\(0.95\)</span>.</p>
+<p><span class="math display">\[
+IC^{\theta}_{0.95} = \hat{\theta}_{MoM}\pm
+1.96\sqrt{\widehat{\operatorname{Var}}[\hat{\theta}_{MoM}]}
+\]</span></p>
+<p>En el siguiente código se calcula el intervalo asintótico mencionado
+y se realizan simulaciones para evaluar cubrimiento empírico y longitud
+promedio.</p>
+<pre class="r"><code>res_listAsint &lt;- vector(&quot;list&quot;, length(ns))
+names(res_listAsint) &lt;- as.character(ns)
+
+for (j in seq_along(ns)){
+  n &lt;- ns[j]
+  cubrimientos &lt;- logical(R)
+  longitudes &lt;- numeric(R)
+  
+  for (r in 1:R){
+    T &lt;- rbinom(n, 1, p_Y)
+    
+    p_hat &lt;- mean(T)
+    tita_hat &lt;- tita_corregida(p_hat,Se,Sp)
+    est_Var &lt;- (p_hat*(1-p_hat))/(n*(Se+Sp-1)^2)
+    
+    termino &lt;- z*sqrt(est_Var)
+    lower &lt;- tita_hat - termino
+    upper &lt;- tita_hat + termino
+    
+    cubrimientos[r] &lt;- (lower &lt;= tita) &amp;&amp; (tita &lt;= upper)
+    longitudes[r] &lt;- (upper - lower)
+  }
+  
+  res_listAsint[[j]] &lt;- list(
+    n = n,
+    cubrimiento = mean(cubrimientos),
+    longitud_media = mean(longitudes)
+  )
+}
+
+resAsint_df &lt;- do.call(rbind, lapply(res_listAsint, function(z){
+  data.frame(n = z$n,
+             cubrimiento = z$cubrimiento,
+             longitud_media = z$longitud_media)
+}))
+rownames(resAsint_df) &lt;- NULL</code></pre>
+</div>
+<div id="comparación-entre-ambos-intervalos." class="section level3">
+<h3>2.1.11 Comparación entre ambos intervalos.</h3>
+<p>Comparemos los resultados obtenidos.</p>
+<pre class="r"><code>knitr::kable(res_df, digits = 4, caption = &quot;Bootstrap Percentil&quot;)</code></pre>
+<table>
+<caption>Bootstrap Percentil</caption>
+<thead>
+<tr class="header">
+<th align="right">n</th>
+<th align="right">cubrimiento</th>
+<th align="right">longitud_media</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">10</td>
+<td align="right">0.9329</td>
+<td align="right">0.5680</td>
+</tr>
+<tr class="even">
+<td align="right">20</td>
+<td align="right">0.9186</td>
+<td align="right">0.4285</td>
+</tr>
+<tr class="odd">
+<td align="right">50</td>
+<td align="right">0.9314</td>
+<td align="right">0.2782</td>
+</tr>
+<tr class="even">
+<td align="right">100</td>
+<td align="right">0.9429</td>
+<td align="right">0.2006</td>
+</tr>
+<tr class="odd">
+<td align="right">1000</td>
+<td align="right">0.9514</td>
+<td align="right">0.0638</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>knitr::kable(resAsint_df, digits = 4, caption = &quot;Intervalos Asintóticos&quot;)</code></pre>
+<table>
+<caption>Intervalos Asintóticos</caption>
+<thead>
+<tr class="header">
+<th align="right">n</th>
+<th align="right">cubrimiento</th>
+<th align="right">longitud_media</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">10</td>
+<td align="right">0.9257</td>
+<td align="right">0.5930</td>
+</tr>
+<tr class="even">
+<td align="right">20</td>
+<td align="right">0.9186</td>
+<td align="right">0.4366</td>
+</tr>
+<tr class="odd">
+<td align="right">50</td>
+<td align="right">0.9200</td>
+<td align="right">0.2836</td>
+</tr>
+<tr class="even">
+<td align="right">100</td>
+<td align="right">0.9414</td>
+<td align="right">0.2013</td>
+</tr>
+<tr class="odd">
+<td align="right">1000</td>
+<td align="right">0.9457</td>
+<td align="right">0.0641</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>El bootstrap parece ser más robusto en muestras pequeñas, lo cual es
+esperable porque no depende de aproximaciones normales ni del método
+delta.</li>
+</ul>
+<p>*El método asintótico da intervalos ligeramente más largos.</p>
+<p>*A medida que aumenta <span class="math inline">\(n\)</span> los
+resultados obtenidos se vuelven casi indistinguibles.</p>
 </div>
 </div>
 

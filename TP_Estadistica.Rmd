@@ -495,7 +495,7 @@ Como $\mathbb{E}[T_{i}] = p$, el estimador de momentos de $p$ es $\hat{p}_{MoM} 
   
   Por lo tanto, $\hat{\theta}_{MoM}$ es fuertemente consistente.
 
-(Para estimar estos valores se puede reemplazar $p$ por $\hat{p}_{MoM}$, si $p$ es desconocido.) 
+ 
 
 ### 2.1.6 ECM del test perfecto y test imprefecto en funcion de n 
 
@@ -772,4 +772,191 @@ abline(v = tita, col = "red", lwd = 2)  # valor verdadero
 
 En el histograma bootstrap se observa que la distribución del estimador de momentos es muy dispersa y presenta barras bien separadas. Esto ocurre porque, con un tamaño muestral tan pequeño como n=10, la proporción muestral $\hat{p}$ solo puede tomar pocos valores posibles, lo que genera una distribución discreta y “a saltos”.
 En conjunto, el gráfico muestra que para $n=10$ el estimador de momentos es muy impreciso y altamente variable, por lo que no es confiable en muestras tan pequeñas. Se recomendaria aumentar el tamaño de la muestra para obtener estimaciones mas utiles.
+
+<br>
+
+### 2.2.9 Intervalos de confianza bootstrap.
+
+Se quiere calcular intervalos de confianza bootstrap para $\theta$ basandose en $\hat{\theta}_{MoM}$. A partir de la técnica bootstrap no paramétrico obtenemos $1000$ estimaciones de $\theta$ y para construir el intervalo de confianza tomamos como límite inferior al cuantil 0.025 y como límite superior al cuantil 0.975. 
+
+También se quieren realizar simulaciones, para evaluar el cubrimiento empirico y la longitud promedio de los intervalos.
+
+En el siguiente código se realiza lo mencionado anteriormente.
+
+```{r}
+tita <- 0.25
+Se <- 0.9
+Sp <- 0.95
+p_Y <- Se * tita + (1 - Sp) * (1 - tita)
+
+ns <-  c(10, 20, 50, 100, 1000)
+R <- 700 #replicas Monte Carlo
+B <- 1000 #remuestreos bootstrap
+
+z <- qnorm(0.975)
+
+res_list <- vector("list",length(ns))
+names(res_list) <- as.character(ns)
+
+for (j in seq_along(ns)){
+  n <- ns[j]
+  cubrimientos <- logical(R)
+  longitudes <- numeric(R)
+   
+  for (r in 1:R){
+     T <- rbinom(n,1,p_Y)
+     boot_est <- numeric(B)
+     
+     for (b in 1:B){
+       T_boot <- sample(T, size = n, replace = TRUE)
+       p_hat_boot <- mean(T_boot)
+       boot_est[b] <- tita_corregida(p_hat_boot, Se, Sp)
+     }
+     
+     lower <- quantile(boot_est, probs = 0.025, names = FALSE)
+     upper <- quantile(boot_est, probs = 0.975, names = FALSE)
+     
+     cubrimientos[r] <- (lower <= tita) && (tita <= upper)
+     longitudes[r] <- (upper - lower)
+  }
+  
+  res_list[[j]] <- list(
+    n = n,
+    cubrimiento = mean(cubrimientos),
+    longitud_media = mean(longitudes)
+  )
+   
+}
+
+res_df <- do.call(rbind, lapply(res_list, function(z){
+  data.frame(n = z$n,
+             cubrimiento = z$cubrimiento,
+             longitud_media = z$longitud_media)
+}))
+rownames(res_df) <- NULL
+```
+
+### 2.2.10 Intervalo de confianza asintótico.
+
+Recordemos que: 
+
+
+* $\hat{p}_{MoM} = \frac{T_{per}}{n}$
+
+* $\mathbb{E}[\hat{p}_{MoM}] = p$
+
+* $\operatorname{Var}[\hat{p}_{MoM}] = \frac{p(1-p)}{n}$
+
+* $\hat{\theta}_{MoM} = \frac{\hat{p}_{MoM} + S_{p} - 1}{S_{e}+S_{p}-1}$
+
+* $\mathbb{E}[\hat{\theta}_{MoM}] = \theta$
+
+* $\operatorname{Var}[\hat{\theta}_{MoM}] = \frac{p(1-p)}{n(S_{e}+S_{p}-1)^2}$
+
+
+
+Entonces por TCL:
+
+\[
+\sqrt{n} (\hat{p}_{MoM} - p) \xrightarrow{D}  N\bigl(0,(p(1-p)\bigr)
+\]
+
+
+Defino $g(x) = \frac{x+S_{p}-1}{S_{e}+S_{p}-1}$ y $g'(x) = \frac{1}{S_{e} + S_{p} -1}$. Notar que $g(x)$ es $C^1$.
+
+Entonces, por Método Delta:
+
+\[
+\sqrt{n}(g(\hat{p}_{MoM}) - g(p)) \xrightarrow{D} N\bigl(0, \frac{p(1-p)}{(S_{e}+S_{p}-1)^2}\bigr)
+\]
+
+Luego,
+
+\[
+\frac{\hat{\theta}_{MoM}-\theta}{\sqrt{\operatorname{Var}[\hat{\theta}_{MoM}]}} \xrightarrow{D} N\bigl(0,1\bigr)
+\]
+
+Además $\hat{p}_{MoM} = \frac{T_{per}}{n} \xrightarrow{cs} p$, entonces: 
+
+\[ 
+\sqrt{\frac{\hat{p}_{MoM}(1-\hat{p}_{MoM})}{p(1-p)}} \xrightarrow{P} 1 
+\]
+
+debido a que $h(x)= \sqrt{\frac{x(1-x)}{p(1-p)}}$ es continua en $(0,1)$.
+
+
+Si $\widehat{\operatorname{Var}}[\hat{\theta}_{MoM}] =\frac{\hat{p}_{MoM}(1-\hat{p}_{MoM})}{n(S_{e}+S_{p}-1)^2}$, usando teorema de Slutsky:
+
+
+\[
+\frac{\hat{\theta}_{MoM} - \theta}{\sqrt{\widehat{\operatorname{Var}}[\hat{\theta}_{MoM}]}} = \frac{\hat{\theta}_{MoM} - \theta}{\sqrt{\operatorname{Var}[\hat{\theta}_{MoM}]}\sqrt{\frac{\hat{p}_{MoM}(1-\hat{p}_{MoM})}{p(1-p)}}} \xrightarrow{D}  N\bigl(0,1\bigr)
+\]
+
+Por lo tanto, se deduce el siguiente intervalo de nivel asintótico $0.95$.
+
+\[
+IC^{\theta}_{0.95} = \hat{\theta}_{MoM}\pm 1.96\sqrt{\widehat{\operatorname{Var}}[\hat{\theta}_{MoM}]}
+\]
+
+En el siguiente código se calcula el intervalo asintótico mencionado y se realizan simulaciones para evaluar cubrimiento empírico y longitud promedio.
+
+```{r}
+res_listAsint <- vector("list", length(ns))
+names(res_listAsint) <- as.character(ns)
+
+for (j in seq_along(ns)){
+  n <- ns[j]
+  cubrimientos <- logical(R)
+  longitudes <- numeric(R)
+  
+  for (r in 1:R){
+    T <- rbinom(n, 1, p_Y)
+    
+    p_hat <- mean(T)
+    tita_hat <- tita_corregida(p_hat,Se,Sp)
+    est_Var <- (p_hat*(1-p_hat))/(n*(Se+Sp-1)^2)
+    
+    termino <- z*sqrt(est_Var)
+    lower <- tita_hat - termino
+    upper <- tita_hat + termino
+    
+    cubrimientos[r] <- (lower <= tita) && (tita <= upper)
+    longitudes[r] <- (upper - lower)
+  }
+  
+  res_listAsint[[j]] <- list(
+    n = n,
+    cubrimiento = mean(cubrimientos),
+    longitud_media = mean(longitudes)
+  )
+}
+
+resAsint_df <- do.call(rbind, lapply(res_listAsint, function(z){
+  data.frame(n = z$n,
+             cubrimiento = z$cubrimiento,
+             longitud_media = z$longitud_media)
+}))
+rownames(resAsint_df) <- NULL
+```
+
+### 2.1.11 Comparación entre ambos intervalos.
+
+Comparemos los resultados obtenidos.
+
+
+```{r}
+knitr::kable(res_df, digits = 4, caption = "Bootstrap Percentil")
+```
+
+
+```{r}
+knitr::kable(resAsint_df, digits = 4, caption = "Intervalos Asintóticos")
+```
+
+
+* El bootstrap parece ser más robusto en muestras pequeñas, lo cual es esperable porque no depende de aproximaciones normales ni del método delta.
+
+* El método asintótico da intervalos ligeramente más largos.
+
+* A medida que aumenta $n$ los resultados obtenidos se vuelven casi indistinguibles.
 
