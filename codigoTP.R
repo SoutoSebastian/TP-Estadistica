@@ -114,8 +114,10 @@ legend("topright",
 #### 2.1.7 ####
 
 
+R <- 10000
+ns <- c(10, 20, 50, 100, 200) 
 
-# FunciC3n estimador de momentos
+# Función estimador de momentos
 tita_corregida <- function(p_hat, Se, Sp) {
   (p_hat - (1 - Sp)) / (Se + Sp - 1)
 }
@@ -130,36 +132,35 @@ resultados_imp <- data.frame(
   ecm_teo  = NA
 )
 
-
 for (i in seq_along(ns)) {
   n <- ns[i]
   est_imp <- numeric(R)
   
+  # Probabilidad real del test positivo
+  p_Y <- Se*tita + (1 - Sp)*(1 - tita)
+  
   for (r in 1:R) {
-    # generar Y y T condicional en Y
-    Y <- rbinom(n, 1, tita)
-    probs_T <- ifelse(Y == 1, Se, 1 - Sp)
-    T <- rbinom(n, 1, probs_T)
     
+    # 1) Genero la muestra de T correctamente
+    T <- rbinom(n, 1, p_Y)
+    
+    # 2) Estimador de momentos
     p_hat <- mean(T)
     est_imp[r] <- tita_corregida(p_hat, Se, Sp)
   }
   
-  # cuantiles o recortes opcionales: truncar a [0,1] si querC)s:
-  # est_imp <- pmin(pmax(est_imp, 0), 1)
-  
-  # estadC-sticos simulados
+  # --- Estadísticos simulados ---
   bias_sim <- mean(est_imp) - tita
   var_sim  <- var(est_imp)
   ecm_sim  <- mean((est_imp - tita)^2)
   
-  # valores teC3ricos (para el estimador corregido, Se,Sp conocidos)
-  p_true <- (Se + Sp - 1) * tita + (1 - Sp)   # P(T=1)
+  # --- Valores teóricos ---
+  p_true <- p_Y
   denom  <- Se + Sp - 1
-  var_teo <- (p_true * (1 - p_true)) / (n * denom^2)
-  ecm_teo <- var_teo   # insesgado => ECM = Var
+  var_teo <- (p_true*(1 - p_true)) / (n * denom^2)
+  ecm_teo <- var_teo   # insesgado
   
-  # guardar
+  # --- Guardar ---
   resultados_imp$bias_sim[i] <- bias_sim
   resultados_imp$var_sim[i]  <- var_sim
   resultados_imp$ecm_sim[i]  <- ecm_sim
@@ -167,11 +168,12 @@ for (i in seq_along(ns)) {
   resultados_imp$ecm_teo[i]  <- ecm_teo
 }
 
+
 # Mostrar tabla comparativa
 print(resultados_imp)
 
 
-## SESGO (teC3rico = 0)
+## SESGO (teorico = 0)
 plot(resultados_imp$n, resultados_imp$bias_sim,
      type="b", pch=19,
      xlab="n", ylab="Sesgo",
@@ -214,4 +216,37 @@ lines(resultados_imp$n, resultados_imp$ecm_teo,
 legend("topright",
        legend=c("ECM sim.", "ECM teC3rico"),
        col=c("black","blue"), pch=c(19,17))
+
+
+### 2.1.8 ####
+
+### --------------------------------------------------------
+### Punto 8 — Bootstrap para n = 10
+### --------------------------------------------------------
+
+
+n <- 10     # tamaño de la muestra
+B <- 5000   # cantidad de réplicas bootstrap
+
+# Probabilidad real de T = 1 bajo test imperfecto
+p_Y <- Se * tita + (1 - Sp) * (1 - tita)
+
+# 1) Genero una muestra original de T
+T <- rbinom(n, 1, p_Y)
+
+# 2) Bootstrap no paramétrico
+boot_est <- numeric(B)
+
+for (b in 1:B) {
+  T_boot <- sample(T, size = n, replace = TRUE)
+  p_hat_boot <- mean(T_boot)
+  boot_est[b] <- tita_corregida(p_hat_boot, Se, Sp)
+}
+
+# 3) Histograma
+hist(boot_est, breaks = 30, freq = TRUE,
+     main = "Distribución bootstrap del estimador de momentos (n = 10)",
+     xlab = expression(hat(theta)["bootstrap"]))
+
+abline(v = tita, col = "red", lwd = 2)  # valor verdadero
 
