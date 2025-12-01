@@ -234,8 +234,7 @@ Y se obtuvieron estos resultados:
 
 </div>
 
-Los resultados obtenidos son coherentes con la teoría. Al tratarse de un intervalo asintótico, el cubrimiento empírico converge hacia el nivel nominal del 0.95 conforme aumenta el tamaño muestral
-n.
+Los resultados obtenidos son coherentes con la teoría. Al tratarse de un intervalo asintótico, el cubrimiento empírico converge hacia el nivel nominal del 0.95 conforme aumenta el tamaño muestral n.
 
 <br><br>
 
@@ -273,6 +272,142 @@ $\hspace{7cm} L(p) \approx p^{T_{per}}(1-p)^{n-T_{per}}$
 se maximiza en $p = T_{per}/n$.
 
 <br>
+
+### 2.0.2 Relación entre $p$, $\theta$, $Se$ y $Sp$
+
+Recordemos que $\theta = P(Y=1)$ denota la prevalencia de la enfermedad en la población, mientras que $Y=1$ indica que el individuo está enfermo y $Y=0$ que está sano. La sensibilidad y especificidad del test diagnóstico se definen como
+\[
+Se = P(T=1 \mid Y=1) y \qquad Sp = P(T=0 \mid Y=0),
+\]
+donde $T$ es el resultado del test ($T=1$ si el test es positivo, $T=0$ si es negativo). Además, $P(Y=1)=\theta$ y $P(Y=0)=1-\theta$.
+
+La probabilidad de obtener un resultado positivo en el test es
+\[
+p = P(T=1).
+\]
+Aplicando la ley de probabilidad total, se tiene
+\[
+P(T=1)
+= P(T=1 \mid Y=1)P(Y=1) + P(T=1 \mid Y=0)P(Y=0).
+\]
+Sustituyendo las definiciones previas,
+\[
+p = Se \cdot \theta + P(T=1 \mid Y=0)\,(1-\theta).
+\]
+Como $Sp = P(T=0 \mid Y=0)$, se sigue que
+\[
+P(T=1 \mid Y=0) = 1 - Sp.
+\]
+Por lo tanto,
+\[
+p = Se\,\theta + (1-Sp)(1-\theta).
+\]
+Equivalentemente, podemos escribir
+\[
+p(\theta,Se,Sp) = (Se + Sp - 1)\,\theta + (1-Sp).
+\]
+
+### 2.0.3 Comportamiento de $p$ en función de $\theta$, $Se$ y $Sp$.
+
+Se analiza cómo varía la probabilidad de obtener un resultado positivo en el test diagnóstico,
+\[
+p = P(T = 1),
+\]
+cuando se modifican la prevalencia verdadera $\theta$, la sensibilidad $Se$ y la especificidad $Sp$ del test. Recordemos que, a partir de la ley de probabilidad total, se obtuvo la relación
+\[
+p(\theta,Se,Sp) = Se\,\theta + (1-Sp)(1-\theta).
+\]
+
+Trabajaremos con los valores de referencia indicados en el enunciado:
+\[
+Se = 0.9, \qquad Sp = 0.95, \qquad \theta = 0.25,
+\]
+y, en cada caso, variamos una de las cantidades manteniendo las otras dos fijas.
+
+```{r}
+## Valores fijos
+Se_fijo  <- 0.9
+Sp_fijo  <- 0.95
+theta_fijo <- 0.25
+
+## a
+theta_grid <- seq(0, 1, length.out = 1000)
+p_theta <- Se_fijo * theta_grid + (1 - Sp_fijo) * (1 - theta_grid)
+
+plot(theta_grid, p_theta, type = "l",
+     xlab = expression(theta),
+     ylab = "p",
+     main = "Probabilidad de test positivo vs. theta")
+abline(v = theta_fijo, col = "gray", lty = 2)
+abline(h = Se_fijo * theta_fijo + (1 - Sp_fijo) * (1 - theta_fijo),
+       col = "gray", lty = 2)
+
+## b
+Se_grid <- seq(0, 1, length.out = 1000)
+p_Se <- Se_grid * theta_fijo + (1 - Sp_fijo) * (1 - theta_fijo)
+
+plot(Se_grid, p_Se, type = "l",
+     xlab = "Se",
+     ylab = "p",
+     main = "Probabilidad de test positivo vs. sensibilidad")
+abline(v = Se_fijo, col = "gray", lty = 2)
+abline(h = Se_fijo * theta_fijo + (1 - Sp_fijo) * (1 - theta_fijo),
+       col = "gray", lty = 2)
+
+## c
+Sp_grid <- seq(0, 1, length.out = 1000)
+p_Sp <- Se_fijo * theta_fijo + (1 - Sp_grid) * (1 - theta_fijo)
+
+plot(Sp_grid, p_Sp, type = "l",
+     xlab = "Sp",
+     ylab = "p",
+     main = "Probabilidad de test positivo vs. especificidad")
+abline(v = Sp_fijo, col = "gray", lty = 2)
+abline(h = Se_fijo * theta_fijo + (1 - Sp_fijo) * (1 - theta_fijo),
+       col = "gray", lty = 2)
+
+```
+
+##### $\underline{\text{(a) $p$ en función de $\theta$ con $Se$ y $Sp$ fijos.}}$
+
+En primer lugar, consideramos la función
+\[
+p(\theta) = Se\,\theta + (1-Sp)(1-\theta),
+\]
+tomando $Se = 0.9$ y $Sp = 0.95$ fijos, y dejando variar la prevalencia $\theta$ en el intervalo $[0,1]$.
+
+El gráfico correspondiente muestra que $p(\theta)$ es una función lineal y creciente de $\theta$. Cuando $\theta$ es muy pequeña (prevalencias cercanas a cero), la probabilidad de test positivo se aproxima al término de falsos positivos $(1-Sp)$; en este caso, $p(\theta) \approx 1 - Sp = 0.05$. A medida que aumenta $\theta$, el término asociado a verdaderos positivos $Se$,$\theta$ domina y $p(\theta)$ crece. En el extremo $\theta = 1$, se tiene $p(1) = Se$, es decir, la probabilidad de test positivo coincide con la sensibilidad del test.
+
+El valor específico $\theta = 0.25$ se destaca sobre la curva para visualizar la probabilidad de test positivo asociada a esa prevalencia, que es
+\[
+p(0.25) = 0.9 \times 0.25 + (1 - 0.95)(1 - 0.25)
+= 0.225 + 0.05 \times 0.75
+= 0.2625.
+\]
+
+##### $\underline{\text{(b) $p$ en función de $Se$ con $\theta$ y $Sp$ fijos.}}$
+
+A continuación, estudiamos $p$ como función de la sensibilidad $Se$, manteniendo fijos $\theta = 0.25$ y $Sp = 0.95$. En este caso,
+\[
+p(Se) = Se \,\theta + (1-Sp)(1-\theta)
+= Se \cdot 0.25 + 0.05 \cdot 0.75.
+\]
+
+Esta expresión también es lineal y creciente en $Se$. El gráfico muestra que, cuando $Se$ es muy baja, la contribución de verdaderos positivos es pequeña y $p(Se)$ se mantiene próxima al valor provocado por falsos positivos. Al aumentar la sensibilidad, el test detecta correctamente a una mayor proporción de individuos enfermos y, en consecuencia, la probabilidad total de obtener un test positivo aumenta.
+
+El valor de referencia $Se = 0.9$ se marca en el eje horizontal, junto con la altura $p(Se=0.9)$ en el gráfico, para visualizar el punto correspondiente en la curva. 
+
+##### $\underline{\text{(c) $p$ en función de $Sp$ con $\theta$ y $Se$ fijos.}}$
+
+Finalmente, analizamos el comportamiento de $p$ en función de la especificidad $Sp$, manteniendo fijos $\theta = 0.25$ y $Se = 0.9$. En este caso
+\[
+p(Sp) = Se\,\theta + (1-Sp)(1-\theta)
+= 0.9 \cdot 0.25 + (1-Sp)\cdot 0.75.
+\]
+
+Aquí $p(Sp)$ es una función lineal y $decreciente$ en $Sp$. El gráfico muestra que, cuando la especificidad es baja (es decir, el test comete muchos falsos positivos), el término $(1-Sp)(1-\theta)$ es grande y la probabilidad total de test positivo $p$ toma valores elevados, incluso si la prevalencia real no es muy grande. A medida que $Sp$ aumenta, el número de falsos positivos disminuye y, en consecuencia, la probabilidad de observar un test positivo se reduce.
+
+El valor de referencia $Sp = 0.95$ se indica sobre el eje horizontal, junto con la altura $p(Sp=0.95)$, lo cual permite comparar la situación real del test con otros posibles niveles de especificidad.
 
 ### 2.1.4 Estimador de momentos (MoM).
 

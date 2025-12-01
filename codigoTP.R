@@ -2,7 +2,7 @@ set.seed(43)
 
 #####PARTE 1#########
 
-#1.5 Cubrimiento empírico mediante simulación Monte Carlo
+#1.5 Cubrimiento empC-rico mediante simulaciC3n Monte Carlo
 
 
 tita <- 0.25
@@ -27,14 +27,61 @@ for (j in seq_along(ns)){
   }
   
   cubrimientoN[j] <- mean(cubrimiento)                  #promedio de veces que el valor real de 
-                                                        #tita cayó en el intervalo.
+                                                        #tita cayC3 en el intervalo.
 }
 
 cubrimientoEmpirico <- data.frame(n = ns, cubrimiento = cubrimientoN)
 
+#####PARTE 2#########
+
+#### 2.0.3 ####
+
+
+## Valores fijos
+Se_fijo  <- 0.9
+Sp_fijo  <- 0.95
+theta_fijo <- 0.25
+
+## a
+theta_grid <- seq(0, 1, length.out = 1000)
+p_theta <- Se_fijo * theta_grid + (1 - Sp_fijo) * (1 - theta_grid)
+
+plot(theta_grid, p_theta, type = "l",
+     xlab = expression(theta),
+     ylab = "p",
+     main = "Probabilidad de test positivo vs. theta")
+abline(v = theta_fijo, col = "gray", lty = 2)
+abline(h = Se_fijo * theta_fijo + (1 - Sp_fijo) * (1 - theta_fijo),
+       col = "gray", lty = 2)
+
+## b
+Se_grid <- seq(0, 1, length.out = 1000)
+p_Se <- Se_grid * theta_fijo + (1 - Sp_fijo) * (1 - theta_fijo)
+
+plot(Se_grid, p_Se, type = "l",
+     xlab = "Se",
+     ylab = "p",
+     main = "Probabilidad de test positivo vs. sensibilidad")
+abline(v = Se_fijo, col = "gray", lty = 2)
+abline(h = Se_fijo * theta_fijo + (1 - Sp_fijo) * (1 - theta_fijo),
+       col = "gray", lty = 2)
+
+## c
+Sp_grid <- seq(0, 1, length.out = 1000)
+p_Sp <- Se_fijo * theta_fijo + (1 - Sp_grid) * (1 - theta_fijo)
+
+plot(Sp_grid, p_Sp, type = "l",
+     xlab = "Sp",
+     ylab = "p",
+     main = "Probabilidad de test positivo vs. especificidad")
+abline(v = Sp_fijo, col = "gray", lty = 2)
+abline(h = Se_fijo * theta_fijo + (1 - Sp_fijo) * (1 - theta_fijo),
+       col = "gray", lty = 2)
+
+
 #### 2.1.6 ####
 
-# Parámetros
+# Parametros
 
 Se <- 0.9
 Sp <- 0.95
@@ -51,7 +98,7 @@ ECM_perfecto <- tita*(1 - tita) / ns
 # ECM del test imperfecto 
 ECM_imperfecto <- p*(1 - p) / (ns * (Se + Sp - 1)^2)
 
-# Gráfico
+# GrC!fico
 plot(ns, ECM_imperfecto,
      type="l", col="orange", lwd=2,
      xlab="n", ylab="ECM",
@@ -68,7 +115,7 @@ legend("topright",
 
 
 
-# Función estimador de momentos
+# FunciC3n estimador de momentos
 tita_corregida <- function(p_hat, Se, Sp) {
   (p_hat - (1 - Sp)) / (Se + Sp - 1)
 }
@@ -98,15 +145,15 @@ for (i in seq_along(ns)) {
     est_imp[r] <- tita_corregida(p_hat, Se, Sp)
   }
   
-  # cuantiles o recortes opcionales: truncar a [0,1] si querés:
+  # cuantiles o recortes opcionales: truncar a [0,1] si querC)s:
   # est_imp <- pmin(pmax(est_imp, 0), 1)
   
-  # estadísticos simulados
+  # estadC-sticos simulados
   bias_sim <- mean(est_imp) - tita
   var_sim  <- var(est_imp)
   ecm_sim  <- mean((est_imp - tita)^2)
   
-  # valores teóricos (para el estimador corregido, Se,Sp conocidos)
+  # valores teC3ricos (para el estimador corregido, Se,Sp conocidos)
   p_true <- (Se + Sp - 1) * tita + (1 - Sp)   # P(T=1)
   denom  <- Se + Sp - 1
   var_teo <- (p_true * (1 - p_true)) / (n * denom^2)
@@ -124,18 +171,18 @@ for (i in seq_along(ns)) {
 print(resultados_imp)
 
 
-## SESGO (teórico = 0)
+## SESGO (teC3rico = 0)
 plot(resultados_imp$n, resultados_imp$bias_sim,
      type="b", pch=19,
      xlab="n", ylab="Sesgo",
-     main="Sesgo: Simulado vs Teórico",
+     main="Sesgo: Simulado vs TeC3rico",
      ylim=c(min(resultados_imp$bias_sim), max(resultados_imp$bias_sim)))
 
-# línea de sesgo teórico = 0
+# lC-nea de sesgo teC3rico = 0
 abline(h = 0, col="blue", lwd=2, lty=2)
 
 legend("topright",
-       legend=c("Sesgo sim.", "Sesgo teórico (0)"),
+       legend=c("Sesgo sim.", "Sesgo teC3rico (0)"),
        col=c("black","blue"), pch=c(19, NA), lty=c(1,2))
 
 
@@ -143,14 +190,14 @@ legend("topright",
 plot(resultados_imp$n, resultados_imp$var_sim,
      type="b", pch=19,
      xlab="n", ylab="Varianza",
-     main="Varianza: Simulado vs Teórica",
+     main="Varianza: Simulado vs TeC3rica",
      ylim=c(0, max(resultados_imp$var_sim, resultados_imp$var_teo)))
 
 lines(resultados_imp$n, resultados_imp$var_teo,
       type="b", pch=17, col="blue")
 
 legend("topright",
-       legend=c("Var sim.", "Var teórica"),
+       legend=c("Var sim.", "Var teC3rica"),
        col=c("black","blue"), pch=c(19,17))
 
 
@@ -158,13 +205,13 @@ legend("topright",
 plot(resultados_imp$n, resultados_imp$ecm_sim,
      type="b", pch=19,
      xlab="n", ylab="ECM",
-     main="ECM: Simulado vs Teórico",
+     main="ECM: Simulado vs TeC3rico",
      ylim=c(0, max(resultados_imp$ecm_sim, resultados_imp$ecm_teo)))
 
 lines(resultados_imp$n, resultados_imp$ecm_teo,
       type="b", pch=17, col="blue")
 
 legend("topright",
-       legend=c("ECM sim.", "ECM teórico"),
+       legend=c("ECM sim.", "ECM teC3rico"),
        col=c("black","blue"), pch=c(19,17))
 
