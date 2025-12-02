@@ -762,7 +762,7 @@ for (b in 1:B) {
 }
 
 # Histograma
-hist(boot_est, breaks = 30, freq = TRUE,
+hist(boot_est, breaks = 15, freq = TRUE,
      main = "Distribución bootstrap del estimador de momentos (n = 10)",
      xlab = expression(hat(theta)["bootstrap"]))
 
@@ -770,10 +770,12 @@ abline(v = tita, col = "red", lwd = 2)  # valor verdadero
 
 ```
 
-En el histograma bootstrap se observa que la distribución del estimador de momentos es muy dispersa y presenta barras bien separadas. Esto ocurre porque, con un tamaño muestral tan pequeño como n=10, la proporción muestral $\hat{p}$ solo puede tomar pocos valores posibles, lo que genera una distribución discreta y “a saltos”.
-En conjunto, el gráfico muestra que para $n=10$ el estimador de momentos es muy impreciso y altamente variable, por lo que no es confiable en muestras tan pequeñas. Se recomendaria aumentar el tamaño de la muestra para obtener estimaciones mas utiles.
 
-<br>
+
+La distribución bootstrap del estimador de momentos para $n=10$ muestra una alta dispersión, lo que muestra una fuerte inestabilidad del estimador cuando el tamaño muestral es chico. Además, el centro de la distribución bootstrap es mayor que el valor real de θ, lo que indica la presencia de un sesgo positivo.
+
+Estos resultados muestran que, con $n=10$, el estimador es altamente variable y poco confiable. Por lo tanto, se recomienda aumentar el tamaño muestral para obtener una distribución más concentrada del estimador. Con un n mayor, el estimador estaria más centrado alrededor del valor real (θ = 0.25) y su varianza disminuiría.
+
 
 ### 2.2.9 Intervalos de confianza bootstrap.
 
