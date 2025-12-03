@@ -960,3 +960,216 @@ knitr::kable(resAsint_df, digits = 4, caption = "Intervalos Asintóticos")
 
 * A medida que aumenta $n$ los resultados obtenidos se vuelven casi indistinguibles.
 
+<br><br>
+
+# 3 Parte III: Dos muestras (pre-post intervención)
+
+En esta sección analizamos si la prevalencia verdadera de la enfermedad cambió después de implementar una campaña de vacunación. Para ello se toman dos muestras independientes:
+
+- Una **antes** de la campaña, de tamaño \( n_{\text{pre}} \), con número de test positivos \( X_{\text{pre}} \).
+- Otra **después**, de tamaño \( n_{\text{post}} \), con número de test positivos \( X_{\text{post}} \).
+
+En ambos casos se utiliza el mismo test diagnóstico imperfecto, caracterizado por su **sensibilidad** \( Se \) y **especificidad** \( Sp \).
+
+Los conteos observados siguen:
+\[
+X_{\text{pre}} \sim \text{Binomial}(n_{\text{pre}}, p_{\text{pre}}), \quad 
+X_{\text{post}} \sim \text{Binomial}(n_{\text{post}}, p_{\text{post}})
+\]
+donde  
+\[
+p_A = (Se + Sp - 1)\theta_A + (1 - Sp), \qquad A \in \{\text{pre}, \text{post}\}
+\]
+
+Nuestro objetivo es inferir la **diferencia de prevalencias verdaderas**:
+\[
+\Delta = \theta_{\text{post}} - \theta_{\text{pre}}
+\]
+
+<br>
+
+### 3.1.1 Test de Hipótesis.
+
+Se quiere plantear un test de nivel aproximado $0.05$ para las siguientes hipótesis, basandose en el estimador $\hat{\theta}_{MoM}$:
+
+\[
+H_{0} : \Delta = 0 \quad \text{vs.} \quad H_{1} : \Delta
+\]
+
+Tenemos:
+
+\[
+\hat{\theta}_{post} = \frac{\hat{p}_{post} + S_{p} - 1}{S_{e}+S_{p}-1} \quad \text{y} \quad \hat{\theta}_{pre} = \frac{\hat{p}_{pre} + S_{p} - 1}{S_{e}+S_{p}-1}
+\]
+
+Y por el item $2.1.10$, se deduce que:
+
+
+\[
+\hat{\theta}_{post} \approx N\bigl(\theta_{post},\; \widehat{\operatorname{Var}}(\hat{\theta}_{post})\bigr)
+\quad\text{y}\quad
+\hat{\theta}_{pre} \approx N\bigl(\theta_{pre},\; \widehat{\operatorname{Var}}(\hat{\theta}_{pre})\bigr)
+\]
+
+\[
+\hat{\theta}_{post} - \hat{\theta}_{pre}
+\approx
+N\!\Bigl(\theta_{post}-\theta_{pre},\; \widehat{\operatorname{Var}}(\hat{\theta}_{post}) + \widehat{\operatorname{Var}}(\hat{\theta}_{pre})\Bigr)
+\]
+
+\[
+U_{\Delta}(X_{pre},X_{post})
+=
+\frac{\hat{\theta}_{post} - \hat{\theta}_{pre} - \Delta}
+     {\sqrt{\widehat{\operatorname{Var}}(\hat{\theta}_{post}) + \widehat{\operatorname{Var}}(\hat{\theta}_{pre})}}
+\approx N(0,1)
+\]
+
+Tenemos un pivote decreciente en $\Delta$ con distribución aproximada conocida independiente de $\Delta$. Entonces, utilizando método del pivote, resulta el siguiente test de nivel aproximado 0.05.
+
+\[
+\Phi(X_{pre},X_{post}) =
+\begin{cases}
+1 & \text{si } \bigl|U_{0}(X_{pre},X_{post})\bigr| > z_{1-\alpha/2} = z_{0.975} \approx 1.96, \\
+0 & \text{c.c.}
+\end{cases}
+\]
+
+<br>
+
+### 3.1.2 Aplicación en caso ficticio.
+
+
+Vamos a aplicar el test dado en el item anterior a un caso ficticio con $n_{pre} = n_{post} = 100$, $S_{e} = 0.9$, $S_{p} = 0.95$, $\theta_{pre} = 0.2$, $\theta_{post} = 0.15$ y $\alpha = 0.05$.
+
+```{r}
+#Definimos los valores.
+n_pre <- 100
+n_post <- 100
+Se <- 0.9
+Sp <- 0.95
+tita_pre <- 0.2
+tita_post <- 0.15
+
+#Calculamos p_pre y p_post:
+
+p_pre <- (Se + Sp - 1)* tita_pre + (1 - Sp)
+p_post <- (Se + Sp - 1)* tita_post + (1 - Sp)
+
+
+#Generamos ambas muestras (pre y post):
+
+Xpre <- rbinom(n_pre, 1, p_pre)
+Xpost <- rbinom(n_post, 1, p_post)
+
+#Ahora calculamos U(Xpre, Xpost):
+p_preHat <- mean(Xpre)
+p_postHat <- mean(Xpost)
+
+tita_preHat <- (p_preHat + Sp - 1)/(Se + Sp - 1)
+tita_postHat <- (p_postHat + Sp - 1)/(Se + Sp - 1)
+
+Var_preHat <- (p_preHat*(1-p_preHat))/(n_pre*(Se+Sp-1)^2)
+Var_postHat <- (p_postHat*(1-p_postHat))/(n_post*(Se+Sp-1)^2)
+
+
+U <- (tita_postHat - tita_preHat)/(sqrt(Var_postHat + Var_preHat))
+```
+
+
+El estadístico observado tiene el siguiente valor:
+
+```{r}
+U
+```
+
+Por lo tanto, no hay evidencia suficiente como para rechazar $H_{0}$ a nivel aproximado 0.05. Esto quiere decir que no se afirma que la vacuna es realmente efectiva. Es razonable porque la diferencia real entre prevalencias es pequeña ($0.05$).
+
+
+* ¿Qué pasa si se achica la muestra?
+
+Observemos que pasa para $n = 50$
+
+```{r, echo = FALSE}
+n_pre <- 50
+n_post <- 50
+Se <- 0.9
+Sp <- 0.95
+tita_pre <- 0.2
+tita_post <- 0.15
+
+#Calculamos p_pre y p_post:
+
+p_pre <- (Se + Sp - 1)* tita_pre + (1 - Sp)
+p_post <- (Se + Sp - 1)* tita_post + (1 - Sp)
+
+
+#Generamos ambas muestras (pre y post):
+
+Xpre <- rbinom(n_pre, 1, p_pre)
+Xpost <- rbinom(n_post, 1, p_post)
+
+#Ahora calculamos U(Xpre, Xpost):
+p_preHat <- mean(Xpre)
+p_postHat <- mean(Xpost)
+
+tita_preHat <- (p_preHat + Sp - 1)/(Se + Sp - 1)
+tita_postHat <- (p_postHat + Sp - 1)/(Se + Sp - 1)
+
+Var_preHat <- (p_preHat*(1-p_preHat))/(n_pre*(Se+Sp-1)^2)
+Var_postHat <- (p_postHat*(1-p_postHat))/(n_post*(Se+Sp-1)^2)
+
+
+U50 <- (tita_postHat - tita_preHat)/(sqrt(Var_postHat + Var_preHat))
+
+```
+
+```{r}
+U50
+```
+
+El valor del estadístico observado sigue estando en la región de aceptación. Igualmente, al haber menos muestras la varianza aumenta y el resultado es distinto de 0.
+
+
+Y ahora con $n = 10$:
+
+```{r, echo = FALSE}
+n_pre <- 10
+n_post <- 10
+Se <- 0.9
+Sp <- 0.95
+tita_pre <- 0.2
+tita_post <- 0.15
+
+#Calculamos p_pre y p_post:
+
+p_pre <- (Se + Sp - 1)* tita_pre + (1 - Sp)
+p_post <- (Se + Sp - 1)* tita_post + (1 - Sp)
+
+
+#Generamos ambas muestras (pre y post):
+
+Xpre <- rbinom(n_pre, 1, p_pre)
+Xpost <- rbinom(n_post, 1, p_post)
+
+#Ahora calculamos U(Xpre, Xpost):
+p_preHat <- mean(Xpre)
+p_postHat <- mean(Xpost)
+
+tita_preHat <- (p_preHat + Sp - 1)/(Se + Sp - 1)
+tita_postHat <- (p_postHat + Sp - 1)/(Se + Sp - 1)
+
+Var_preHat <- (p_preHat*(1-p_preHat))/(n_pre*(Se+Sp-1)^2)
+Var_postHat <- (p_postHat*(1-p_postHat))/(n_post*(Se+Sp-1)^2)
+
+
+U10 <- (tita_postHat - tita_preHat)/(sqrt(Var_postHat + Var_preHat))
+```
+
+```{r}
+U10
+```
+
+Para una muestra tan pequeña el test se vuelve inestable y es practicamente inútil, ya que nuetsro test es de nivel asintótico.
+
+

@@ -1348,13 +1348,151 @@ rownames(resAsint_df) &lt;- NULL</code></pre>
 </tbody>
 </table>
 <ul>
-<li>El bootstrap parece ser más robusto en muestras pequeñas, lo cual es
-esperable porque no depende de aproximaciones normales ni del método
-delta.</li>
+<li><p>El bootstrap parece ser más robusto en muestras pequeñas, lo cual
+es esperable porque no depende de aproximaciones normales ni del método
+delta.</p></li>
+<li><p>El método asintótico da intervalos ligeramente más
+largos.</p></li>
+<li><p>A medida que aumenta <span class="math inline">\(n\)</span> los
+resultados obtenidos se vuelven casi indistinguibles.</p></li>
 </ul>
-<p>*El método asintótico da intervalos ligeramente más largos.</p>
-<p>*A medida que aumenta <span class="math inline">\(n\)</span> los
-resultados obtenidos se vuelven casi indistinguibles.</p>
+<p><br><br></p>
+</div>
+</div>
+<div id="parte-iii-dos-muestras-pre-post-intervención" class="section level1">
+<h1>3 Parte III: Dos muestras (pre-post intervención)</h1>
+<p>En esta sección analizamos si la prevalencia verdadera de la
+enfermedad cambió después de implementar una campaña de vacunación. Para
+ello se toman dos muestras independientes:</p>
+<ul>
+<li>Una <strong>antes</strong> de la campaña, de tamaño <span class="math inline">\(n_{\text{pre}}\)</span>, con número de test
+positivos <span class="math inline">\(X_{\text{pre}}\)</span>.</li>
+<li>Otra <strong>después</strong>, de tamaño <span class="math inline">\(n_{\text{post}}\)</span>, con número de test
+positivos <span class="math inline">\(X_{\text{post}}\)</span>.</li>
+</ul>
+<p>En ambos casos se utiliza el mismo test diagnóstico imperfecto,
+caracterizado por su <strong>sensibilidad</strong> <span class="math inline">\(Se\)</span> y <strong>especificidad</strong> <span class="math inline">\(Sp\)</span>.</p>
+<p>Los conteos observados siguen: <span class="math display">\[
+X_{\text{pre}} \sim \text{Binomial}(n_{\text{pre}}, p_{\text{pre}}),
+\quad
+X_{\text{post}} \sim \text{Binomial}(n_{\text{post}}, p_{\text{post}})
+\]</span> donde<br />
+<span class="math display">\[
+p_A = (Se + Sp - 1)\theta_A + (1 - Sp), \qquad A \in \{\text{pre},
+\text{post}\}
+\]</span></p>
+<p>Nuestro objetivo es inferir la <strong>diferencia de prevalencias
+verdaderas</strong>: <span class="math display">\[
+\Delta = \theta_{\text{post}} - \theta_{\text{pre}}
+\]</span></p>
+<p><br></p>
+<div id="test-de-hipótesis." class="section level3">
+<h3>3.1.1 Test de Hipótesis.</h3>
+<p>Se quiere plantear un test de nivel aproximado <span class="math inline">\(0.05\)</span> para las siguientes hipótesis,
+basandose en el estimador <span class="math inline">\(\hat{\theta}_{MoM}\)</span>:</p>
+<p><span class="math display">\[
+H_{0} : \Delta = 0 \quad \text{vs.} \quad H_{1} : \Delta
+\]</span></p>
+<p>Tenemos:</p>
+<p><span class="math display">\[
+\hat{\theta}_{post} = \frac{\hat{p}_{post} + S_{p} - 1}{S_{e}+S_{p}-1}
+\quad \text{y} \quad \hat{\theta}_{pre} = \frac{\hat{p}_{pre} + S_{p} -
+1}{S_{e}+S_{p}-1}
+\]</span></p>
+<p>Y por el item <span class="math inline">\(2.1.10\)</span>, se deduce
+que:</p>
+<p><span class="math display">\[
+\hat{\theta}_{post} \approx N\bigl(\theta_{post},\;
+\widehat{\operatorname{Var}}(\hat{\theta}_{post})\bigr)
+\quad\text{y}\quad
+\hat{\theta}_{pre} \approx N\bigl(\theta_{pre},\;
+\widehat{\operatorname{Var}}(\hat{\theta}_{pre})\bigr)
+\]</span></p>
+<p><span class="math display">\[
+\hat{\theta}_{post} - \hat{\theta}_{pre}
+\approx
+N\!\Bigl(\theta_{post}-\theta_{pre},\;
+\widehat{\operatorname{Var}}(\hat{\theta}_{post}) +
+\widehat{\operatorname{Var}}(\hat{\theta}_{pre})\Bigr)
+\]</span></p>
+<p><span class="math display">\[
+U_{\Delta}(X_{pre},X_{post})
+=
+\frac{\hat{\theta}_{post} - \hat{\theta}_{pre} - \Delta}
+     {\sqrt{\widehat{\operatorname{Var}}(\hat{\theta}_{post}) +
+\widehat{\operatorname{Var}}(\hat{\theta}_{pre})}}
+\approx N(0,1)
+\]</span></p>
+<p>Tenemos un pivote decreciente en <span class="math inline">\(\Delta\)</span> con distribución aproximada
+conocida independiente de <span class="math inline">\(\Delta\)</span>.
+Entonces, utilizando método del pivote, resulta el siguiente test de
+nivel aproximado 0.05.</p>
+<p><span class="math display">\[
+\Phi(X_{pre},X_{post}) =
+\begin{cases}
+1 &amp; \text{si } \bigl|U_{0}(X_{pre},X_{post})\bigr| &gt;
+z_{1-\alpha/2} = z_{0.975} \approx 1.96, \\
+0 &amp; \text{c.c.}
+\end{cases}
+\]</span></p>
+<p><br></p>
+</div>
+<div id="aplicación-en-caso-ficticio." class="section level3">
+<h3>3.1.2 Aplicación en caso ficticio.</h3>
+<p>Vamos a aplicar el test dado en el item anterior a un caso ficticio
+con <span class="math inline">\(n_{pre} = n_{post} = 100\)</span>, <span class="math inline">\(S_{e} = 0.9\)</span>, <span class="math inline">\(S_{p} = 0.95\)</span>, <span class="math inline">\(\theta_{pre} = 0.2\)</span>, <span class="math inline">\(\theta_{post} = 0.15\)</span> y <span class="math inline">\(\alpha = 0.05\)</span>.</p>
+<pre class="r"><code>#Definimos los valores.
+n_pre &lt;- 100
+n_post &lt;- 100
+Se &lt;- 0.9
+Sp &lt;- 0.95
+tita_pre &lt;- 0.2
+tita_post &lt;- 0.15
+
+#Calculamos p_pre y p_post:
+
+p_pre &lt;- (Se + Sp - 1)* tita_pre + (1 - Sp)
+p_post &lt;- (Se + Sp - 1)* tita_post + (1 - Sp)
+
+
+#Generamos ambas muestras (pre y post):
+
+Xpre &lt;- rbinom(n_pre, 1, p_pre)
+Xpost &lt;- rbinom(n_post, 1, p_post)
+
+#Ahora calculamos U(Xpre, Xpost):
+p_preHat &lt;- mean(Xpre)
+p_postHat &lt;- mean(Xpost)
+
+tita_preHat &lt;- (p_preHat + Sp - 1)/(Se + Sp - 1)
+tita_postHat &lt;- (p_postHat + Sp - 1)/(Se + Sp - 1)
+
+Var_preHat &lt;- (p_preHat*(1-p_preHat))/(n_pre*(Se+Sp-1)^2)
+Var_postHat &lt;- (p_postHat*(1-p_postHat))/(n_post*(Se+Sp-1)^2)
+
+
+U &lt;- (tita_postHat - tita_preHat)/(sqrt(Var_postHat + Var_preHat))</code></pre>
+<p>El estadístico observado tiene el siguiente valor:</p>
+<pre class="r"><code>U</code></pre>
+<pre><code>## [1] 0</code></pre>
+<p>Por lo tanto, no hay evidencia suficiente como para rechazar <span class="math inline">\(H_{0}\)</span> a nivel aproximado 0.05. Esto
+quiere decir que no se afirma que la vacuna es realmente efectiva. Es
+razonable porque la diferencia real entre prevalencias es pequeña (<span class="math inline">\(0.05\)</span>).</p>
+<ul>
+<li>¿Qué pasa si se achica la muestra?</li>
+</ul>
+<p>Observemos que pasa para <span class="math inline">\(n =
+50\)</span></p>
+<pre class="r"><code>U50</code></pre>
+<pre><code>## [1] -1.638127</code></pre>
+<p>El valor del estadístico observado sigue estando en la región de
+aceptación. Igualmente, al haber menos muestras la varianza aumenta y el
+resultado es distinto de 0.</p>
+<p>Y ahora con <span class="math inline">\(n = 10\)</span>:</p>
+<pre class="r"><code>U10</code></pre>
+<pre><code>## [1] 1</code></pre>
+<p>Para una muestra tan pequeña el test se vuelve inestable y es
+practicamente inútil, ya que nuetsro test es de nivel asintótico.</p>
 </div>
 </div>
 

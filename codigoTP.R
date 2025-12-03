@@ -117,7 +117,7 @@ legend("topright",
 R <- 10000
 ns <- c(10, 20, 50, 100, 200) 
 
-# Función estimador de momentos
+# FunciC3n estimador de momentos
 tita_corregida <- function(p_hat, Se, Sp) {
   (p_hat - (1 - Sp)) / (Se + Sp - 1)
 }
@@ -149,12 +149,12 @@ for (i in seq_along(ns)) {
     est_imp[r] <- tita_corregida(p_hat, Se, Sp)
   }
   
-  # --- Estadísticos simulados ---
+  # --- EstadC-sticos simulados ---
   bias_sim <- mean(est_imp) - tita
   var_sim  <- var(est_imp)
   ecm_sim  <- mean((est_imp - tita)^2)
   
-  # --- Valores teóricos ---
+  # --- Valores teC3ricos ---
   p_true <- p_Y
   denom  <- Se + Sp - 1
   var_teo <- (p_true*(1 - p_true)) / (n * denom^2)
@@ -221,12 +221,12 @@ legend("topright",
 ### 2.1.8 ####
 
 ### --------------------------------------------------------
-### Punto 8 — Bootstrap para n = 10
+### Punto 8 ??? Bootstrap para n = 10
 ### --------------------------------------------------------
 
 
-n <- 10     # tamaño de la muestra
-B <- 5000   # cantidad de réplicas bootstrap
+n <- 10     # tama??o de la muestra
+B <- 5000   # cantidad de r??plicas bootstrap
 
 # Probabilidad real de T = 1 bajo test imperfecto
 p_Y <- Se * tita + (1 - Sp) * (1 - tita)
@@ -234,7 +234,7 @@ p_Y <- Se * tita + (1 - Sp) * (1 - tita)
 # 1) Genero una muestra original de T
 T <- rbinom(n, 1, p_Y)
 
-# 2) Bootstrap no paramétrico
+# 2) Bootstrap no param??trico
 boot_est <- numeric(B)
 
 for (b in 1:B) {
@@ -245,7 +245,7 @@ for (b in 1:B) {
 
 # 3) Histograma
 hist(boot_est, breaks = 30, freq = TRUE,
-     main = "Distribución bootstrap del estimador de momentos (n = 10)",
+     main = "Distribuci??n bootstrap del estimador de momentos (n = 10)",
      xlab = expression(hat(theta)["bootstrap"]))
 
 abline(v = tita, col = "red", lwd = 2)  # valor verdadero
@@ -271,22 +271,22 @@ for (j in seq_along(ns)){
   n <- ns[j]
   cubrimientos <- logical(R)
   longitudes <- numeric(R)
-   
+  
   for (r in 1:R){
-     T <- rbinom(n,1,p_Y)
-     boot_est <- numeric(B)
-     
-     for (b in 1:B){
-       T_boot <- sample(T, size = n, replace = TRUE)
-       p_hat_boot <- mean(T_boot)
-       boot_est[b] <- tita_corregida(p_hat_boot, Se, Sp)
-     }
-     
-     lower <- quantile(boot_est, probs = 0.025, names = FALSE)
-     upper <- quantile(boot_est, probs = 0.975, names = FALSE)
-     
-     cubrimientos[r] <- (lower <= tita) && (tita <= upper)
-     longitudes[r] <- (upper - lower)
+    T <- rbinom(n,1,p_Y)
+    boot_est <- numeric(B)
+    
+    for (b in 1:B){
+      T_boot <- sample(T, size = n, replace = TRUE)
+      p_hat_boot <- mean(T_boot)
+      boot_est[b] <- tita_corregida(p_hat_boot, Se, Sp)
+    }
+    
+    lower <- quantile(boot_est, probs = 0.025, names = FALSE)
+    upper <- quantile(boot_est, probs = 0.975, names = FALSE)
+    
+    cubrimientos[r] <- (lower <= tita) && (tita <= upper)
+    longitudes[r] <- (upper - lower)
   }
   
   res_list[[j]] <- list(
@@ -294,7 +294,7 @@ for (j in seq_along(ns)){
     cubrimiento = mean(cubrimientos),
     longitud_media = mean(longitudes)
   )
-   
+  
 }
 
 res_df <- do.call(rbind, lapply(res_list, function(z){
@@ -342,3 +342,106 @@ resAsint_df <- do.call(rbind, lapply(res_listAsint, function(z){
              longitud_media = z$longitud_media)
 }))
 rownames(resAsint_df) <- NULL
+
+#### 3.1.2 ####
+
+#Definimos los valores.
+n_pre <- 100
+n_post <- 100
+Se <- 0.9
+Sp <- 0.95
+tita_pre <- 0.2
+tita_post <- 0.15
+
+#Calculamos p_pre y p_post:
+
+p_pre <- (Se + Sp - 1)* tita_pre + (1 - Sp)
+p_post <- (Se + Sp - 1)* tita_post + (1 - Sp)
+
+
+#Generamos ambas muestras (pre y post):
+
+Xpre <- rbinom(n_pre, 1, p_pre)
+Xpost <- rbinom(n_post, 1, p_post)
+
+#Ahora calculamos U(Xpre, Xpost):
+p_preHat <- mean(Xpre)
+p_postHat <- mean(Xpost)
+
+tita_preHat <- (p_preHat + Sp - 1)/(Se + Sp - 1)
+tita_postHat <- (p_postHat + Sp - 1)/(Se + Sp - 1)
+
+Var_preHat <- (p_preHat*(1-p_preHat))/(n_pre*(Se+Sp-1)^2)
+Var_postHat <- (p_postHat*(1-p_postHat))/(n_post*(Se+Sp-1)^2)
+
+
+U <- (tita_postHat - tita_preHat)/(sqrt(Var_postHat + Var_preHat))
+
+
+#Que pasa si achicamos la muestra? 
+
+#n = 50
+
+n_pre <- 50
+n_post <- 50
+Se <- 0.9
+Sp <- 0.95
+tita_pre <- 0.2
+tita_post <- 0.15
+
+#Calculamos p_pre y p_post:
+
+p_pre <- (Se + Sp - 1)* tita_pre + (1 - Sp)
+p_post <- (Se + Sp - 1)* tita_post + (1 - Sp)
+
+
+#Generamos ambas muestras (pre y post):
+
+Xpre <- rbinom(n_pre, 1, p_pre)
+Xpost <- rbinom(n_post, 1, p_post)
+
+#Ahora calculamos U(Xpre, Xpost):
+p_preHat <- mean(Xpre)
+p_postHat <- mean(Xpost)
+
+tita_preHat <- (p_preHat + Sp - 1)/(Se + Sp - 1)
+tita_postHat <- (p_postHat + Sp - 1)/(Se + Sp - 1)
+
+Var_preHat <- (p_preHat*(1-p_preHat))/(n_pre*(Se+Sp-1)^2)
+Var_postHat <- (p_postHat*(1-p_postHat))/(n_post*(Se+Sp-1)^2)
+
+
+U50 <- (tita_postHat - tita_preHat)/(sqrt(Var_postHat + Var_preHat))
+
+#n=10
+
+n_pre <- 10
+n_post <- 10
+Se <- 0.9
+Sp <- 0.95
+tita_pre <- 0.2
+tita_post <- 0.15
+
+#Calculamos p_pre y p_post:
+
+p_pre <- (Se + Sp - 1)* tita_pre + (1 - Sp)
+p_post <- (Se + Sp - 1)* tita_post + (1 - Sp)
+
+
+#Generamos ambas muestras (pre y post):
+
+Xpre <- rbinom(n_pre, 1, p_pre)
+Xpost <- rbinom(n_post, 1, p_post)
+
+#Ahora calculamos U(Xpre, Xpost):
+p_preHat <- mean(Xpre)
+p_postHat <- mean(Xpost)
+
+tita_preHat <- (p_preHat + Sp - 1)/(Se + Sp - 1)
+tita_postHat <- (p_postHat + Sp - 1)/(Se + Sp - 1)
+
+Var_preHat <- (p_preHat*(1-p_preHat))/(n_pre*(Se+Sp-1)^2)
+Var_postHat <- (p_postHat*(1-p_postHat))/(n_post*(Se+Sp-1)^2)
+
+
+U10 <- (tita_postHat - tita_preHat)/(sqrt(Var_postHat + Var_preHat))
