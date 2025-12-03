@@ -1174,4 +1174,77 @@ U10
 
 Para una muestra tan pequeña el test se vuelve inestable y es practicamente inútil, ya que nuetsro test es de nivel asintótico.
 
+### 3.1.3 Intervalo de confianza de nivel asintotico 0.95 para ∆.
+
+## Intervalo de confianza asintótico para la diferencia Δ
+
+Usamos el estimador de momentos (no truncado):
+
+\[
+\hat\theta_A \;=\; \frac{\hat p_A + (Sp - 1)}{Se + Sp - 1}, 
+\qquad A \in \{\text{pre}, \text{post}\},
+\]
+
+donde \(\hat p_A = X_A / n_A\) y \(X_A\) es el número de tests positivos observados.
+
+El pivote utilizado es:
+
+\[
+Z \;=\; 
+\frac{
+\widehat{\Delta} - \Delta
+}{
+\sqrt{
+\widehat{Var}(\hat\theta_{\text{post}}) +
+\widehat{Var}(\hat\theta_{\text{pre}})
+}
+},
+\]
+
+el cual tiene distribución aproximada \(N(0,1)\).
+
+El intervalo de confianza asintótico al 95% para la diferencia
+
+\[
+\Delta = \theta_{\text{post}} - \theta_{\text{pre}}
+\]
+
+es
+
+\[
+\widehat{\Delta} \;\pm\;
+1.96 \sqrt{
+\widehat{Var}(\hat\theta_{\text{post}}) +
+\widehat{Var}(\hat\theta_{\text{pre}})
+}.
+\]
+
+donde \(\widehat{\Delta} = \hat\theta_{\text{post}} - \hat\theta_{\text{pre}}\).
+
+```{r}
+
+# Estimador de Delta y su desvío estándar
+DeltaHat <- tita_postHat - tita_preHat
+se_Delta <- sqrt(Var_preHat + Var_postHat)
+
+# Intervalo asintotico 95%
+z <- qnorm(0.975)
+IC_lower <- DeltaHat - z * se_Delta
+IC_upper <- DeltaHat + z * se_Delta
+
+cat("DeltaHat =", round(DeltaHat, 4), "\n")
+cat("IC 95% para Delta: [", round(IC_lower, 4), ",", round(IC_upper, 4), "]\n")
+
+```
+Con los datos simulados, el intervalo calculado fue:
+
+\[
+IC_{95\%}(\Delta)
+=
+[-0.2259,\; 0.6965].
+\]
+
+Podemos ver que el intervalo incluye al 0, por lo tanto no hay evidencia suficiente para decir que hay un cambio real entre pre y post.
+El intervalo es bastante ancho, se puede decir que hay alta incertidumbre.
+Pero podemos ver tambien que el limite superior es bastante grande (≈0.70) lo cual muestra que con nuestros datos todavia es posible un aumento grande entre pre y post. Y como el limite inferior es negativo tambien puede haber una disminucion moderada.
 

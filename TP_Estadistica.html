@@ -1493,6 +1493,73 @@ resultado es distinto de 0.</p>
 <p>Para una muestra tan pequeña el test se vuelve inestable y es
 practicamente inútil, ya que nuetsro test es de nivel asintótico.</p>
 </div>
+<div id="intervalo-de-confianza-de-nivel-asintotico-0.95-para-." class="section level3">
+<h3>3.1.3 Intervalo de confianza de nivel asintotico 0.95 para ∆.</h3>
+</div>
+<div id="intervalo-de-confianza-asintótico-para-la-diferencia-δ" class="section level2">
+<h2>Intervalo de confianza asintótico para la diferencia Δ</h2>
+<p>Usamos el estimador de momentos (no truncado):</p>
+<p><span class="math display">\[
+\hat\theta_A \;=\; \frac{\hat p_A + (Sp - 1)}{Se + Sp - 1},
+\qquad A \in \{\text{pre}, \text{post}\},
+\]</span></p>
+<p>donde <span class="math inline">\(\hat p_A = X_A / n_A\)</span> y
+<span class="math inline">\(X_A\)</span> es el número de tests positivos
+observados.</p>
+<p>El pivote utilizado es:</p>
+<p><span class="math display">\[
+Z \;=\;
+\frac{
+\widehat{\Delta} - \Delta
+}{
+\sqrt{
+\widehat{Var}(\hat\theta_{\text{post}}) +
+\widehat{Var}(\hat\theta_{\text{pre}})
+}
+},
+\]</span></p>
+<p>el cual tiene distribución aproximada <span class="math inline">\(N(0,1)\)</span>.</p>
+<p>El intervalo de confianza asintótico al 95% para la diferencia</p>
+<p><span class="math display">\[
+\Delta = \theta_{\text{post}} - \theta_{\text{pre}}
+\]</span></p>
+<p>es</p>
+<p><span class="math display">\[
+\widehat{\Delta} \;\pm\;
+1.96 \sqrt{
+\widehat{Var}(\hat\theta_{\text{post}}) +
+\widehat{Var}(\hat\theta_{\text{pre}})
+}.
+\]</span></p>
+<p>donde <span class="math inline">\(\widehat{\Delta} =
+\hat\theta_{\text{post}} - \hat\theta_{\text{pre}}\)</span>.</p>
+<pre class="r"><code># Estimador de Delta y su desvío estándar
+DeltaHat &lt;- tita_postHat - tita_preHat
+se_Delta &lt;- sqrt(Var_preHat + Var_postHat)
+
+# Intervalo asintotico 95%
+z &lt;- qnorm(0.975)
+IC_lower &lt;- DeltaHat - z * se_Delta
+IC_upper &lt;- DeltaHat + z * se_Delta
+
+cat(&quot;DeltaHat =&quot;, round(DeltaHat, 4), &quot;\n&quot;)</code></pre>
+<pre><code>## DeltaHat = 0.2353</code></pre>
+<pre class="r"><code>cat(&quot;IC 95% para Delta: [&quot;, round(IC_lower, 4), &quot;,&quot;, round(IC_upper, 4), &quot;]\n&quot;)</code></pre>
+<pre><code>## IC 95% para Delta: [ -0.2259 , 0.6965 ]</code></pre>
+<p>Con los datos simulados, el intervalo calculado fue:</p>
+<p><span class="math display">\[
+IC_{95\%}(\Delta)
+=
+[-0.2259,\; 0.6965].
+\]</span></p>
+<p>Podemos ver que el intervalo incluye al 0, por lo tanto no hay
+evidencia suficiente para decir que hay un cambio real entre pre y post.
+El intervalo es bastante ancho, se puede decir que hay alta
+incertidumbre. Pero podemos ver tambien que el limite superior es
+bastante grande (≈0.70) lo cual muestra que con nuestros datos todavia
+es posible un aumento grande entre pre y post. Y como el limite inferior
+es negativo tambien puede haber una disminucion moderada.</p>
+</div>
 </div>
 
 
