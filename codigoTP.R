@@ -177,7 +177,7 @@ print(resultados_imp)
 plot(resultados_imp$n, resultados_imp$bias_sim,
      type="b", pch=19,
      xlab="n", ylab="Sesgo",
-     main="Sesgo: Simulado vs TeC3rico",
+     main="Sesgo: Simulado vs Teorico",
      ylim=c(min(resultados_imp$bias_sim), max(resultados_imp$bias_sim)))
 
 # lC-nea de sesgo teC3rico = 0
@@ -192,7 +192,7 @@ legend("topright",
 plot(resultados_imp$n, resultados_imp$var_sim,
      type="b", pch=19,
      xlab="n", ylab="Varianza",
-     main="Varianza: Simulado vs TeC3rica",
+     main="Varianza: Simulado vs Teorica",
      ylim=c(0, max(resultados_imp$var_sim, resultados_imp$var_teo)))
 
 lines(resultados_imp$n, resultados_imp$var_teo,
@@ -207,7 +207,7 @@ legend("topright",
 plot(resultados_imp$n, resultados_imp$ecm_sim,
      type="b", pch=19,
      xlab="n", ylab="ECM",
-     main="ECM: Simulado vs TeC3rico",
+     main="ECM: Simulado vs Teorico",
      ylim=c(0, max(resultados_imp$ecm_sim, resultados_imp$ecm_teo)))
 
 lines(resultados_imp$n, resultados_imp$ecm_teo,
@@ -244,8 +244,8 @@ for (b in 1:B) {
 }
 
 # 3) Histograma
-hist(boot_est, breaks = 30, freq = TRUE,
-     main = "Distribuci??n bootstrap del estimador de momentos (n = 10)",
+hist(boot_est, breaks = 15, freq = TRUE,
+     main = "Distribucion bootstrap del estimador de momentos (n = 10)",
      xlab = expression(hat(theta)["bootstrap"]))
 
 abline(v = tita, col = "red", lwd = 2)  # valor verdadero
@@ -445,3 +445,20 @@ Var_postHat <- (p_postHat*(1-p_postHat))/(n_post*(Se+Sp-1)^2)
 
 
 U10 <- (tita_postHat - tita_preHat)/(sqrt(Var_postHat + Var_preHat))
+
+
+### 3.1.3 ####
+
+
+# Estimador de Delta y su desvío estándar
+DeltaHat <- tita_postHat - tita_preHat
+se_Delta <- sqrt(Var_preHat + Var_postHat)
+
+# Intervalo asintotico 95%
+z <- qnorm(0.975)
+IC_lower <- DeltaHat - z * se_Delta
+IC_upper <- DeltaHat + z * se_Delta
+
+cat("DeltaHat =", round(DeltaHat, 4), "\n")
+cat("IC 95% para Delta: [", round(IC_lower, 4), ",", round(IC_upper, 4), "]\n")
+
