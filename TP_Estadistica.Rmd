@@ -1092,7 +1092,7 @@ resultados <- data.frame(
   ECM   = NA_real_
 )
 
-set.seed(43)
+
 
 for (i in seq_along(n_valores)) {
   n <- n_valores[i]
@@ -1141,7 +1141,7 @@ Para tamaños muestrales pequeños, el ECM se ve afectado tanto por el sesgo ind
 ##### $\underline{\text{Distribución asintótica:}}$
 Hacemos los siguientes gráficos para la distribución asintótica:
 ```{r}
-set.seed(43)
+
 par(mfrow = c(2, 2))  ## grid para los gráficos
 
 for (n in n_valores) {
