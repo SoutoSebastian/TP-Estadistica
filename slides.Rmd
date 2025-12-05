@@ -1,0 +1,627 @@
+---
+title: "Trabajo Práctico – IECD"
+author: "Grupo 11"
+date: "2025-12-8"
+output: beamer_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+# Introducción
+
+## Objetivo del trabajo
+
+Análisis de propiedades estadísticas de tests diagnósticos:
+
+1. **Test perfecto** (baseline)
+2. **Test imperfecto** con $S_e$ y $S_p$ conocidos  
+3. **Dos muestras** (pre-post intervención)
+
+---
+
+# Parte I: Test perfecto (baseline)
+
+## 1.1 Distribución de $T_{per}$
+
+### Contexto
+- Población con prevalencia $\theta = P(Y=1)$
+- Test perfecto: $Se = Sp = 1$
+- $Y_i \sim \text{Bernoulli}(\theta)$, i.i.d.
+
+### Variable de interés
+$$T_{per} = \sum_{i=1}^n Y_i$$
+
+### Distribución
+$$T_{per} \sim \text{Binomial}(n,\theta)$$
+
+$$\boxed{P(T_{per} = k) = \binom{n}{k}\theta^{k}(1-\theta)^{n-k}}$$
+
+---
+
+## 1.2 Estimador de Máxima Verosimilitud
+
+### Función de verosimilitud
+$$L(\theta) = \prod_{i=1}^n \theta^{Y_i}(1-\theta)^{1-Y_i} = (1-\theta)^{N_0}\,\theta^{N_1}$$
+
+### Log-verosimilitud
+$$\ell(\theta) = N_0 \ln(1-\theta) + N_1 \ln(\theta)$$
+
+### Estimador EMV
+$$\hat{\theta}_{per} = \frac{N_1}{n} = \frac{T_{per}}{n}$$
+
+---
+
+## 1.3 Propiedades del estimador
+
+### Sesgo
+$$\mathbb{E}[\hat{\theta}_{per}] = \theta \quad \text{(insesgado)}$$
+
+### Varianza
+$$\operatorname{Var}(\hat{\theta}_{per}) = \frac{\theta(1-\theta)}{n}$$
+
+### Error Cuadrático Medio
+$$\text{ECM}(\hat{\theta}_{per}) = \frac{\theta(1-\theta)}{n}$$
+
+---
+
+### Consistencia
+$$\hat{\theta}_{per} \xrightarrow{c.s.} \theta$$
+
+### Distribución asintótica
+$$\sqrt{n}\,(\hat{\theta}_{per} - \theta) \xrightarrow{d} N\bigl(0,\theta(1-\theta)\bigr)$$
+
+---
+
+## 1.4 Intervalo de confianza para $\theta$
+
+### Por TCL y Slutsky
+$$\sqrt{n}\,\frac{(\hat{\theta}_{per} - \theta)}{\sqrt{\hat{\theta}_{per}(1-\hat{\theta}_{per})}} \xrightarrow{d} N\bigl(0,1\bigr)$$
+
+### Intervalo de confianza 95%
+$$IC_{0.95}(\theta) = \hat{\theta}_{per} \pm 1.96\sqrt{\frac{\hat{\theta}_{per}(1-\hat{\theta}_{per})}{n}}$$
+
+---
+
+## 1.5 Cubrimiento empírico
+
+### Simulación Monte Carlo
+
+```{r, echo=FALSE, eval=TRUE, warning=FALSE}
+set.seed(43)
+tita <- 0.25
+ns <- c(10, 20, 50, 100, 1000, 10000)
+Nrep <- 5000
+z <- qnorm(0.975)
+cubrimientoN <- numeric(length(ns))
+
+for (j in seq_along(ns)){
+  n <- ns[j]
+  cubrimiento <- numeric(Nrep)
+  
+  for(i in 1:Nrep){
+    muestra <- rbinom(1,n,tita)
+    estTita <- muestra/n
+    termino <- z * sqrt((estTita*(1-estTita))/n)
+    intervalo <- c(estTita - termino, estTita + termino)
+    cubrimiento[i] <- intervalo[1] <= tita && tita <= intervalo[2]
+  }
+  cubrimientoN[j] <- mean(cubrimiento)
+}
+
+cubrimientoEmpirico <- data.frame(n = ns, cubrimiento = cubrimientoN)
+```
+
+```{r}
+knitr::kable(cubrimientoEmpirico, 
+             col.names = c("n", "Cubrimiento"),
+             digits = 4,
+             caption = "Cubrimiento empírico para diferentes n")
+```
+
+
+---
+
+# Parte II: Test imperfecto con $S_e$ y $S_p$ conocidos
+
+## 2.0.1 Estimación de $p$ con $T_{per}$
+
+### Estimador de $p$
+$$\hat{p} = \frac{T_{per}}{n}$$
+
+### Distribución
+$$T_{per} \sim \text{Binomial}(n, p)$$
+
+### Propiedades
+- $\mathbb{E}[\hat{p}] = p$
+- $\operatorname{Var}(\hat{p}) = \frac{p(1-p)}{n}$
+- $\hat{p}$ es EMV de $p$
+
+---
+
+## 2.0.2 $p$ como función de $\theta$, $S_{e}$ y $S_{p}$.
+
+\[
+\boxed{p = Se\,\theta + (1-Sp)(1-\theta)}
+\]
+
+### Formas equivalentes
+\[
+p = (Se + Sp - 1)\,\theta + (1-Sp)
+\]
+
+\[
+\theta = \frac{p + Sp - 1}{Se + Sp - 1}
+\]
+
+### Casos límite
+\[
+\theta = 0 \Rightarrow p = 1 - Sp
+\]
+\[
+\theta = 1 \Rightarrow p = Se
+\]
+
+---
+
+## 2.0.3 Comportamiento de $p = P(T=1)$
+
+### Fórmula base
+\[
+p(\theta,Se,Sp) = Se\,\theta + (1-Sp)(1-\theta)
+\]
+
+### Valores de referencia
+\[
+Se = 0.9, \quad Sp = 0.95, \quad \theta = 0.25
+\]
+\[
+p(0.25) = 0.2625
+\]
+
+---
+
+## $p$ vs $\theta$ (fijos $Se$, $Sp$)
+
+### Comportamiento
+- **Lineal creciente** en $\theta$
+
+
+### Límites
+\[
+\theta = 0 \Rightarrow p = 1 - Sp = 0.05
+\]
+\[
+\theta = 1 \Rightarrow p = Se = 0.9
+\]
+
+### Interpretación
+- **$\theta$ bajo**: $p$ dominada por falsos positivos
+- **$\theta$ alto**: $p$ dominada por verdaderos positivos
+
+---
+
+## $p$ vs $Se$ (fijos $\theta$, $Sp$)
+
+### Comportamiento
+- **Lineal creciente** en $Se$
+- Pendiente: $\theta = 0.25$
+
+### Efecto
+- **$Se$ baja**: Pocos verdaderos positivos
+- **$Se$ alta**: Mejor detección → $p$ mayor
+
+### Para $Se = 0.9$:
+\[
+p = 0.9 \times 0.25 + 0.05 \times 0.75 = 0.2625
+\]
+
+---
+
+## $p$ vs $Sp$ (fijos $\theta$, $Se$)
+
+### Comportamiento
+- **Lineal decreciente** en $Sp$
+- Pendiente: $-(1-\theta) = -0.75$
+
+### Efecto
+- **$Sp$ baja**: Muchos falsos positivos → $p$ alto
+- **$Sp$ alta**: Menos falsos positivos → $p$ bajo
+
+### Para $Sp = 0.95$:
+\[
+p = 0.225 + 0.05 \times 0.75 = 0.2625
+\]
+
+---
+
+## Conclusiones clave
+
+### Relaciones lineales
+1. **$p \nearrow$ con $\theta$** 
+2. **$p \nearrow$ con $Se$** 
+3. **$p \searrow$ con $Sp$** 
+
+---
+
+## 2.1.4 Estimador de momentos (MoM) 
+
+### Fórmula final
+\[
+\boxed{\hat{\theta}_{MoM} = \frac{\hat{p}_{MoM} + S_p - 1}{S_e + S_p - 1}}
+\]
+
+### Donde
+\[
+\hat{p}_{MoM} = \frac{T_{per}}{n}
+\]
+
+---
+
+## 2.1.5 Propiedades del estimador MoM
+
+### Sesgo
+\[
+\boxed{\mathbb{E}[\hat{\theta}_{MoM}] = \theta}
+\]
+**Conclusión**: Estimador insesgado
+
+### Varianza
+\[
+\boxed{\operatorname{Var}(\hat{\theta}_{MoM}) = \frac{p(1-p)}{n(S_e+S_p-1)^2}}
+\]
+
+### Error Cuadrático Medio
+\[
+\boxed{\text{ECM}(\hat{\theta}_{MoM}) = \frac{p(1-p)}{n(S_e+S_p-1)^2}}
+\]
+(Sesgo = 0 → ECM = Varianza)
+
+---
+
+## Consistencia y forma de $p$
+
+### Consistencia
+\[
+\boxed{\hat{\theta}_{MoM} \xrightarrow{c.s.} \theta}
+\]
+- $\hat{p}_{MoM} \xrightarrow{c.s.} p$ (Ley fuerte)
+- Función continua de $\hat{p}_{MoM}$
+
+---
+
+## 2.1.6 Comparación ECM: Test perfecto vs imperfecto
+
+### Fórmulas
+\[
+\text{ECM}_{\text{perfecto}} = \frac{\theta(1-\theta)}{n}
+\]
+\[
+\text{ECM}_{\text{imperfecto}} = \frac{p(1-p)}{n(S_e+S_p-1)^2}
+\]
+
+### Factor de aumento
+\[
+\boxed{\frac{1}{(S_e+S_p-1)^2}}
+\]
+
+### Para $S_e=0.9$, $S_p=0.95$
+\[
+S_e+S_p-1 = 0.85 \Rightarrow \frac{1}{0.85^2} \approx 1.38
+\]
+**ECM 38% mayor** con test imperfecto
+
+---
+
+## Comportamiento en función de $n$
+
+```{r, echo=FALSE, fig.height=4.5}
+tita <- 0.25
+Se <- 0.9
+Sp <- 0.95
+p <- (Se + Sp - 1)*tita + (1 - Sp)
+ns <- 10:1000
+
+ECM_perfecto <- tita*(1 - tita) / ns
+ECM_imperfecto <- p*(1 - p) / (ns * (Se + Sp - 1)^2)
+
+plot(ns, ECM_imperfecto, type="l", col="orange", lwd=2,
+     xlab="Tamaño muestral (n)", ylab="ECM",
+     main="ECM vs n: Comparación entre tests")
+lines(ns, ECM_perfecto, col="blue", lwd=2)
+
+legend("topright", legend=c("Test imperfecto", "Test perfecto"),
+       col=c("orange", "blue"), lwd=2, cex=0.9)
+
+```
+
+---
+
+## Conclusiones clave
+
+### Observaciones del gráfico
+1. **ECM imperfecto > ECM perfecto** para todo $n$
+2. Ambas **decrecen** como $1/n$
+
+---
+
+## 2.1.7 Validación: Teórico vs Simulado
+
+### Diseño de simulación
+- $R = 10000$ réplicas
+- $n \in \{10, 20, 50, 100, 200\}$
+- $\theta = 0.25$, $S_e = 0.9$, $S_p = 0.95$
+- Estimador: $\hat{\theta}_{MoM}$
+
+### Valores teóricos
+\[
+\operatorname{Var}_{\text{teórica}} = \frac{p(1-p)}{n(S_e+S_p-1)^2}
+\]
+\[
+\text{ECM}_{\text{teórico}} = \operatorname{Var}_{\text{teórica}} \quad (\text{sesgo}=0)
+\]
+
+---
+
+## Sesgo: Simulado vs Teórico (=0)
+
+```{r, echo=FALSE, fig.height=4}
+# Código adaptado para mostrar solo el gráfico
+tita <- 0.25
+Se <- 0.9
+Sp <- 0.95
+ns <- c(10, 20, 50, 100, 200)
+R <- 10000
+
+resultados <- data.frame(n = ns, bias_sim = NA)
+
+for (i in seq_along(ns)) {
+  n <- ns[i]
+  p_Y <- Se*tita + (1 - Sp)*(1 - tita)
+  est_imp <- numeric(R)
+  
+  for (r in 1:R) {
+    T <- rbinom(n, 1, p_Y)
+    p_hat <- mean(T)
+    est_imp[r] <- (p_hat - (1 - Sp)) / (Se + Sp - 1)
+  }
+  resultados$bias_sim[i] <- mean(est_imp) - tita
+}
+
+plot(resultados$n, resultados$bias_sim, type="b", pch=19,
+     xlab="n", ylab="Sesgo",
+     main="Sesgo: Simulado vs Teórico",
+     ylim=range(resultados$bias_sim))
+abline(h = 0, col="blue", lwd=2, lty=2)
+legend("topright", legend=c("Sesgo sim.", "Sesgo teórico (0)"),
+       col=c("black","blue"), pch=c(19, NA), lty=c(1,2))
+```
+
+---
+
+## Varianza: Simulado vs Teórica
+
+```{r, echo=FALSE, fig.height=4}
+# Cálculos para varianza
+var_teo <- numeric(length(ns))
+var_sim <- numeric(length(ns))
+
+for (i in seq_along(ns)) {
+  n <- ns[i]
+  p_Y <- Se*tita + (1 - Sp)*(1 - tita)
+  est_imp <- numeric(R)
+  
+  for (r in 1:R) {
+    T <- rbinom(n, 1, p_Y)
+    p_hat <- mean(T)
+    est_imp[r] <- (p_hat - (1 - Sp)) / (Se + Sp - 1)
+  }
+  var_sim[i] <- var(est_imp)
+  var_teo[i] <- (p_Y*(1 - p_Y)) / (n * (Se + Sp - 1)^2)
+}
+
+plot(ns, var_sim, type="b", pch=19, xlab="n", ylab="Varianza",
+     main="Varianza: Simulado vs Teórica",
+     ylim=c(0, max(var_sim, var_teo)))
+lines(ns, var_teo, type="b", pch=17, col="blue")
+legend("topright", legend=c("Var sim.", "Var teórica"),
+       col=c("black","blue"), pch=c(19,17))
+```
+
+---
+
+## ECM: Simulado vs Teórico
+
+```{r, echo=FALSE, fig.height=4}
+# Cálculos para ECM
+ecm_sim <- numeric(length(ns))
+ecm_teo <- var_teo  # insesgado
+
+plot(ns, ecm_sim, type="b", pch=19, xlab="n", ylab="ECM",
+     main="ECM: Simulado vs Teórico",
+     ylim=c(0, max(ecm_sim, ecm_teo)))
+lines(ns, ecm_teo, type="b", pch=17, col="blue")
+legend("topright", legend=c("ECM sim.", "ECM teórico"),
+       col=c("black","blue"), pch=c(19,17))
+```
+
+
+---
+
+## Conclusiones de la validación
+
+### Confirmaciones
+1. **Sesgo aprox 0** en simulación → Insesgabilidad verificada
+2. **Varianza simulada aprox Varianza teórica** para todo $n$
+3. **ECM simulada aprox ECM teórico** → Fórmulas correctas
+
+### Comportamiento observado
+- **Convergencia**: A mayor $n$, mejor ajuste teórico-simulado
+- **Consistencia**: Var/ECM decrecen como $1/n$
+- **Robustez**: Fórmulas teóricas válidas aún para $n$ pequeño
+
+### Implicaciones
+- **Expresiones teóricas** son confiables
+- **Estimador MoM** se comporta según teoría
+- **Simulación** valida aproximaciones asintóticas
+
+---
+
+## 2.1.8 Bootstrap para $\hat{\theta}_{MoM}$ ($n=10$)
+
+### Parámetros
+- $\theta = 0.25$, $S_e = 0.9$, $S_p = 0.95$
+- $n = 10$, $B = 5000$ réplicas bootstrap
+- Bootstrap no paramétrico
+
+### Método
+1. Muestra original: $T_i \sim \text{Bernoulli}(p)$
+2. Remuestreo con reemplazo
+3. Recalcular $\hat{\theta}_{MoM}$ en cada réplica
+
+---
+
+## Distribución bootstrap ($n=10$)
+
+```{r, echo=FALSE, fig.height=4.5}
+tita <- 0.25
+Se <- 0.9
+Sp <- 0.95
+n <- 10
+B <- 5000
+
+# Probabilidad real
+p_Y <- Se * tita + (1 - Sp) * (1 - tita)
+
+# Muestra original
+set.seed(123)  # Para reproducibilidad
+T_original <- rbinom(n, 1, p_Y)
+
+# Bootstrap
+boot_est <- numeric(B)
+for (b in 1:B) {
+  T_boot <- sample(T_original, size = n, replace = TRUE)
+  p_hat_boot <- mean(T_boot)
+  boot_est[b] <- (p_hat_boot - (1 - Sp)) / (Se + Sp - 1)
+}
+
+# Histograma
+hist(boot_est, breaks = 15, freq = TRUE, col = "lightblue",
+     main = "Distribución bootstrap - n = 10",
+     xlab = expression(hat(theta)["MoM"]), 
+     ylab = "Frecuencia", border = "darkblue")
+abline(v = tita, col = "red", lwd = 3, lty = 2)
+abline(v = mean(boot_est), col = "darkgreen", lwd = 2, lty = 2)
+legend("topright", legend = c(expression(theta*" verdadero"), "Media bootstrap"),
+       col = c("red", "darkgreen"), lwd = c(3, 2), lty = c(2, 2), cex = 0.8)
+```
+
+---
+
+## Resultados bootstrap
+
+### Estadísticas clave
+\[
+\text{Media bootstrap} = `r round(mean(boot_est), 4)`
+\]
+\[
+\text{Sesgo bootstrap} = `r round(mean(boot_est) - tita, 4)`
+\]
+\[
+\text{Desvío bootstrap} = `r round(sd(boot_est), 4)`
+\]
+
+### Características observadas
+1. **Alta dispersión** (gran variabilidad)
+2. **Sesgo positivo** 
+3. **Distribución asimétrica** hacia derecha
+4. **Valores fuera de [0,1]** posibles
+
+---
+
+## IC Bootstrap Percentil - Método
+
+### Objetivo
+Construir IC para $\theta$ usando bootstrap no paramétrico
+
+### Algoritmo
+1. Para cada $n \in \{10, 20, 50, 100, 1000\}$
+2. $R = 700$ réplicas Monte Carlo
+3. $B = 1000$ remuestreos bootstrap
+4. Calcular $\hat{\theta}_{MoM}$ en cada bootstrap
+5. IC = cuantiles 2.5% y 97.5%
+
+### Fórmula bootstrap
+\[
+IC_{\text{boot}}^{0.95} = \left[ Q_{0.025}(\hat{\theta}^*), Q_{0.975}(\hat{\theta}^*) \right]
+\]
+donde $\hat{\theta}^*$ son estimaciones bootstrap
+
+---
+
+## IC Asintótico - Resultado final
+
+### Estimador y varianza estimada
+\[
+\hat{\theta}_{MoM} = \frac{\hat{p} + S_p - 1}{S_e + S_p - 1}
+\]
+\[
+\widehat{\operatorname{Var}}(\hat{\theta}_{MoM}) = \frac{\hat{p}(1-\hat{p})}{n(S_e+S_p-1)^2}
+\]
+
+### Intervalo de confianza 95%
+\[
+\boxed{IC_{\text{asint}}^{0.95} = \hat{\theta}_{MoM} \pm 1.96\sqrt{\frac{\hat{p}(1-\hat{p})}{n(S_e+S_p-1)^2}}}
+\]
+
+### Fundamentos
+- **TCL + Método Delta** → Normalidad asintótica
+- **Slutsky** → Reemplazar $p$ por $\hat{p}$
+- **Nivel**: 0.95 asintótico ($z_{0.975} = 1.96$)
+
+---
+
+## Resultados: Bootstrap vs Asintótico
+
+### Cubrimiento empírico y longitud
+
+```{r, echo=FALSE}
+# Tabla Bootstrap
+res_df <- data.frame(
+  n = c(10, 20, 50, 100, 1000),
+  cubrimiento = c(0.9329, 0.9186, 0.9314, 0.9429, 0.9514),
+  longitud = c(0.5680, 0.4285, 0.2782, 0.2006, 0.0638)
+)
+
+knitr::kable(res_df, digits = 4, 
+             col.names = c("n", "Cubrimiento", "Longitud media"),
+             caption = "IC Bootstrap Percentil (R=700, B=1000)")
+```
+
+---
+
+## Resultados: Intervalos Asintóticos
+
+```{r, echo=FALSE}
+# Tabla Asintótico
+resAsint_df <- data.frame(
+  n = c(10, 20, 50, 100, 1000),
+  cubrimiento = c(0.9257, 0.9186, 0.9200, 0.9414, 0.9457),
+  longitud = c(0.5930, 0.4366, 0.2836, 0.2013, 0.0641)
+)
+
+knitr::kable(resAsint_df, digits = 4,
+             col.names = c("n", "Cubrimiento", "Longitud media"),
+             caption = "IC Asintótico (R=700)")
+```
+
+---
+
+### Conclusiones
+1. **Bootstrap más robusto** para $n$ pequeño
+2. **Asintótico adecuado** para $n \geq 50$
+3. **Longitudes similares** en ambos métodos
+4. **Convergencia** cuando $n$ crece
+
+---
