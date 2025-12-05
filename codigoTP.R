@@ -416,17 +416,21 @@ for (i in seq_along(n_valores)) {
 }
 resultados
 # Graficos para la distrbucion asintotica
-par(mfrow = c(2, 2))  ## grid para los gr??ficos
+set.seed(43)
+par(mfrow = c(2, 2))  ## grid para los gráficos
 
 for (n in n_valores) {
-  ## Histograma
+  # nueva data para cada n
+  T_sim <- rbinom(N_rep, size = n, prob = p_verdadera)
+  theta_trunc_sim <- theta_trunc(T_sim, n)
+  
+  # Histograma
   hist(theta_trunc_sim,
        breaks = 40,
        main = paste("Histograma de theta_trunc, n =", n),
        xlab = expression(hat(theta)[trunc]),
        probability = TRUE)
   
-  ## Normal overlay (more meaningful for large n)
   media_hat <- mean(theta_trunc_sim)
   sd_hat    <- sd(theta_trunc_sim)
   x_grid    <- seq(0, 1, length.out = 200)
@@ -436,13 +440,14 @@ for (n in n_valores) {
 par(mfrow = c(1, 1))
 
 n <- 1000
+T_sim <- rbinom(N_rep, size = n, prob = p_verdadera)
+theta_trunc_sim <- theta_trunc(T_sim, n)
 
 qqnorm(theta_trunc_sim,
        main = expression(paste("QQ-plot de ", hat(theta)[trunc], " para n=1000")),
        xlab= "",
        ylab= "")
 qqline(theta_trunc_sim)
-
 
 #### 3.1.2 ####
 

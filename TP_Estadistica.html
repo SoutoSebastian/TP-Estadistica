@@ -1555,18 +1555,17 @@ asintótica:}}\)</span></h5>
 par(mfrow = c(2, 2))  ## grid para los gráficos
 
 for (n in n_valores) {
-  ## Simulate new data for each n
+  # nueva data para cada n
   T_sim &lt;- rbinom(N_rep, size = n, prob = p_verdadera)
   theta_trunc_sim &lt;- theta_trunc(T_sim, n)
   
-  ## Histograma
+  # Histograma
   hist(theta_trunc_sim,
        breaks = 40,
        main = paste(&quot;Histograma de theta_trunc, n =&quot;, n),
        xlab = expression(hat(theta)[trunc]),
        probability = TRUE)
   
-  ## Normal overlay
   media_hat &lt;- mean(theta_trunc_sim)
   sd_hat    &lt;- sd(theta_trunc_sim)
   x_grid    &lt;- seq(0, 1, length.out = 200)
