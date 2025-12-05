@@ -343,6 +343,107 @@ resAsint_df <- do.call(rbind, lapply(res_listAsint, function(z){
 }))
 rownames(resAsint_df) <- NULL
 
+#### 2.3.13 ####
+
+# Par??metros
+theta_verdadera <- 0.25
+Se_fijo         <- 0.9
+Sp_fijo         <- 0.95
+
+# Probabilidad verdadera de test positivo bajo el modelo
+p_verdadera <- Se_fijo * theta_verdadera + (1 - Sp_fijo) * (1 - theta_verdadera)
+
+# N??mero de r??plicas para Monte Carlo
+N_rep <- 10000
+
+
+# Funciones para los estimadores
+
+# Estimador de momentos de theta
+theta_mom <- function(T_obs, n, Se = Se_fijo, Sp = Sp_fijo) {
+  p_muestral <- T_obs / n
+  theta_mom_est <- (p_muestral + Sp - 1) / (Se + Sp - 1)
+  return(theta_mom_est)
+}
+
+# Estimador truncado de theta
+theta_trunc <- function(T_obs, n, Se = Se_fijo, Sp = Sp_fijo) {
+  theta_mom_est <- theta_mom(T_obs, n, Se, Sp)
+  theta_trunc_est <- pmin(1, pmax(0, theta_mom_est))
+  return(theta_trunc_est)
+}
+
+## Tama??os muestrales a estudiar
+n_valores <- c(10, 100, 1000)
+
+## Data frame para almacenar resultados
+resultados <- data.frame(
+  n     = n_valores,
+  media = NA_real_,
+  sesgo = NA_real_,
+  var   = NA_real_,
+  ECM   = NA_real_
+)
+
+set.seed(123)
+
+for (i in seq_along(n_valores)) {
+  n <- n_valores[i]
+  
+  # Simular T_obs ~ Binomial(n, p_verdadera) N_rep veces
+  T_sim <- rbinom(N_rep, size = n, prob = p_verdadera)
+  
+  # Estimaciones truncadas
+  theta_trunc_sim <- theta_trunc(T_sim, n)
+  
+  # media
+  media_hat <- mean(theta_trunc_sim)
+  
+  # sesgo
+  sesgo_hat <- media_hat - theta_verdadera
+  
+  # varianza
+  var_hat <- var(theta_trunc_sim)
+  
+  # ECM
+  ECM_hat <- mean((theta_trunc_sim - theta_verdadera)^2)
+  
+  # resultados
+  resultados$media[i] <- media_hat
+  resultados$sesgo[i] <- sesgo_hat
+  resultados$var[i]   <- var_hat
+  resultados$ECM[i]   <- ECM_hat
+}
+
+# Gr??ficos para la distrbuci??n asint??tica
+par(mfrow = c(2, 2))  ## grid para los gr??ficos
+
+for (n in n_valores) {
+  ## Histograma
+  hist(theta_trunc_sim,
+       breaks = 40,
+       main = paste("Histograma de theta_trunc, n =", n),
+       xlab = expression(hat(theta)[trunc]),
+       probability = TRUE)
+  
+  ## Normal overlay (more meaningful for large n)
+  media_hat <- mean(theta_trunc_sim)
+  sd_hat    <- sd(theta_trunc_sim)
+  x_grid    <- seq(0, 1, length.out = 200)
+  lines(x_grid, dnorm(x_grid, mean = media_hat, sd = sd_hat), col = "red")
+}
+
+par(mfrow = c(1, 1))
+
+n <- 1000
+
+qqnorm(theta_trunc_sim,
+       main = expression(paste("QQ-plot de ", hat(theta)[trunc], " para n=1000")),
+       xlab= "",
+       ylab= "")
+qqline(theta_trunc_sim)
+
+
 #### 3.1.2 ####
 
 #Definimos los valores.
@@ -450,7 +551,7 @@ U10 <- (tita_postHat - tita_preHat)/(sqrt(Var_postHat + Var_preHat))
 ### 3.1.3 ####
 
 
-# Estimador de Delta y su desvío estándar
+# Estimador de Delta y su desvC-o estC!ndar
 DeltaHat <- tita_postHat - tita_preHat
 se_Delta <- sqrt(Var_preHat + Var_postHat)
 

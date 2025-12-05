@@ -941,7 +941,7 @@ resAsint_df <- do.call(rbind, lapply(res_listAsint, function(z){
 rownames(resAsint_df) <- NULL
 ```
 
-### 2.1.11 Comparación entre ambos intervalos.
+### 2.2.11 Comparación entre ambos intervalos.
 
 Comparemos los resultados obtenidos.
 
@@ -963,6 +963,218 @@ knitr::kable(resAsint_df, digits = 4, caption = "Intervalos Asintóticos")
 * A medida que aumenta $n$ los resultados obtenidos se vuelven casi indistinguibles.
 
 <br><br>
+### 2.3.12 Comportamiento del estimador de momentos.
+
+Recordemos que el estimador de momentos de la prevalencia se obtiene despejando $\theta$ en la expresión
+\[
+p = Se\,\theta + (1-Sp)(1-\theta),
+\]
+y reemplazando $p$ por su estimador $\hat p = T_{\text{per}}/n$. Esto produce
+\[
+\hat{\theta}_{MoM}
+= \frac{\hat p + S_{p} - 1}{S_{e}+S_{p}-1}.
+\]
+
+Si bien $\hat p \in [0,1]$, la transformación anterior es lineal y puede llevar a que el estimador resultante tome valores fuera del intervalo válido para una probabilidad. En particular,
+\[
+\hat{\theta}_{MoM} < 0
+\quad\Longleftrightarrow\quad
+\hat p < 1 - Sp,
+\]
+lo cual ocurre en muestras donde se observan menos resultados positivos de los esperados, mientras que
+\[
+\hat{\theta}_{MoM} > 1
+\quad\Longleftrightarrow\quad
+\hat p > Se,
+\]
+lo cual puede suceder cuando la muestra presenta un número inusualmente alto de resultados positivos.
+
+##### $\underline{\text{Ejemplos numéricos}}$
+
+Consideremos los valores utilizados en esta parte del trabajo:
+\[
+Se = 0.9,\qquad Sp = 0.95.
+\]
+Entonces,
+\[
+1 - Sp = 0.05,
+\qquad
+Se + Sp - 1 = 0.85.
+\]
+
+$\underline{\text{Ejemplo 1:}}  \hat{\theta}_{MoM} < 0.$
+
+Si en una muestra particular no se observan resultados positivos, entonces
+\[
+\hat p = 0.
+\]
+Reemplazando en la fórmula del estimador:
+\[
+\hat{\theta}_{MoM}
+   = \frac{0 + 0.95 - 1}{0.85}
+   = \frac{-0.05}{0.85}
+   \approx -0.0588.
+\]
+En este caso, el estimador toma un valor negativo, aun cuando la prevalencia real sea positiva.
+
+$\underline{\text{Ejemplo 2:}} \hat{\theta}_{MoM} > 1.$
+
+Si por azar la muestra produce un valor muy alto de $\hat p$, por ejemplo
+\[
+\hat p = 0.95,
+\]
+entonces
+\[
+\hat{\theta}_{MoM}
+   = \frac{0.95 + 0.95 - 1}{0.85}
+   = \frac{0.90}{0.85}
+   \approx 1.0588.
+\]
+En este caso, el estimador supera el valor máximo admisible para una prevalencia.
+
+\medskip
+
+Estos ejemplos ilustran que el estimador $\hat{\theta}_{MoM}$ puede ubicarse fuera de $[0,1]$ para ciertas muestras.
+
+### 2.3.13 Estudio del estimador truncado
+
+Recordemos que el estimador de momentos puede tomar valores fuera del intervalo $[0,1]$. Para evitar esta situación, definimos el estimador truncado como
+\[
+\hat\theta_{\text{trunc}} =
+\begin{cases}
+\hat\theta_{\text{MoM}}, & 0 \le \hat\theta_{\text{MoM}} \le 1, \\[6pt]
+0, & \hat\theta_{\text{MoM}} < 0, \\[6pt]
+1, & \hat\theta_{\text{MoM}} > 1.
+\end{cases}
+\]
+
+Este estimador coincide con $\hat\theta_{\text{MoM}}$ en la región central y recorta los valores imposibles asignándolos al borde del intervalo.
+
+Para estudiar sus propiedades, realizamos simulaciones Monte Carlo para $\theta = 0.25$, $Se = 0.9$, $Sp = 0.95$ y tamaños muestrales $n = 10, 100$ y $1000$. En cada caso generamos $N_{\text{rep}}$ réplicas independientes, calculamos $\hat\theta_{\text{trunc}}$ y estimamos el sesgo, la varianza, el error cuadrático medio (ECM) y la forma empírica de la distribución.
+
+```{r}
+# Parámetros
+theta_verdadera <- 0.25
+Se_fijo         <- 0.9
+Sp_fijo         <- 0.95
+
+# Probabilidad verdadera de test positivo bajo el modelo
+p_verdadera <- Se_fijo * theta_verdadera + (1 - Sp_fijo) * (1 - theta_verdadera)
+
+# Número de réplicas para Monte Carlo
+N_rep <- 10000
+
+
+# Funciones para los estimadores
+
+# Estimador de momentos de theta
+theta_mom <- function(T_obs, n, Se = Se_fijo, Sp = Sp_fijo) {
+  p_muestral <- T_obs / n
+  theta_mom_est <- (p_muestral + Sp - 1) / (Se + Sp - 1)
+  return(theta_mom_est)
+}
+
+# Estimador truncado de theta
+theta_trunc <- function(T_obs, n, Se = Se_fijo, Sp = Sp_fijo) {
+  theta_mom_est <- theta_mom(T_obs, n, Se, Sp)
+  theta_trunc_est <- pmin(1, pmax(0, theta_mom_est))
+  return(theta_trunc_est)
+}
+
+## Tamaños muestrales a estudiar
+n_valores <- c(10, 100, 1000)
+
+## Data frame para almacenar resultados
+resultados <- data.frame(
+  n     = n_valores,
+  media = NA_real_,
+  sesgo = NA_real_,
+  var   = NA_real_,
+  ECM   = NA_real_
+)
+
+set.seed(123)
+
+for (i in seq_along(n_valores)) {
+  n <- n_valores[i]
+  
+  # Simular T_obs ~ Binomial(n, p_verdadera) N_rep veces
+  T_sim <- rbinom(N_rep, size = n, prob = p_verdadera)
+  
+  # Estimaciones truncadas
+  theta_trunc_sim <- theta_trunc(T_sim, n)
+  
+  # media
+  media_hat <- mean(theta_trunc_sim)
+  
+  # sesgo
+  sesgo_hat <- media_hat - theta_verdadera
+  
+  # varianza
+  var_hat <- var(theta_trunc_sim)
+  
+  # ECM
+  ECM_hat <- mean((theta_trunc_sim - theta_verdadera)^2)
+  
+  # resultados
+  resultados$media[i] <- media_hat
+  resultados$sesgo[i] <- sesgo_hat
+  resultados$var[i]   <- var_hat
+  resultados$ECM[i]   <- ECM_hat
+}
+
+```
+
+##### $\underline{\text{Sesgo:}}$
+Para $n=10$ el estimador presenta un sesgo notable. Esto se debe a que el estimador de momentos frecuentemente cae por debajo de $0$ y es truncado a cero, lo cual desplaza el valor medio del estimador hacia la región central del intervalo. A medida que el tamaño muestral aumenta, la frecuencia de truncamientos disminuye y el sesgo se aproxima a cero. En consecuencia, el estimador truncado es asintóticamente insesgado.
+
+##### $\underline{\text{Varianza:}}$
+La varianza disminuye al crecer $n$, como es esperable para un estimador consistente. Para $n=10$ la varianza es elevada debido a la alta variabilidad de $\hat p$, mientras que para $n=1000$ el estimador muestra muy poca dispersión.
+
+##### $\underline{\text{Error cuadrático medio:}}$
+El ECM refleja el compromiso entre sesgo y varianza:
+\[
+ECM = \operatorname{Sesgo}^2 + \operatorname{Var}.
+\]
+Para tamaños muestrales pequeños, el ECM se ve afectado tanto por el sesgo inducido por el truncamiento como por la alta varianza. Para tamaños muestrales grandes, el ECM resulta muy pequeño, consistente con la convergencia del estimador.
+
+##### $\underline{\text{Distribución asintótica:}}$
+Hacemos los siguientes gráficos para la distribución asintótica:
+```{r}
+par(mfrow = c(2, 2))  ## grid para los gráficos
+
+for (n in n_valores) {
+  ## Histograma
+  hist(theta_trunc_sim,
+       breaks = 40,
+       main = paste("Histograma de theta_trunc, n =", n),
+       xlab = expression(hat(theta)[trunc]),
+       probability = TRUE)
+  
+  ## Normal overlay (more meaningful for large n)
+  media_hat <- mean(theta_trunc_sim)
+  sd_hat    <- sd(theta_trunc_sim)
+  x_grid    <- seq(0, 1, length.out = 200)
+  lines(x_grid, dnorm(x_grid, mean = media_hat, sd = sd_hat), col = "red")
+}
+
+par(mfrow = c(1, 1))
+
+n <- 1000
+
+qqnorm(theta_trunc_sim,
+       main = expression(paste("QQ-plot de ", hat(theta)[trunc], " para n=1000")),
+       xlab= "",
+       ylab= "")
+qqline(theta_trunc_sim)
+
+
+```
+
+Para $n$ pequeños, la distribución empírica de $\hat\theta_{\text{trunc}}$ muestra acumulación de masa en los puntos $0$ y $1$, debido al truncamiento. Por ello, la distribución no es aproximadamente normal. Sin embargo, para $n$ grandes el truncamiento ocurre con probabilidad prácticamente nula, y la distribución empírica se aproxima bien a una normal, coincidiendo en este caso con la distribución asintótica del estimador de momentos no truncado.
+
+En conjunto, estos resultados muestran que el truncamiento introduce sesgo en muestras pequeñas, pero el estimador es asintóticamente equivalente al estimador de momentos original, preservando sus propiedades cuando $n$ es grande.
+
 
 # 3 Parte III: Dos muestras (pre-post intervención)
 
@@ -1244,7 +1456,5 @@ IC_{95\%}(\Delta)
 [-0.2259,\; 0.6965].
 \]
 
-Podemos ver que el intervalo incluye al 0, por lo tanto no hay evidencia suficiente para decir que hay un cambio real entre pre y post.
-El intervalo es bastante ancho, se puede decir que hay alta incertidumbre.
-Pero podemos ver tambien que el limite superior es bastante grande (≈0.70) lo cual muestra que con nuestros datos todavia es posible un aumento grande entre pre y post. Y como el limite inferior es negativo tambien puede haber una disminucion moderada.
+Podemos ver que el intervalo incluye al 0, por lo tanto no hay evidencia suficiente para decir que hay un cambio real entre pre y post. El intervalo es bastante ancho, se puede decir que hay alta incertidumbre. Pero podemos ver tambien que el limite superior es bastante grande (≈0.70) lo cual muestra que con nuestros datos todavia es posible un aumento grande entre pre y post. Y como el limite inferior es negativo tambien puede haber una disminucion moderada.
 
