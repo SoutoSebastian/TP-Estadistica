@@ -963,6 +963,7 @@ knitr::kable(resAsint_df, digits = 4, caption = "Intervalos Asintóticos")
 * A medida que aumenta $n$ los resultados obtenidos se vuelven casi indistinguibles.
 
 <br><br>
+
 ### 2.3.12 Comportamiento del estimador de momentos.
 
 Recordemos que el estimador de momentos de la prevalencia se obtiene despejando $\theta$ en la expresión
@@ -1032,8 +1033,6 @@ entonces
 \]
 En este caso, el estimador supera el valor máximo admisible para una prevalencia.
 
-\medskip
-
 Estos ejemplos ilustran que el estimador $\hat{\theta}_{MoM}$ puede ubicarse fuera de $[0,1]$ para ciertas muestras.
 
 ### 2.3.13 Estudio del estimador truncado
@@ -1093,7 +1092,7 @@ resultados <- data.frame(
   ECM   = NA_real_
 )
 
-set.seed(123)
+set.seed(43)
 
 for (i in seq_along(n_valores)) {
   n <- n_valores[i]
@@ -1123,6 +1122,7 @@ for (i in seq_along(n_valores)) {
   resultados$ECM[i]   <- ECM_hat
 }
 
+resultados
 ```
 
 ##### $\underline{\text{Sesgo:}}$
@@ -1141,9 +1141,14 @@ Para tamaños muestrales pequeños, el ECM se ve afectado tanto por el sesgo ind
 ##### $\underline{\text{Distribución asintótica:}}$
 Hacemos los siguientes gráficos para la distribución asintótica:
 ```{r}
+set.seed(43)
 par(mfrow = c(2, 2))  ## grid para los gráficos
 
 for (n in n_valores) {
+  ## Simulate new data for each n
+  T_sim <- rbinom(N_rep, size = n, prob = p_verdadera)
+  theta_trunc_sim <- theta_trunc(T_sim, n)
+  
   ## Histograma
   hist(theta_trunc_sim,
        breaks = 40,
@@ -1151,7 +1156,7 @@ for (n in n_valores) {
        xlab = expression(hat(theta)[trunc]),
        probability = TRUE)
   
-  ## Normal overlay (more meaningful for large n)
+  ## Normal overlay
   media_hat <- mean(theta_trunc_sim)
   sd_hat    <- sd(theta_trunc_sim)
   x_grid    <- seq(0, 1, length.out = 200)
@@ -1161,6 +1166,8 @@ for (n in n_valores) {
 par(mfrow = c(1, 1))
 
 n <- 1000
+T_sim <- rbinom(N_rep, size = n, prob = p_verdadera)
+theta_trunc_sim <- theta_trunc(T_sim, n)
 
 qqnorm(theta_trunc_sim,
        main = expression(paste("QQ-plot de ", hat(theta)[trunc], " para n=1000")),

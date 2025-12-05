@@ -345,7 +345,7 @@ rownames(resAsint_df) <- NULL
 
 #### 2.3.13 ####
 
-# Par??metros
+# Parametros
 theta_verdadera <- 0.25
 Se_fijo         <- 0.9
 Sp_fijo         <- 0.95
@@ -353,7 +353,7 @@ Sp_fijo         <- 0.95
 # Probabilidad verdadera de test positivo bajo el modelo
 p_verdadera <- Se_fijo * theta_verdadera + (1 - Sp_fijo) * (1 - theta_verdadera)
 
-# N??mero de r??plicas para Monte Carlo
+# Numero de replicas para Monte Carlo
 N_rep <- 10000
 
 
@@ -385,7 +385,7 @@ resultados <- data.frame(
   ECM   = NA_real_
 )
 
-set.seed(123)
+set.seed(43)
 
 for (i in seq_along(n_valores)) {
   n <- n_valores[i]
@@ -414,8 +414,8 @@ for (i in seq_along(n_valores)) {
   resultados$var[i]   <- var_hat
   resultados$ECM[i]   <- ECM_hat
 }
-
-# Gr??ficos para la distrbuci??n asint??tica
+resultados
+# Graficos para la distrbucion asintotica
 par(mfrow = c(2, 2))  ## grid para los gr??ficos
 
 for (n in n_valores) {
