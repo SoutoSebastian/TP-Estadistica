@@ -564,6 +564,10 @@ legend("topright",
        col=c("orange", "blue"), lwd=2)
 
 ```
+
+
+
+
 Podemos ver que para todos los tamaños muestrales n, el ECM del test imperfecto es mayor que el del test perfecto.
 A medida que n crece, ambos ECM tienden a 0, pero el imperfecto siempre queda más arriba que el perfecto.
 Cuanto más pequeño sea $Se+Sp−1$ (es decir, cuanto peor sea el test), mayor será la brecha entre las dos curvas.
@@ -1488,10 +1492,10 @@ Con los datos simulados, el intervalo calculado fue:
 \[
 IC_{95\%}(\Delta)
 =
-[-0.2259,\; 0.6965].
+[-0.3259,\; 0.5612].
 \]
 
-Podemos ver que el intervalo incluye al 0, por lo tanto no hay evidencia suficiente para decir que hay un cambio real entre pre y post. El intervalo es bastante ancho, se puede decir que hay alta incertidumbre. Pero podemos ver tambien que el limite superior es bastante grande (≈0.70) lo cual muestra que con nuestros datos todavia es posible un aumento grande entre pre y post. Y como el limite inferior es negativo tambien puede haber una disminucion moderada.
+Podemos ver que el intervalo incluye al 0, por lo tanto no hay evidencia suficiente para decir que hay un cambio real entre pre y post. El intervalo es bastante ancho, se puede decir que hay alta incertidumbre. Pero podemos ver tambien que el limite superior es bastante grande (≈0.50) lo cual muestra que con nuestros datos todavia es posible un aumento grande entre pre y post. Y como el limite inferior es negativo tambien puede haber una disminucion moderada.
 
 
 ## 3.1.4 Nivel empírico del test.
