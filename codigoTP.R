@@ -568,3 +568,77 @@ IC_upper <- DeltaHat + z * se_Delta
 cat("DeltaHat =", round(DeltaHat, 4), "\n")
 cat("IC 95% para Delta: [", round(IC_lower, 4), ",", round(IC_upper, 4), "]\n")
 
+
+
+### 3.1.4 ####
+
+#Definimos los valores a utilizar.
+Nrep <- 2000
+ns <- c(10, 20, 50, 100, 1000, 10000)
+alpha <- 0.05
+Se <- 0.9
+Sp <- 0.95
+z <- qnorm(0.975)
+
+# Como queremos nivel, definimos prevalencias iguales para pre y post (H0 delta = 0).
+#Además queremos el supremo de los errores de tipo 1, entonces hay que variar tita.
+grid_tita <- seq(0.01, 0.99, length.out = 20)
+  
+
+#Vector que va a tener el nivel empírico para cada n.
+nivelN <- numeric(length(ns))
+
+
+#para cada n:
+for (r in seq_along(ns)){
+  n <- ns[r]
+  
+  #vector que va a tener error de tipo 1 para cada tita.
+  errorTipo1 <- numeric(length(grid_tita))
+  
+  #para cada tita:
+  for (j in seq_along(grid_tita)){
+    tita <- grid_tita[j]
+    p <- (Se + Sp - 1)* tita + (1 - Sp)
+    
+    #vector que va a tener si rechazo o no el test en cada pos.
+    rechazos <- numeric(Nrep)
+    
+    #repito el experimento Nrep veces:
+    for(i in 1:Nrep){                                        
+      Xpre <- rbinom(n,1,p)
+      Xpost <- rbinom(n,1,p)
+      
+      #Ahora calculamos U(Xpre, Xpost):
+      p_preHat <- mean(Xpre)
+      p_postHat <- mean(Xpost)
+      
+      tita_preHat <- (p_preHat + Sp - 1)/(Se + Sp - 1)
+      tita_postHat <- (p_postHat + Sp - 1)/(Se + Sp - 1)
+      
+      Var_preHat <- (p_preHat*(1-p_preHat))/(n*(Se+Sp-1)^2)
+      Var_postHat <- (p_postHat*(1-p_postHat))/(n*(Se+Sp-1)^2)
+      
+      U <- (tita_postHat - tita_preHat)/(sqrt(Var_postHat + Var_preHat)) 
+      
+      #rechazo o no H0.
+      rechazos[i] <- abs(U) > z
+    }
+    
+    #proporción de rechazos.(ignoro nan en caso de que el p estimado sea 0 o 1 
+    #pues sucede un div por 0)
+    errorTipo1[j] <- mean(rechazos, na.rm = TRUE)                    
+    
+  }
+  
+  nivelN[r] <- max(errorTipo1)
+}
+
+nivelEmpirico <- data.frame(n = ns, nivel = nivelN)
+
+
+
+
+
+
+

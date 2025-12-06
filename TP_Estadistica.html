@@ -531,7 +531,8 @@ Carlo para los siguientes valores de n:</p>
 <p><span class="math display">\[
 10, 20, 50, 100, 1000, 10000
 \]</span></p>
-<pre class="r"><code>set.seed(43)
+<pre class="r"><code>#fijamos la semilla que se va a utilizar durante todo el tp.
+set.seed(43)
 
 tita &lt;- 0.25
 ns &lt;- c(10, 20, 50, 100, 1000, 10000) #valores de n para los cuales vamos a evaluar la cobertura
@@ -540,11 +541,13 @@ z &lt;- qnorm(0.975)
 
 cubrimientoN &lt;- 0
 
+#para cada n:
 for (j in seq_along(ns)){
   n &lt;- ns[j]
   cubrimiento &lt;- 0
   
-  for(i in 1:Nrep){                                         #repito el experimento 5000 veces.
+  #repito el experimento 5000 veces.
+  for(i in 1:Nrep){                                         
     muestra &lt;- rbinom(1,n,tita)
     
     estTita &lt;- muestra/n
@@ -554,48 +557,48 @@ for (j in seq_along(ns)){
     cubrimiento[i] &lt;- intervalo[1] &lt;= tita &amp;&amp; tita &lt;= intervalo[2]
   }
   
-  cubrimientoN[j] &lt;- mean(cubrimiento)                  #promedio de veces que el valor real de 
-                                                        #tita cayó en el intervalo.
+  #promedio de veces que el valor real de tita cayó en el intervalo
+  cubrimientoN[j] &lt;- mean(cubrimiento)                  
 }
 
 cubrimientoEmpirico &lt;- data.frame(n = ns, cubrimiento = cubrimientoN)</code></pre>
 <p>Y se obtuvieron estos resultados:</p>
-<div style="width: 50%; margin: auto;">
+<pre class="r"><code>knitr::kable(cubrimientoEmpirico, digits = 4, caption = &quot;Cubrimiento empírico del intervalo&quot;)</code></pre>
 <table>
+<caption>Cubrimiento empírico del intervalo</caption>
 <thead>
 <tr class="header">
-<th>n</th>
-<th>Cubrimiento</th>
+<th align="right">n</th>
+<th align="right">cubrimiento</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td>10</td>
-<td>0.9232</td>
+<td align="right">10</td>
+<td align="right">0.9232</td>
 </tr>
 <tr class="even">
-<td>20</td>
-<td>0.8992</td>
+<td align="right">20</td>
+<td align="right">0.8992</td>
 </tr>
 <tr class="odd">
-<td>50</td>
-<td>0.9362</td>
+<td align="right">50</td>
+<td align="right">0.9362</td>
 </tr>
 <tr class="even">
-<td>100</td>
-<td>0.9462</td>
+<td align="right">100</td>
+<td align="right">0.9462</td>
 </tr>
 <tr class="odd">
-<td>1000</td>
-<td>0.9472</td>
+<td align="right">1000</td>
+<td align="right">0.9472</td>
 </tr>
 <tr class="even">
-<td>10000</td>
-<td>0.9486</td>
+<td align="right">10000</td>
+<td align="right">0.9486</td>
 </tr>
 </tbody>
 </table>
-</div>
 <p>Los resultados obtenidos son coherentes con la teoría. Al tratarse de
 un intervalo asintótico, el cubrimiento empírico converge hacia el nivel
 nominal del 0.95 conforme aumenta el tamaño muestral n.</p>
@@ -1119,7 +1122,8 @@ superior al cuantil 0.975.</p>
 <p>También se quieren realizar simulaciones, para evaluar el cubrimiento
 empirico y la longitud promedio de los intervalos.</p>
 <p>En el siguiente código se realiza lo mencionado anteriormente.</p>
-<pre class="r"><code>tita &lt;- 0.25
+<pre class="r"><code>#Definimos los valores a utilizar.
+tita &lt;- 0.25
 Se &lt;- 0.9
 Sp &lt;- 0.95
 p_Y &lt;- Se * tita + (1 - Sp) * (1 - tita)
@@ -1133,15 +1137,18 @@ z &lt;- qnorm(0.975)
 res_list &lt;- vector(&quot;list&quot;,length(ns))
 names(res_list) &lt;- as.character(ns)
 
+#para cada n:
 for (j in seq_along(ns)){
   n &lt;- ns[j]
   cubrimientos &lt;- logical(R)
   longitudes &lt;- numeric(R)
-   
+  
+  #repito el experimento R veces 
   for (r in 1:R){
      T &lt;- rbinom(n,1,p_Y)
      boot_est &lt;- numeric(B)
      
+     #genero B muestras bootstrap.
      for (b in 1:B){
        T_boot &lt;- sample(T, size = n, replace = TRUE)
        p_hat_boot &lt;- mean(T_boot)
@@ -1155,6 +1162,7 @@ for (j in seq_along(ns)){
      longitudes[r] &lt;- (upper - lower)
   }
   
+  #resultados para cada n
   res_list[[j]] &lt;- list(
     n = n,
     cubrimiento = mean(cubrimientos),
@@ -1233,11 +1241,13 @@ promedio.</p>
 <pre class="r"><code>res_listAsint &lt;- vector(&quot;list&quot;, length(ns))
 names(res_listAsint) &lt;- as.character(ns)
 
+#para cada n:
 for (j in seq_along(ns)){
   n &lt;- ns[j]
   cubrimientos &lt;- logical(R)
   longitudes &lt;- numeric(R)
   
+  #repito el experimento R veces.
   for (r in 1:R){
     T &lt;- rbinom(n, 1, p_Y)
     
@@ -1253,6 +1263,7 @@ for (j in seq_along(ns)){
     longitudes[r] &lt;- (upper - lower)
   }
   
+  #resultados para cada n.
   res_listAsint[[j]] &lt;- list(
     n = n,
     cubrimiento = mean(cubrimientos),
@@ -1512,13 +1523,43 @@ for (i in seq_along(n_valores)) {
   resultados$sesgo[i] &lt;- sesgo_hat
   resultados$var[i]   &lt;- var_hat
   resultados$ECM[i]   &lt;- ECM_hat
-}
-
-resultados</code></pre>
-<pre><code>##      n     media         sesgo         var          ECM
-## 1   10 0.2485059 -1.494118e-03 0.024626528 0.0246262976
-## 2  100 0.2500482  4.823529e-05 0.002685104 0.0026848374
-## 3 1000 0.2500671  6.705882e-05 0.000262917 0.0002628952</code></pre>
+}</code></pre>
+<pre class="r"><code>knitr::kable(resultados, digits = 9, caption = &quot;Resultados&quot;)</code></pre>
+<table>
+<caption>Resultados</caption>
+<thead>
+<tr class="header">
+<th align="right">n</th>
+<th align="right">media</th>
+<th align="right">sesgo</th>
+<th align="right">var</th>
+<th align="right">ECM</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">10</td>
+<td align="right">0.2485059</td>
+<td align="right">-0.001494118</td>
+<td align="right">0.024626528</td>
+<td align="right">0.024626298</td>
+</tr>
+<tr class="even">
+<td align="right">100</td>
+<td align="right">0.2500482</td>
+<td align="right">0.000048235</td>
+<td align="right">0.002685104</td>
+<td align="right">0.002684837</td>
+</tr>
+<tr class="odd">
+<td align="right">1000</td>
+<td align="right">0.2500671</td>
+<td align="right">0.000067059</td>
+<td align="right">0.000262917</td>
+<td align="right">0.000262895</td>
+</tr>
+</tbody>
+</table>
 <div id="underlinetextsesgo" class="section level5">
 <h5><span class="math inline">\(\underline{\text{Sesgo:}}\)</span></h5>
 <p>Para <span class="math inline">\(n=10\)</span> el estimador presenta
@@ -1800,6 +1841,117 @@ incertidumbre. Pero podemos ver tambien que el limite superior es
 bastante grande (≈0.70) lo cual muestra que con nuestros datos todavia
 es posible un aumento grande entre pre y post. Y como el limite inferior
 es negativo tambien puede haber una disminucion moderada.</p>
+</div>
+<div id="nivel-empírico-del-test." class="section level2">
+<h2>3.1.4 Nivel empírico del test.</h2>
+<p>Se quiere calcular el nivel empírico del test dado en <span class="math inline">\(3.1.2\)</span>. Para ello, se define una grilla de
+valores de <span class="math inline">\(n\)</span> para calcular el nivel
+para cada valor. Se sabe que el nivel de un test está definido por el
+supremo de los errores de tipo 1. Entonces, también se define una grilla
+de valores de <span class="math inline">\(\theta\)</span> y se realizan
+las simulaciones pertinentes. Este proceso se encuentra en el código
+siguiente.</p>
+<pre class="r"><code>#Definimos los valores a utilizar.
+Nrep &lt;- 2000
+ns &lt;- c(10, 20, 50, 100, 1000, 10000)
+alpha &lt;- 0.05
+Se &lt;- 0.9
+Sp &lt;- 0.95
+z &lt;- qnorm(0.975)
+
+# Como queremos nivel, definimos prevalencias iguales para pre y post (H0 delta = 0).
+#Además queremos el supremo de los errores de tipo 1, entonces hay que variar tita.
+grid_tita &lt;- seq(0.01, 0.99, length.out = 20)
+  
+
+#Vector que va a tener el nivel empírico para cada n.
+nivelN &lt;- numeric(length(ns))
+
+
+#para cada n:
+for (r in seq_along(ns)){
+  n &lt;- ns[r]
+  
+  #vector que va a tener error de tipo 1 para cada tita.
+  errorTipo1 &lt;- numeric(length(grid_tita))
+  
+  #para cada tita:
+  for (j in seq_along(grid_tita)){
+    tita &lt;- grid_tita[j]
+    p &lt;- (Se + Sp - 1)* tita + (1 - Sp)
+    
+    #vector que va a tener si rechazo o no el test en cada pos.
+    rechazos &lt;- numeric(Nrep)
+    
+    #repito el experimento Nrep veces:
+    for(i in 1:Nrep){                                        
+      Xpre &lt;- rbinom(n,1,p)
+      Xpost &lt;- rbinom(n,1,p)
+      
+      #Ahora calculamos U(Xpre, Xpost):
+      p_preHat &lt;- mean(Xpre)
+      p_postHat &lt;- mean(Xpost)
+      
+      tita_preHat &lt;- (p_preHat + Sp - 1)/(Se + Sp - 1)
+      tita_postHat &lt;- (p_postHat + Sp - 1)/(Se + Sp - 1)
+      
+      Var_preHat &lt;- (p_preHat*(1-p_preHat))/(n*(Se+Sp-1)^2)
+      Var_postHat &lt;- (p_postHat*(1-p_postHat))/(n*(Se+Sp-1)^2)
+      
+      U &lt;- (tita_postHat - tita_preHat)/(sqrt(Var_postHat + Var_preHat)) 
+      
+      #rechazo o no H0.
+      rechazos[i] &lt;- abs(U) &gt; z
+    }
+    
+    #proporción de rechazos.(ignoro nan en caso de que el p estimado sea 0 o 1 
+    #pues sucede un div por 0)
+    errorTipo1[j] &lt;- mean(rechazos, na.rm = TRUE)                    
+    
+  }
+  
+  nivelN[r] &lt;- max(errorTipo1)
+}
+
+nivelEmpirico &lt;- data.frame(n = ns, nivel = nivelN)</code></pre>
+<pre class="r"><code>knitr::kable(nivelEmpirico, digits = 4, caption = &quot;Nivel empírico del test&quot;)</code></pre>
+<table>
+<caption>Nivel empírico del test</caption>
+<thead>
+<tr class="header">
+<th align="right">n</th>
+<th align="right">nivel</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">10</td>
+<td align="right">0.1098</td>
+</tr>
+<tr class="even">
+<td align="right">20</td>
+<td align="right">0.0895</td>
+</tr>
+<tr class="odd">
+<td align="right">50</td>
+<td align="right">0.0650</td>
+</tr>
+<tr class="even">
+<td align="right">100</td>
+<td align="right">0.0585</td>
+</tr>
+<tr class="odd">
+<td align="right">1000</td>
+<td align="right">0.0570</td>
+</tr>
+<tr class="even">
+<td align="right">10000</td>
+<td align="right">0.0595</td>
+</tr>
+</tbody>
+</table>
+<p>Se observa claramente el comportamiento asintótico del test. A medida
+que aumenta n, el nivel del test se acerca a 0.05.</p>
 </div>
 </div>
 

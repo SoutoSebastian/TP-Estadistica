@@ -189,6 +189,7 @@ Para evaluar el cubrimiento empírico del intervalo dado en $1.4$, se llevó a c
 \]
 
 ```{r}
+#fijamos la semilla que se va a utilizar durante todo el tp.
 set.seed(43)
 
 tita <- 0.25
@@ -198,11 +199,13 @@ z <- qnorm(0.975)
 
 cubrimientoN <- 0
 
+#para cada n:
 for (j in seq_along(ns)){
   n <- ns[j]
   cubrimiento <- 0
   
-  for(i in 1:Nrep){                                         #repito el experimento 5000 veces.
+  #repito el experimento 5000 veces.
+  for(i in 1:Nrep){                                         
     muestra <- rbinom(1,n,tita)
     
     estTita <- muestra/n
@@ -212,8 +215,8 @@ for (j in seq_along(ns)){
     cubrimiento[i] <- intervalo[1] <= tita && tita <= intervalo[2]
   }
   
-  cubrimientoN[j] <- mean(cubrimiento)                  #promedio de veces que el valor real de 
-                                                        #tita cayó en el intervalo.
+  #promedio de veces que el valor real de tita cayó en el intervalo
+  cubrimientoN[j] <- mean(cubrimiento)                  
 }
 
 cubrimientoEmpirico <- data.frame(n = ns, cubrimiento = cubrimientoN)
@@ -221,18 +224,9 @@ cubrimientoEmpirico <- data.frame(n = ns, cubrimiento = cubrimientoN)
 
 Y se obtuvieron estos resultados:
 
-<div style="width: 50%; margin: auto;">
-
-| n     | Cubrimiento |
-|-------|-------------|
-| 10    | 0.9232      |
-| 20    | 0.8992      |
-| 50    | 0.9362      |
-| 100   | 0.9462      |
-| 1000  | 0.9472      |
-| 10000 | 0.9486      |
-
-</div>
+```{r}
+knitr::kable(cubrimientoEmpirico, digits = 4, caption = "Cubrimiento empírico del intervalo")
+```
 
 Los resultados obtenidos son coherentes con la teoría. Al tratarse de un intervalo asintótico, el cubrimiento empírico converge hacia el nivel nominal del 0.95 conforme aumenta el tamaño muestral n.
 
@@ -786,6 +780,7 @@ También se quieren realizar simulaciones, para evaluar el cubrimiento empirico 
 En el siguiente código se realiza lo mencionado anteriormente.
 
 ```{r}
+#Definimos los valores a utilizar.
 tita <- 0.25
 Se <- 0.9
 Sp <- 0.95
@@ -800,15 +795,18 @@ z <- qnorm(0.975)
 res_list <- vector("list",length(ns))
 names(res_list) <- as.character(ns)
 
+#para cada n:
 for (j in seq_along(ns)){
   n <- ns[j]
   cubrimientos <- logical(R)
   longitudes <- numeric(R)
-   
+  
+  #repito el experimento R veces 
   for (r in 1:R){
      T <- rbinom(n,1,p_Y)
      boot_est <- numeric(B)
      
+     #genero B muestras bootstrap.
      for (b in 1:B){
        T_boot <- sample(T, size = n, replace = TRUE)
        p_hat_boot <- mean(T_boot)
@@ -822,6 +820,7 @@ for (j in seq_along(ns)){
      longitudes[r] <- (upper - lower)
   }
   
+  #resultados para cada n
   res_list[[j]] <- list(
     n = n,
     cubrimiento = mean(cubrimientos),
@@ -906,11 +905,13 @@ En el siguiente código se calcula el intervalo asintótico mencionado y se real
 res_listAsint <- vector("list", length(ns))
 names(res_listAsint) <- as.character(ns)
 
+#para cada n:
 for (j in seq_along(ns)){
   n <- ns[j]
   cubrimientos <- logical(R)
   longitudes <- numeric(R)
   
+  #repito el experimento R veces.
   for (r in 1:R){
     T <- rbinom(n, 1, p_Y)
     
@@ -926,6 +927,7 @@ for (j in seq_along(ns)){
     longitudes[r] <- (upper - lower)
   }
   
+  #resultados para cada n.
   res_listAsint[[j]] <- list(
     n = n,
     cubrimiento = mean(cubrimientos),
@@ -1122,7 +1124,10 @@ for (i in seq_along(n_valores)) {
   resultados$ECM[i]   <- ECM_hat
 }
 
-resultados
+```
+
+```{r}
+knitr::kable(resultados, digits = 9, caption = "Resultados")
 ```
 
 ##### $\underline{\text{Sesgo:}}$
@@ -1463,4 +1468,83 @@ IC_{95\%}(\Delta)
 \]
 
 Podemos ver que el intervalo incluye al 0, por lo tanto no hay evidencia suficiente para decir que hay un cambio real entre pre y post. El intervalo es bastante ancho, se puede decir que hay alta incertidumbre. Pero podemos ver tambien que el limite superior es bastante grande (≈0.70) lo cual muestra que con nuestros datos todavia es posible un aumento grande entre pre y post. Y como el limite inferior es negativo tambien puede haber una disminucion moderada.
+
+
+## 3.1.4 Nivel empírico del test.
+
+Se quiere calcular el nivel empírico del test dado en $3.1.2$. Para ello, se define una grilla de valores de $n$ para calcular el nivel para cada valor. Se sabe que el nivel de un test está definido por el supremo de los errores de tipo 1. Entonces, también se define una grilla de valores de $\theta$ y se realizan las simulaciones pertinentes. Este proceso se encuentra en el código siguiente.
+
+```{r}
+#Definimos los valores a utilizar.
+Nrep <- 2000
+ns <- c(10, 20, 50, 100, 1000, 10000)
+alpha <- 0.05
+Se <- 0.9
+Sp <- 0.95
+z <- qnorm(0.975)
+
+# Como queremos nivel, definimos prevalencias iguales para pre y post (H0 delta = 0).
+#Además queremos el supremo de los errores de tipo 1, entonces hay que variar tita.
+grid_tita <- seq(0.01, 0.99, length.out = 20)
+  
+
+#Vector que va a tener el nivel empírico para cada n.
+nivelN <- numeric(length(ns))
+
+
+#para cada n:
+for (r in seq_along(ns)){
+  n <- ns[r]
+  
+  #vector que va a tener error de tipo 1 para cada tita.
+  errorTipo1 <- numeric(length(grid_tita))
+  
+  #para cada tita:
+  for (j in seq_along(grid_tita)){
+    tita <- grid_tita[j]
+    p <- (Se + Sp - 1)* tita + (1 - Sp)
+    
+    #vector que va a tener si rechazo o no el test en cada pos.
+    rechazos <- numeric(Nrep)
+    
+    #repito el experimento Nrep veces:
+    for(i in 1:Nrep){                                        
+      Xpre <- rbinom(n,1,p)
+      Xpost <- rbinom(n,1,p)
+      
+      #Ahora calculamos U(Xpre, Xpost):
+      p_preHat <- mean(Xpre)
+      p_postHat <- mean(Xpost)
+      
+      tita_preHat <- (p_preHat + Sp - 1)/(Se + Sp - 1)
+      tita_postHat <- (p_postHat + Sp - 1)/(Se + Sp - 1)
+      
+      Var_preHat <- (p_preHat*(1-p_preHat))/(n*(Se+Sp-1)^2)
+      Var_postHat <- (p_postHat*(1-p_postHat))/(n*(Se+Sp-1)^2)
+      
+      U <- (tita_postHat - tita_preHat)/(sqrt(Var_postHat + Var_preHat)) 
+      
+      #rechazo o no H0.
+      rechazos[i] <- abs(U) > z
+    }
+    
+    #proporción de rechazos.(ignoro nan en caso de que el p estimado sea 0 o 1 
+    #pues sucede un div por 0)
+    errorTipo1[j] <- mean(rechazos, na.rm = TRUE)                    
+    
+  }
+  
+  nivelN[r] <- max(errorTipo1)
+}
+
+nivelEmpirico <- data.frame(n = ns, nivel = nivelN)
+
+```
+
+```{r}
+knitr::kable(nivelEmpirico, digits = 4, caption = "Nivel empírico del test")
+```
+
+Se observa claramente el comportamiento asintótico del test. A medida que aumenta n, el nivel del test se acerca a 0.05.
+
 
