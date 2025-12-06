@@ -573,26 +573,50 @@ Cuanto más pequeño sea $Se+Sp−1$ (es decir, cuanto peor sea el test), mayor 
 
 #### Comparación: valores teóricos vs simulados (test imperfecto)
 
-Para el test imperfecto hemos simulado \(R\) réplicas para cada tamaño muestral \(n\), generando primero
-\(Y_i\sim\mathrm{Bernoulli}(\theta)\) y luego \(T_i\) condicionado en \(Y_i\) con
-\(P(T=1\mid Y=1)=Se\) y \(P(T=1\mid Y=0)=1-Sp\).
+
+Para el test imperfecto consideramos un modelo donde la variable observada  
+\(T\) proviene de un test con sensibilidad \(Se\) y especificidad \(Sp\).
+
+La probabilidad real de obtener un test positivo es:
 
 \[
-\hat\theta = \frac{\hat p_T - (1-Sp)}{Se+Sp-1},
-\qquad \hat p_T=\frac{1}{n}\sum_{i=1}^n T_i.
+p = P(T = 1) = Se\,\theta + (1 - Sp)(1 - \theta),
 \]
 
-De la teoría se obtiene la varianza asintótica (para \(Se,Sp\) conocidos):
+de modo que, para un tamaño muestral \(n\),
 
 \[
-\operatorname{Var}(\hat\theta) \approx \frac{p(1-p)}{n(Se+Sp-1)^2},
-\quad\text{con } p=P(T=1)=(Se+Sp-1)\theta + (1-Sp).
+T_1, \ldots, T_n \sim \text{Bernoulli}(p).
 \]
 
-Como el estimador es insesgado, el ECM teórico coincide con la varianza teórica.
+El estimador de momentos corregido para \(\theta\) es:
 
-En la tabla y las figuras siguientes comparamos, para cada \(n\), la **varianza y el ECM simulados**
-(con \(R\) réplicas) frente a los valores teóricos calculados.
+\[
+\hat{\theta} = \frac{\hat{p}_T - (1 - Sp)}{Se + Sp - 1},
+\qquad
+\hat{p}_T = \frac{1}{n}\sum_{i=1}^n T_i.
+\]
+
+Para cada tamaño muestral  
+\[
+n \in \{10,\,20,\,50,\,100,\,200\},
+\]
+se simulan \(R = 10000\) réplicas de \(\hat{\theta}\).  
+A partir de ellas se estiman:
+
+- el sesgo,  
+- la varianza simulada,  
+- el error cuadrático medio (ECM) simulado.
+
+Además, la teoría indica que, como el estimador es insesgado, su varianza es:
+
+\[
+\operatorname{Var}(\hat{\theta}) 
+= \frac{p(1 - p)}{n(Se + Sp - 1)^2},
+\]
+
+por lo que el ECM teórico coincide con la varianza teórica.
+
 
 ```{r}
 R <- 10000

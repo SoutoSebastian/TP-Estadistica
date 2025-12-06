@@ -934,23 +934,45 @@ test), mayor será la brecha entre las dos curvas.</p>
 <h3>2.1.7 Comparo valores teoricos hallados con los simulados</h3>
 <div id="comparación-valores-teóricos-vs-simulados-test-imperfecto" class="section level4">
 <h4>Comparación: valores teóricos vs simulados (test imperfecto)</h4>
-<p>Para el test imperfecto hemos simulado <span class="math inline">\(R\)</span> réplicas para cada tamaño muestral
-<span class="math inline">\(n\)</span>, generando primero <span class="math inline">\(Y_i\sim\mathrm{Bernoulli}(\theta)\)</span> y luego
-<span class="math inline">\(T_i\)</span> condicionado en <span class="math inline">\(Y_i\)</span> con <span class="math inline">\(P(T=1\mid Y=1)=Se\)</span> y <span class="math inline">\(P(T=1\mid Y=0)=1-Sp\)</span>.</p>
+<p>Para el test imperfecto consideramos un modelo donde la variable
+observada<br />
+<span class="math inline">\(T\)</span> proviene de un test con
+sensibilidad <span class="math inline">\(Se\)</span> y especificidad
+<span class="math inline">\(Sp\)</span>.</p>
+<p>La probabilidad real de obtener un test positivo es:</p>
 <p><span class="math display">\[
-\hat\theta = \frac{\hat p_T - (1-Sp)}{Se+Sp-1},
-\qquad \hat p_T=\frac{1}{n}\sum_{i=1}^n T_i.
+p = P(T = 1) = Se\,\theta + (1 - Sp)(1 - \theta),
 \]</span></p>
-<p>De la teoría se obtiene la varianza asintótica (para <span class="math inline">\(Se,Sp\)</span> conocidos):</p>
+<p>de modo que, para un tamaño muestral <span class="math inline">\(n\)</span>,</p>
 <p><span class="math display">\[
-\operatorname{Var}(\hat\theta) \approx \frac{p(1-p)}{n(Se+Sp-1)^2},
-\quad\text{con } p=P(T=1)=(Se+Sp-1)\theta + (1-Sp).
+T_1, \ldots, T_n \sim \text{Bernoulli}(p).
 \]</span></p>
-<p>Como el estimador es insesgado, el ECM teórico coincide con la
-varianza teórica.</p>
-<p>En la tabla y las figuras siguientes comparamos, para cada <span class="math inline">\(n\)</span>, la <strong>varianza y el ECM
-simulados</strong> (con <span class="math inline">\(R\)</span> réplicas)
-frente a los valores teóricos calculados.</p>
+<p>El estimador de momentos corregido para <span class="math inline">\(\theta\)</span> es:</p>
+<p><span class="math display">\[
+\hat{\theta} = \frac{\hat{p}_T - (1 - Sp)}{Se + Sp - 1},
+\qquad
+\hat{p}_T = \frac{1}{n}\sum_{i=1}^n T_i.
+\]</span></p>
+<p>Para cada tamaño muestral<br />
+<span class="math display">\[
+n \in \{10,\,20,\,50,\,100,\,200\},
+\]</span> se simulan <span class="math inline">\(R = 10000\)</span>
+réplicas de <span class="math inline">\(\hat{\theta}\)</span>.<br />
+A partir de ellas se estiman:</p>
+<ul>
+<li>el sesgo,<br />
+</li>
+<li>la varianza simulada,<br />
+</li>
+<li>el error cuadrático medio (ECM) simulado.</li>
+</ul>
+<p>Además, la teoría indica que, como el estimador es insesgado, su
+varianza es:</p>
+<p><span class="math display">\[
+\operatorname{Var}(\hat{\theta})
+= \frac{p(1 - p)}{n(Se + Sp - 1)^2},
+\]</span></p>
+<p>por lo que el ECM teórico coincide con la varianza teórica.</p>
 <pre class="r"><code>R &lt;- 10000
 ns &lt;- c(10, 20, 50, 100, 200) 
 

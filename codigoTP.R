@@ -149,12 +149,12 @@ for (i in seq_along(ns)) {
     est_imp[r] <- tita_corregida(p_hat, Se, Sp)
   }
   
-  # --- EstadC-sticos simulados ---
+  # --- Estadisticos simulados ---
   bias_sim <- mean(est_imp) - tita
   var_sim  <- var(est_imp)
   ecm_sim  <- mean((est_imp - tita)^2)
   
-  # --- Valores teC3ricos ---
+  # --- Valores teoricos ---
   p_true <- p_Y
   denom  <- Se + Sp - 1
   var_teo <- (p_true*(1 - p_true)) / (n * denom^2)
