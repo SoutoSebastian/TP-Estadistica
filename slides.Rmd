@@ -625,3 +625,356 @@ knitr::kable(resAsint_df, digits = 4,
 4. **Convergencia** cuando $n$ crece
 
 ---
+
+## 2.2.9 Intervalos de confianza bootstrap
+
+### Objetivo
+Construir intervalos de confianza para $\theta$ basados en el estimador de momentos  
+utilizando bootstrap no paramétrico.
+
+### Método
+- A partir de los datos ${T_i}$ se calcula $\hat\theta_{MoM}$ en cada remuestreo.
+- Se generan $B = 1000$ réplicas bootstrap:  
+  $\hat\theta^{*(b)}_{MoM}$, $b = 1,\dots,B$.
+- Intervalo bootstrap percentil:
+\[
+IC^{boot}_{0.95} = 
+\big[\, Q_{0.025}(\hat\theta^{*}),\; Q_{0.975}(\hat\theta^{*}) \,\big].
+\]
+
+### Simulación Monte Carlo
+- Replicaciones: $R = 700$.
+- Tamaños muestrales: $n \in \{10, 20, 50, 100, 1000\}$.
+- Para cada réplica se obtiene:
+  - **Cubrimiento empírico**: $\mathbb{1}\{\theta \in IC^{boot}\}$
+  - **Longitud**: $IC^{up} - IC^{low}$
+
+---
+
+### Resultados (resumen)
+- Buen cubrimiento para todos los $n$.
+- Robusto para $n$ pequeños.
+- Longitud disminuye al aumentar $n$.
+
+---
+
+## 2.2.10 Intervalo de confianza asintótico
+
+### Idea
+A partir del estimador de momentos:
+\[
+\hat\theta_{MoM}=\frac{\hat p + Sp - 1}{Se + Sp - 1},
+\]
+donde $\hat p = T_{\text{per}}/n$.
+
+### Varianza estimada
+\[
+\widehat{\mathrm{Var}}(\hat\theta_{MoM}) =
+\frac{\hat p(1 - \hat p)}{n(Se + Sp - 1)^2}.
+\]
+
+### Intervalo de confianza asintótico (95%)
+\[
+IC^{asint}_{0.95}
+= 
+\hat\theta_{MoM}
+\pm
+1.96\,
+\sqrt{
+\frac{\hat p(1 - \hat p)}{n(Se + Sp - 1)^2}
+}.
+\]
+
+### Fundamentación teórica
+- TCL aplicado a $\hat p$  
+- Método Delta para la transformación  
+- Slutsky justifica reemplazar $p$ por $\hat p$
+
+---
+
+## 2.2.10 Resultados: Intervalos Asintóticos
+
+### Cubrimiento empírico y longitud media
+
+\begin{table}[H]
+\centering
+\begin{tabular}{ccc}
+\hline
+$n$ & Cubrimiento & Longitud media \\
+\hline
+10   & 0.9257 & 0.5930 \\
+20   & 0.9186 & 0.4366 \\
+50   & 0.9200 & 0.2836 \\
+100  & 0.9414 & 0.2013 \\
+1000 & 0.9457 & 0.0641 \\
+\hline
+\end{tabular}
+\end{table}
+
+### Observaciones
+- Cubrimiento similar al bootstrap para $n \ge 50$.## 2.2.11 Comparación entre IC Bootstrap y Asintótico
+
+### Métricas comparadas
+- **Cubrimiento empírico**
+- **Longitud promedio del intervalo**
+- **Comportamiento según n**
+
+### Resultados generales
+- Ambos métodos alcanzan cubrimiento cercano a 0.95.
+- Para **n pequeño**, el *bootstrap percentil*:
+  - Tiene **mejor cubrimiento**.
+  - Produce intervalos **ligeramente más cortos**.
+- El IC asintótico depende de la aproximación normal:
+  - Se vuelve confiable recién para **n ≥ 50**.
+- Para n grande, ambos intervalos **convergen** y son casi indistinguibles.
+
+---
+
+## 2.2.11 Comparación: Bootstrap vs Asintótico
+
+### Cubrimiento y longitud media (R = 700)
+
+\begin{table}[H]
+\centering
+\begin{tabular}{ccccc}
+\hline
+$n$ & Cub. Boot & Len. Boot & Cub. Asint & Len. Asint \\
+\hline
+10   & 0.9329 & 0.5680 & 0.9257 & 0.5930 \\
+20   & 0.9186 & 0.4285 & 0.9186 & 0.4366 \\
+50   & 0.9314 & 0.2782 & 0.9200 & 0.2836 \\
+100  & 0.9429 & 0.2006 & 0.9414 & 0.2013 \\
+1000 & 0.9514 & 0.0638 & 0.9457 & 0.0641 \\
+\hline
+\end{tabular}
+\end{table}
+
+### Conclusión
+- Bootstrap es **más robusto** para muestras chicas.
+- Asintótico funciona bien a partir de tamaños moderados.
+- En ambos casos, la longitud disminuye con n.
+
+- Intervalo ligeramente más largo que el bootstrap.
+- A medida que $n$ crece, ambos métodos se vuelven casi indistinguibles.
+
+---
+
+## 2.3.12 Comportamiento del estimador de momentos
+
+### Definición
+El estimador de momentos se obtiene de:
+\[
+p = Se\,\theta + (1-Sp)(1-\theta)
+\]
+y reemplazando \(p\) por \(\hat p = T_{\text{per}}/n\):
+\[
+\hat{\theta}_{MoM} =
+\frac{\hat p + Sp - 1}{Se + Sp - 1}.
+\]
+
+### Observación clave
+- Aunque \(\hat p \in [0,1]\), la transformación es **lineal**, por lo que  
+  \(\hat\theta_{MoM}\) **puede salir de \([0,1]\)**.
+- Esto ocurre cuando la muestra tiene demasiados o muy pocos positivos.
+
+### Condiciones
+\[
+\hat\theta_{MoM} < 0
+\quad\Longleftrightarrow\quad
+\hat p < 1 - Sp,
+\]
+\[
+\hat\theta_{MoM} > 1
+\quad\Longleftrightarrow\quad
+\hat p > Se.
+\]
+
+---
+
+## Ejemplos numéricos
+
+### Valores de referencia
+\[
+Se = 0.9, \quad Sp = 0.95,
+\qquad
+1 - Sp = 0.05, \quad Se + Sp - 1 = 0.85.
+\]
+
+### Ejemplo 1: \(\hat\theta_{MoM} < 0\)
+Si no hay positivos en la muestra:
+\[
+\hat p = 0.
+\]
+Entonces:
+\[
+\hat\theta_{MoM}
+= \frac{0 + 0.95 - 1}{0.85}
+= \frac{-0.05}{0.85}
+\approx -0.0588.
+\]
+
+### Ejemplo 2: \(\hat\theta_{MoM} > 1\)
+Si la muestra da un valor extremo:
+\[
+\hat p = 0.95,
+\]
+entonces:
+\[
+\hat\theta_{MoM}
+= \frac{0.95 + 0.95 - 1}{0.85}
+= \frac{0.90}{0.85}
+\approx 1.0588.
+\]
+
+### Conclusión
+- El estimador puede quedar fuera del intervalo válido para una probabilidad.
+- Motivación para introducir el **estimador truncado**.
+
+---
+
+## 2.3.13 Estudio del estimador truncado
+
+### Motivación
+El estimador de momentos puede tomar valores fuera de \([0,1]\).  
+Para evitar valores imposibles se define el estimador **truncado**:
+
+### Definición
+\[
+\hat\theta_{\text{trunc}} =
+\begin{cases}
+\hat\theta_{\text{MoM}}, & 0 \le \hat\theta_{\text{MoM}} \le 1,\\[6pt]
+0, & \hat\theta_{\text{MoM}} < 0,\\[6pt]
+1, & \hat\theta_{\text{MoM}} > 1.
+\end{cases}
+\]
+
+### Interpretación
+- Coincide con \(\hat\theta_{MoM}\) cuando este es válido.
+- Recorta valores negativos a 0 y mayores a 1 a 1.
+- Introduce **sesgo** para muestras pequeñas, pero evita valores inaceptables.
+
+---
+
+## Simulación Monte Carlo del estimador truncado
+
+### Parámetros usados
+- \(\theta = 0.25\), \(Se = 0.9\), \(Sp = 0.95\)
+- Tamaños muestrales: \(n = 10,\,100,\,1000\)
+- Réplicas: \(N_{\text{rep}} = 10000\)
+
+### Para cada réplica:
+1. Generar \(T \sim \text{Binomial}(n, p_{verdadera})\)
+2. Calcular \(\hat\theta_{\text{trunc}}\)
+3. Estimar:
+   - media  
+   - sesgo  
+   - varianza  
+   - ECM = Sesgo\(^2\) + Var
+
+### Tabla de resultados
+\begin{table}[H]
+\centering
+\begin{tabular}{ccccc}
+\hline
+$n$ & media & sesgo & var & ECM \\
+\hline
+10   & 0.2485 & -0.00149 & 0.02463 & 0.02463 \\
+100  & 0.25005 & 0.000048 & 0.002685 & 0.002685 \\
+1000 & 0.25007 & 0.000067 & 0.000263 & 0.000263 \\
+\hline
+\end{tabular}
+\end{table}
+
+---
+
+## Análisis del estimador truncado
+
+### Sesgo
+- Para \(n = 10\), el estimador muestra sesgo apreciable.  
+  Esto ocurre porque \(\hat\theta_{MoM}\) cae a menudo por debajo de 0 y se trunca.
+- El sesgo → 0 cuando \(n\) aumenta (coincide con el estimador original).
+
+### Varianza
+- Disminuye al crecer \(n\).
+- Para \(n = 10\) es elevada por la alta variabilidad de \(\hat p\).
+- Para \(n = 1000\) es muy baja y estable.
+
+### ECM
+\[
+ECM = \text{Sesgo}^2 + \text{Var}.
+\]
+- Para muestras pequeñas, ECM grande por sesgo + varianza.
+- Para muestras grandes, el ECM es muy pequeño.
+
+### Conclusión
+El estimador truncado:
+- **es consistente**,  
+- **es asintóticamente equivalente** al estimador de momentos,  
+- pero **distorsiona muestras pequeñas** debido al truncamiento.
+
+---
+
+## Distribución del estimador truncado
+
+```{r, echo = FALSE}
+set.seed(43)
+par(mfrow = c(2, 2))  ## grid para los gráficos
+
+for (n in n_valores) {
+  # nueva data para cada n
+  T_sim <- rbinom(N_rep, size = n, prob = p_verdadera)
+  theta_trunc_sim <- theta_trunc(T_sim, n)
+  
+  # Histograma
+  hist(theta_trunc_sim,
+       breaks = 40,
+       main = paste("Histograma de theta_trunc, n =", n),
+       xlab = expression(hat(theta)[trunc]),
+       probability = TRUE)
+  
+  media_hat <- mean(theta_trunc_sim)
+  sd_hat    <- sd(theta_trunc_sim)
+  x_grid    <- seq(0, 1, length.out = 200)
+  lines(x_grid, dnorm(x_grid, mean = media_hat, sd = sd_hat), col = "red")
+}
+
+par(mfrow = c(1, 1))
+
+n <- 1000
+T_sim <- rbinom(N_rep, size = n, prob = p_verdadera)
+theta_trunc_sim <- theta_trunc(T_sim, n)
+
+qqnorm(theta_trunc_sim,
+       main = expression(paste("QQ-plot de ", hat(theta)[trunc], " para n=1000")),
+       xlab= "",
+       ylab= "")
+qqline(theta_trunc_sim)
+
+```
+
+---
+
+### Observaciones de la simulación
+- Para \(n = 10\):  
+  - La distribución muestra **acumulación en 0 y 1**.  
+  - No es aproximadamente normal.
+- Para \(n = 100\):  
+  - La masa en los bordes disminuye.  
+  - La distribución empieza a ser unimodal y más suave.
+- Para \(n = 1000\):  
+  - El truncamiento ocurre con probabilidad casi nula.  
+  - La distribución es bien aproximada por una normal:
+\[
+\hat\theta_{\text{trunc}} \approx
+\mathcal{N}\left(
+\theta,\;
+\frac{p(1-p)}{n(Se+Sp-1)^2}
+\right).
+\]
+
+### Conclusión general
+- Para muestras grandes, el estimador truncado **preserva la distribución asintótica del MoM**.
+
+---
+
+
