@@ -2,7 +2,8 @@ set.seed(43)
 
 #####PARTE 1#########
 
-#1.5 Cubrimiento empirico mediante simulacion Monte Carlo
+#### 1.5 #### 
+#Cubrimiento empirico mediante simulacion Monte Carlo
 
 
 tita <- 0.25
@@ -117,7 +118,8 @@ legend("topright",
 R <- 10000
 ns <- c(10, 20, 50, 100, 200) 
 
-# FunciC3n estimador de momentos
+#FunciCon estimador de momentos
+
 tita_corregida <- function(p_hat, Se, Sp) {
   (p_hat - (1 - Sp)) / (Se + Sp - 1)
 }
@@ -220,9 +222,8 @@ legend("topright",
 
 ### 2.1.8 ####
 
-### --------------------------------------------------------
-### Punto 8 ??? Bootstrap para n = 10
-### --------------------------------------------------------
+#Punto 8 ??? Bootstrap para n = 10
+
 
 
 n <- 10     # tama??o de la muestra

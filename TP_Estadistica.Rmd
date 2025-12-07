@@ -5,13 +5,16 @@ author: "Grupo 11"
 date: "2025-12-8"
 output: html_document
 ---
+<br><br>
 
 # Parte I: Test perfecto (baseline)
 
 ### 1.1 Observe $T_{per} \sim Bi(n,\theta)$
 Consideremos una población en la que cada individuo puede estar o no enfermo. Sea la prevalencia verdadera de la enfermedad
 
-$\hspace{7cm} \theta = P(Y = 1)$,
+\[
+\theta = P(Y = 1)
+\]
 
 donde $Y$ es la variable aleatoria que indica el estado verdadero de una persona. Esto es, $Y = 1$ si la persona está enferma y $Y = 0$ si no lo está.
 
@@ -19,33 +22,46 @@ Se asume, por enunciado, que el test diagnóstico es perfecto, es decir, tanto l
 
 Sea $Y_1, \dots, Y_n$ una muestra aleatoria de tamaño $n$ tomada de la población. Suponemos que las variables $Y_1, \dots, Y_n$ son independientes e idénticamente distribuidas, con
 
-
-$\hspace{7cm} Y_i \sim Bernoulli(\theta)$ con $i = 1,\dots,n.$
-
+\[
+Y_i \sim Bernoulli(\theta)\quad \text{con}\quad i = 1,\dots,n
+\]
 
 Definimos la variable aleatoria que cuenta cuántas personas enfermas hay en la muestra como
 
-$\hspace{7cm} T_{per} = \sum_{i=1}^n Y_i.$
+\[
+T_{per} = \sum_{i=1}^n Y_i.
+\]
 
 Dado que $T_{per}$ es la suma de $n$ variables independientes con distribución Bernoulli$(\theta)$, se sigue que $T_{per}$ tiene una distribución binomial. En efecto, para $k = 0,1,\dots,n$ se cumple que
 
-$\hspace{7cm} P(T_{per} = k)= \binom{n}{k}\theta^{k}(1-\theta)^{n-k}.$
+\[
+P(T_{per} = k)= \binom{n}{k}\theta^{k}(1-\theta)^{n-k}.
+\]
 
 Por lo tanto, concluimos que
 
-$\hspace{7cm} T_{\text{per}} \sim \mathrm{Binomial}(n,\theta).$
+\[
+T_{\text{per}} \sim \mathrm{Binomial}(n,\theta).
+\]
+
 
 $\hspace{16cm} \boxtimes$
+
+<br>
 
 ### 1.2 Estimador de Máxima Verosimilitud de $\theta$
 
 Como en el punto anterior, recordemos que bajo un test perfecto se tiene
 
-$\hspace{7cm} T_{per} \sim Binomial(n,\theta),$
+\[
+T_{per} \sim Binomial(n,\theta)
+\]
 
 y que podemos representar los datos mediante variables Bernoulli
 
-$\hspace{7cm} Y_1,\dots,Y_n \sim i.i.d. Bernoulli(\theta),$
+\[
+Y_1,\dots,Y_n \sim i.i.d. Bernoulli(\theta),
+\]
 
 donde $Y_i = 1$ si la persona $i$ está enferma y $Y_i = 0$ si no lo está.
 
@@ -53,7 +69,9 @@ Sea $N_1 = \sum_{i=1}^n Y_i$ la cantidad de individuos enfermos en la muestra y 
 
 La función de verosimilitud viene dada por
 
-$\hspace{7cm} L(\theta)= \prod_{i=1}^n \theta^{Y_i}(1-\theta)^{1-Y_i}= (1-\theta)^{N_0}\,\theta^{N_1}.$
+\[
+L(\theta)= \prod_{i=1}^n \theta^{Y_i}(1-\theta)^{1-Y_i}= (1-\theta)^{N_0}\,\theta^{N_1}.
+\]
 
 La log-verosimilitud resulta entonces
 
@@ -62,37 +80,55 @@ $\hspace{7cm} \ell(\theta) = \ln L(\theta)= N_0 \ln(1-\theta) + N_1 \ln(\theta).
 
 Buscamos $\theta \in (0,1)$ tal que
 
-$\hspace{7cm} \frac{\partial \ell(\theta)}{\partial \theta} = 0.$
+\[
+\frac{\partial \ell(\theta)}{\partial \theta} = 0.
+\]
 
 Derivando:
 
-$\hspace{7cm} \frac{\partial \ell(\theta)}{\partial \theta}= \frac{N_0}{1-\theta}(-1) + \frac{N_1}{\theta}= -\frac{N_0}{1-\theta} + \frac{N_1}{\theta}.$
+\[
+\frac{\partial \ell(\theta)}{\partial \theta}= \frac{N_0}{1-\theta}(-1) + \frac{N_1}{\theta}= -\frac{N_0}{1-\theta} + \frac{N_1}{\theta}.
+\]
 
 Igualamos a cero:
 
-$\hspace{7cm} -\frac{N_0}{1-\theta} + \frac{N_1}{\theta} = 0 \quad \Longleftrightarrow \quad \frac{N_1}{\theta} = \frac{N_0}{1-\theta}.$
+\[
+-\frac{N_0}{1-\theta} + \frac{N_1}{\theta} = 0 \quad \Longleftrightarrow \quad \frac{N_1}{\theta} = \frac{N_0}{1-\theta}.
+\]
 
 Despejando:
 
-$\hspace{7cm} N_1(1-\theta) = N_0 \theta \quad \Longleftrightarrow \quad N_1 - N_1\theta = N_0\theta$
+\[
+N_1(1-\theta) = N_0 \theta \quad \Longleftrightarrow \quad N_1 - N_1\theta = N_0\theta
+\]
 
-$\hspace{11cm} \Longleftrightarrow \quad N_1 = (N_0 + N_1)\theta = n\theta.$
+\[
+\Longleftrightarrow \quad N_1 = (N_0 + N_1)\theta = n\theta.
+\]
 
 Por lo tanto,
 
-$\hspace{7cm} \hat{\theta}_{EMV} = \frac{N_1}{n}.$
+\[
+\hat{\theta}_{EMV} = \frac{N_1}{n}.
+\]
 
 
 Finalmente, como $N_1 = T_{per}$, obtenemos
 
-$\hspace{7cm} \hat{\theta}_{per} = \frac{T_{per}}{n}.$
+\[
+\hat{\theta}_{per} = \frac{T_{per}}{n}.
+\]
 
 
 La segunda derivada confirma que se trata de un máximo, ya que
 
-$\hspace{7cm} \frac{\partial^2 \ell(\theta)}{\partial \theta^2}= -\frac{N_0}{(1-\theta)^2} - \frac{N_1}{\theta^2} < 0, \forall \theta \in (0,1).$
+\[
+\frac{\partial^2 \ell(\theta)}{\partial \theta^2}= -\frac{N_0}{(1-\theta)^2} - \frac{N_1}{\theta^2} < 0,\quad \forall \theta \in (0,1).
+\]
 
 $\hspace{16cm} \boxtimes$
+
+<br>
 
 ### 1.3 Sesgo, Varianza, Error cuadrático medio, consistencia y distribución asintótica
 
@@ -141,6 +177,7 @@ $\hspace{16cm} \boxtimes$
   \xrightarrow{d} N\bigl(0,\theta(1-\theta)\bigr).
   \]
 
+<br>
 
 ### 1.4 Intervalo de confianza para $\theta$.
 
@@ -301,6 +338,8 @@ Equivalentemente, podemos escribir
 p(\theta,Se,Sp) = (Se + Sp - 1)\,\theta + (1-Sp).
 \]
 
+<br>
+
 ### 2.0.3 Comportamiento de $p$ en función de $\theta$, $Se$ y $Sp$.
 
 Se analiza cómo varía la probabilidad de obtener un resultado positivo en el test diagnóstico,
@@ -379,6 +418,8 @@ p(0.25) = 0.9 \times 0.25 + (1 - 0.95)(1 - 0.25)
 = 0.2625.
 \]
 
+<br>
+
 ##### $\underline{\text{(b) $p$ en función de $Se$ con $\theta$ y $Sp$ fijos.}}$
 
 A continuación, estudiamos $p$ como función de la sensibilidad $Se$, manteniendo fijos $\theta = 0.25$ y $Sp = 0.95$. En este caso,
@@ -391,6 +432,8 @@ Esta expresión también es lineal y creciente en $Se$. El gráfico muestra que,
 
 El valor de referencia $Se = 0.9$ se marca en el eje horizontal, junto con la altura $p(Se=0.9)$ en el gráfico, para visualizar el punto correspondiente en la curva. 
 
+<br>
+
 ##### $\underline{\text{(c) $p$ en función de $Sp$ con $\theta$ y $Se$ fijos.}}$
 
 Finalmente, analizamos el comportamiento de $p$ en función de la especificidad $Sp$, manteniendo fijos $\theta = 0.25$ y $Se = 0.9$. En este caso
@@ -402,6 +445,8 @@ p(Sp) = Se\,\theta + (1-Sp)(1-\theta)
 Aquí $p(Sp)$ es una función lineal y $decreciente$ en $Sp$. El gráfico muestra que, cuando la especificidad es baja (es decir, el test comete muchos falsos positivos), el término $(1-Sp)(1-\theta)$ es grande y la probabilidad total de test positivo $p$ toma valores elevados, incluso si la prevalencia real no es muy grande. A medida que $Sp$ aumenta, el número de falsos positivos disminuye y, en consecuencia, la probabilidad de observar un test positivo se reduce.
 
 El valor de referencia $Sp = 0.95$ se indica sobre el eje horizontal, junto con la altura $p(Sp=0.95)$, lo cual permite comparar la situación real del test con otros posibles niveles de especificidad.
+
+<br>
 
 ### 2.1.4 Estimador de momentos (MoM).
 
@@ -489,7 +534,7 @@ Como $\mathbb{E}[T_{i}] = p$, el estimador de momentos de $p$ es $\hat{p}_{MoM} 
   
   Por lo tanto, $\hat{\theta}_{MoM}$ es fuertemente consistente.
 
- 
+<br> 
 
 ### 2.1.6 ECM del test perfecto y test imprefecto en funcion de n 
 
@@ -572,6 +617,7 @@ Podemos ver que para todos los tamaños muestrales n, el ECM del test imperfecto
 A medida que n crece, ambos ECM tienden a 0, pero el imperfecto siempre queda más arriba que el perfecto.
 Cuanto más pequeño sea $Se+Sp−1$ (es decir, cuanto peor sea el test), mayor será la brecha entre las dos curvas.
 
+<br>
 
 ### 2.1.7 Comparo valores teoricos hallados con los simulados
 
@@ -756,6 +802,8 @@ legend("topright",
 
 - El sesgo empírico del estimador corregido es cercano a cero en todas las réplicas (coincidiendo con la insesgabilidad teórica).
 
+<br>
+
 ### 2.1.8 Muestras bootstrap para el estimador de momentos 
 
 Para  θ = 0.25, Se = 0.9 y Sp = 0.95, construyo muestras bootstrap para observar
@@ -798,6 +846,7 @@ La distribución bootstrap del estimador de momentos para $n=10$ muestra una alt
 
 Estos resultados muestran que, con $n=10$, el estimador es altamente variable y poco confiable. Por lo tanto, se recomienda aumentar el tamaño muestral para obtener una distribución más concentrada del estimador. Con un n mayor, el estimador estaria más centrado alrededor del valor real (θ = 0.25) y su varianza disminuiría.
 
+<br>
 
 ### 2.2.9 Intervalos de confianza bootstrap.
 
@@ -864,6 +913,8 @@ res_df <- do.call(rbind, lapply(res_list, function(z){
 }))
 rownames(res_df) <- NULL
 ```
+
+<br>
 
 ### 2.2.10 Intervalo de confianza asintótico.
 
@@ -971,6 +1022,8 @@ resAsint_df <- do.call(rbind, lapply(res_listAsint, function(z){
 rownames(resAsint_df) <- NULL
 ```
 
+<br>
+
 ### 2.2.11 Comparación entre ambos intervalos.
 
 Comparemos los resultados obtenidos.
@@ -992,7 +1045,7 @@ knitr::kable(resAsint_df, digits = 4, caption = "Intervalos Asintóticos")
 
 * A medida que aumenta $n$ los resultados obtenidos se vuelven casi indistinguibles.
 
-<br><br>
+<br>
 
 ### 2.3.12 Comportamiento del estimador de momentos.
 
@@ -1064,6 +1117,8 @@ entonces
 En este caso, el estimador supera el valor máximo admisible para una prevalencia.
 
 Estos ejemplos ilustran que el estimador $\hat{\theta}_{MoM}$ puede ubicarse fuera de $[0,1]$ para ciertas muestras.
+
+<br>
 
 ### 2.3.13 Estudio del estimador truncado
 
@@ -1214,6 +1269,7 @@ Para $n$ pequeños, la distribución empírica de $\hat\theta_{\text{trunc}}$ mu
 
 En conjunto, estos resultados muestran que el truncamiento introduce sesgo en muestras pequeñas, pero el estimador es asintóticamente equivalente al estimador de momentos original, preservando sus propiedades cuando $n$ es grande.
 
+<br><br>
 
 # 3 Parte III: Dos muestras (pre-post intervención)
 
@@ -1339,7 +1395,7 @@ U
 Por lo tanto, no hay evidencia suficiente como para rechazar $H_{0}$ a nivel aproximado 0.05. Esto quiere decir que no se afirma que la vacuna es realmente efectiva. Es razonable porque la diferencia real entre prevalencias es pequeña ($0.05$).
 
 
-* ¿Qué pasa si se achica la muestra?
+* ¿Qué pasa si se achica la muestra? A continuación se realizan las mismas simulaciones variando n.
 
 Observemos que pasa para $n = 50$
 
@@ -1427,8 +1483,6 @@ Para una muestra tan pequeña el test se vuelve inestable y es practicamente in�
 
 ### 3.1.3 Intervalo de confianza de nivel asintotico 0.95 para ∆.
 
-## Intervalo de confianza asintótico para la diferencia Δ
-
 Usamos el estimador de momentos (no truncado):
 
 \[
@@ -1497,8 +1551,9 @@ IC_{95\%}(\Delta)
 
 Podemos ver que el intervalo incluye al 0, por lo tanto no hay evidencia suficiente para decir que hay un cambio real entre pre y post. El intervalo es bastante ancho, se puede decir que hay alta incertidumbre. Pero podemos ver tambien que el limite superior es bastante grande (≈0.50) lo cual muestra que con nuestros datos todavia es posible un aumento grande entre pre y post. Y como el limite inferior es negativo tambien puede haber una disminucion moderada.
 
+<br>
 
-## 3.1.4 Nivel empírico del test.
+### 3.1.4 Nivel empírico del test.
 
 Se quiere calcular el nivel empírico del test dado en $3.1.2$. Para ello, se define una grilla de valores de $n$ para calcular el nivel para cada valor. Se sabe que el nivel de un test está definido por el supremo de los errores de tipo 1. Entonces, también se define una grilla de valores de $\theta$ y se realizan las simulaciones pertinentes. Este proceso se encuentra en el código siguiente.
 

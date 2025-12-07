@@ -356,6 +356,7 @@ display: none;
 </div>
 
 
+<p><br><br></p>
 <div id="parte-i-test-perfecto-baseline" class="section level1">
 <h1>Parte I: Test perfecto (baseline)</h1>
 <div id="observe-t_per-sim-bintheta" class="section level3">
@@ -363,8 +364,9 @@ display: none;
 Bi(n,\theta)\)</span></h3>
 <p>Consideremos una población en la que cada individuo puede estar o no
 enfermo. Sea la prevalencia verdadera de la enfermedad</p>
-<p><span class="math inline">\(\hspace{7cm} \theta = P(Y =
-1)\)</span>,</p>
+<p><span class="math display">\[
+\theta = P(Y = 1)
+\]</span></p>
 <p>donde <span class="math inline">\(Y\)</span> es la variable aleatoria
 que indica el estado verdadero de una persona. Esto es, <span class="math inline">\(Y = 1\)</span> si la persona está enferma y <span class="math inline">\(Y = 0\)</span> si no lo está.</p>
 <p>Se asume, por enunciado, que el test diagnóstico es perfecto, es
@@ -375,77 +377,94 @@ aleatoria de tamaño <span class="math inline">\(n\)</span> tomada de la
 población. Suponemos que las variables <span class="math inline">\(Y_1,
 \dots, Y_n\)</span> son independientes e idénticamente distribuidas,
 con</p>
-<p><span class="math inline">\(\hspace{7cm} Y_i \sim
-Bernoulli(\theta)\)</span> con <span class="math inline">\(i =
-1,\dots,n.\)</span></p>
+<p><span class="math display">\[
+Y_i \sim Bernoulli(\theta)\quad \text{con}\quad i = 1,\dots,n
+\]</span></p>
 <p>Definimos la variable aleatoria que cuenta cuántas personas enfermas
 hay en la muestra como</p>
-<p><span class="math inline">\(\hspace{7cm} T_{per} = \sum_{i=1}^n
-Y_i.\)</span></p>
+<p><span class="math display">\[
+T_{per} = \sum_{i=1}^n Y_i.
+\]</span></p>
 <p>Dado que <span class="math inline">\(T_{per}\)</span> es la suma de
 <span class="math inline">\(n\)</span> variables independientes con
 distribución Bernoulli<span class="math inline">\((\theta)\)</span>, se
 sigue que <span class="math inline">\(T_{per}\)</span> tiene una
 distribución binomial. En efecto, para <span class="math inline">\(k =
 0,1,\dots,n\)</span> se cumple que</p>
-<p><span class="math inline">\(\hspace{7cm} P(T_{per} = k)=
-\binom{n}{k}\theta^{k}(1-\theta)^{n-k}.\)</span></p>
+<p><span class="math display">\[
+P(T_{per} = k)= \binom{n}{k}\theta^{k}(1-\theta)^{n-k}.
+\]</span></p>
 <p>Por lo tanto, concluimos que</p>
-<p><span class="math inline">\(\hspace{7cm} T_{\text{per}} \sim
-\mathrm{Binomial}(n,\theta).\)</span></p>
+<p><span class="math display">\[
+T_{\text{per}} \sim \mathrm{Binomial}(n,\theta).
+\]</span></p>
 <p><span class="math inline">\(\hspace{16cm} \boxtimes\)</span></p>
+<p><br></p>
 </div>
 <div id="estimador-de-máxima-verosimilitud-de-theta" class="section level3">
 <h3>1.2 Estimador de Máxima Verosimilitud de <span class="math inline">\(\theta\)</span></h3>
 <p>Como en el punto anterior, recordemos que bajo un test perfecto se
 tiene</p>
-<p><span class="math inline">\(\hspace{7cm} T_{per} \sim
-Binomial(n,\theta),\)</span></p>
+<p><span class="math display">\[
+T_{per} \sim Binomial(n,\theta)
+\]</span></p>
 <p>y que podemos representar los datos mediante variables Bernoulli</p>
-<p><span class="math inline">\(\hspace{7cm} Y_1,\dots,Y_n \sim i.i.d.
-Bernoulli(\theta),\)</span></p>
+<p><span class="math display">\[
+Y_1,\dots,Y_n \sim i.i.d. Bernoulli(\theta),
+\]</span></p>
 <p>donde <span class="math inline">\(Y_i = 1\)</span> si la persona
 <span class="math inline">\(i\)</span> está enferma y <span class="math inline">\(Y_i = 0\)</span> si no lo está.</p>
 <p>Sea <span class="math inline">\(N_1 = \sum_{i=1}^n Y_i\)</span> la
 cantidad de individuos enfermos en la muestra y <span class="math inline">\(N_0 = n - N_1\)</span> la cantidad de individuos
 sanos.</p>
 <p>La función de verosimilitud viene dada por</p>
-<p><span class="math inline">\(\hspace{7cm} L(\theta)= \prod_{i=1}^n
-\theta^{Y_i}(1-\theta)^{1-Y_i}=
-(1-\theta)^{N_0}\,\theta^{N_1}.\)</span></p>
+<p><span class="math display">\[
+L(\theta)= \prod_{i=1}^n \theta^{Y_i}(1-\theta)^{1-Y_i}=
+(1-\theta)^{N_0}\,\theta^{N_1}.
+\]</span></p>
 <p>La log-verosimilitud resulta entonces</p>
 <p><span class="math inline">\(\hspace{7cm} \ell(\theta) = \ln
 L(\theta)= N_0 \ln(1-\theta) + N_1 \ln(\theta).\)</span></p>
 <p>Buscamos <span class="math inline">\(\theta \in (0,1)\)</span> tal
 que</p>
-<p><span class="math inline">\(\hspace{7cm} \frac{\partial
-\ell(\theta)}{\partial \theta} = 0.\)</span></p>
+<p><span class="math display">\[
+\frac{\partial \ell(\theta)}{\partial \theta} = 0.
+\]</span></p>
 <p>Derivando:</p>
-<p><span class="math inline">\(\hspace{7cm} \frac{\partial
-\ell(\theta)}{\partial \theta}= \frac{N_0}{1-\theta}(-1) +
-\frac{N_1}{\theta}= -\frac{N_0}{1-\theta} +
-\frac{N_1}{\theta}.\)</span></p>
+<p><span class="math display">\[
+\frac{\partial \ell(\theta)}{\partial \theta}= \frac{N_0}{1-\theta}(-1)
++ \frac{N_1}{\theta}= -\frac{N_0}{1-\theta} + \frac{N_1}{\theta}.
+\]</span></p>
 <p>Igualamos a cero:</p>
-<p><span class="math inline">\(\hspace{7cm} -\frac{N_0}{1-\theta} +
-\frac{N_1}{\theta} = 0 \quad \Longleftrightarrow \quad
-\frac{N_1}{\theta} = \frac{N_0}{1-\theta}.\)</span></p>
+<p><span class="math display">\[
+-\frac{N_0}{1-\theta} + \frac{N_1}{\theta} = 0 \quad \Longleftrightarrow
+\quad \frac{N_1}{\theta} = \frac{N_0}{1-\theta}.
+\]</span></p>
 <p>Despejando:</p>
-<p><span class="math inline">\(\hspace{7cm} N_1(1-\theta) = N_0 \theta
-\quad \Longleftrightarrow \quad N_1 - N_1\theta = N_0\theta\)</span></p>
-<p><span class="math inline">\(\hspace{11cm} \Longleftrightarrow \quad
-N_1 = (N_0 + N_1)\theta = n\theta.\)</span></p>
+<p><span class="math display">\[
+N_1(1-\theta) = N_0 \theta \quad \Longleftrightarrow \quad N_1 -
+N_1\theta = N_0\theta
+\]</span></p>
+<p><span class="math display">\[
+\Longleftrightarrow \quad N_1 = (N_0 + N_1)\theta = n\theta.
+\]</span></p>
 <p>Por lo tanto,</p>
-<p><span class="math inline">\(\hspace{7cm} \hat{\theta}_{EMV} =
-\frac{N_1}{n}.\)</span></p>
+<p><span class="math display">\[
+\hat{\theta}_{EMV} = \frac{N_1}{n}.
+\]</span></p>
 <p>Finalmente, como <span class="math inline">\(N_1 = T_{per}\)</span>,
 obtenemos</p>
-<p><span class="math inline">\(\hspace{7cm} \hat{\theta}_{per} =
-\frac{T_{per}}{n}.\)</span></p>
+<p><span class="math display">\[
+\hat{\theta}_{per} = \frac{T_{per}}{n}.
+\]</span></p>
 <p>La segunda derivada confirma que se trata de un máximo, ya que</p>
-<p><span class="math inline">\(\hspace{7cm} \frac{\partial^2
-\ell(\theta)}{\partial \theta^2}= -\frac{N_0}{(1-\theta)^2} -
-\frac{N_1}{\theta^2} &lt; 0, \forall \theta \in (0,1).\)</span></p>
+<p><span class="math display">\[
+\frac{\partial^2 \ell(\theta)}{\partial \theta^2}=
+-\frac{N_0}{(1-\theta)^2} - \frac{N_1}{\theta^2} &lt; 0,\quad \forall
+\theta \in (0,1).
+\]</span></p>
 <p><span class="math inline">\(\hspace{16cm} \boxtimes\)</span></p>
+<p><br></p>
 </div>
 <div id="sesgo-varianza-error-cuadrático-medio-consistencia-y-distribución-asintótica" class="section level3">
 <h3>1.3 Sesgo, Varianza, Error cuadrático medio, consistencia y
@@ -491,6 +510,7 @@ Por el Teorema Central del Límite, <span class="math display">\[
 \xrightarrow{d} N\bigl(0,\theta(1-\theta)\bigr).
 \]</span></p></li>
 </ul>
+<p><br></p>
 </div>
 <div id="intervalo-de-confianza-para-theta." class="section level3">
 <h3>1.4 Intervalo de confianza para <span class="math inline">\(\theta\)</span>.</h3>
@@ -668,6 +688,7 @@ p = Se\,\theta + (1-Sp)(1-\theta).
 \]</span> Equivalentemente, podemos escribir <span class="math display">\[
 p(\theta,Se,Sp) = (Se + Sp - 1)\,\theta + (1-Sp).
 \]</span></p>
+<p><br></p>
 </div>
 <div id="comportamiento-de-p-en-función-de-theta-se-y-sp." class="section level3">
 <h3>2.0.3 Comportamiento de <span class="math inline">\(p\)</span> en
@@ -748,6 +769,7 @@ p(0.25) = 0.9 \times 0.25 + (1 - 0.95)(1 - 0.25)
 = 0.225 + 0.05 \times 0.75
 = 0.2625.
 \]</span></p>
+<p><br></p>
 </div>
 <div id="underlinetextb-p-en-función-de-se-con-theta-y-sp-fijos." class="section level5">
 <h5><span class="math inline">\(\underline{\text{(b) $p$ en función de
@@ -768,6 +790,7 @@ aumenta.</p>
 <p>El valor de referencia <span class="math inline">\(Se = 0.9\)</span>
 se marca en el eje horizontal, junto con la altura <span class="math inline">\(p(Se=0.9)\)</span> en el gráfico, para visualizar
 el punto correspondiente en la curva.</p>
+<p><br></p>
 </div>
 <div id="underlinetextc-p-en-función-de-sp-con-theta-y-se-fijos." class="section level5">
 <h5><span class="math inline">\(\underline{\text{(c) $p$ en función de
@@ -787,6 +810,7 @@ positivo se reduce.</p>
 <p>El valor de referencia <span class="math inline">\(Sp = 0.95\)</span>
 se indica sobre el eje horizontal, junto con la altura <span class="math inline">\(p(Sp=0.95)\)</span>, lo cual permite comparar la
 situación real del test con otros posibles niveles de especificidad.</p>
+<p><br></p>
 </div>
 </div>
 <div id="estimador-de-momentos-mom." class="section level3">
@@ -864,6 +888,7 @@ es una función continua de <span class="math inline">\(\hat{p}_{MoM}\)</span>:<
 <p>Por lo tanto, <span class="math inline">\(\hat{\theta}_{MoM}\)</span>
 es fuertemente consistente.</p></li>
 </ul>
+<p><br></p>
 </div>
 <div id="ecm-del-test-perfecto-y-test-imprefecto-en-funcion-de-n" class="section level3">
 <h3>2.1.6 ECM del test perfecto y test imprefecto en funcion de n</h3>
@@ -929,6 +954,7 @@ imperfecto es mayor que el del test perfecto. A medida que n crece,
 ambos ECM tienden a 0, pero el imperfecto siempre queda más arriba que
 el perfecto. Cuanto más pequeño sea <span class="math inline">\(Se+Sp−1\)</span> (es decir, cuanto peor sea el
 test), mayor será la brecha entre las dos curvas.</p>
+<p><br></p>
 </div>
 <div id="comparo-valores-teoricos-hallados-con-los-simulados" class="section level3">
 <h3>2.1.7 Comparo valores teoricos hallados con los simulados</h3>
@@ -1093,6 +1119,7 @@ ley de los grandes números y la aproximación asintótica).</p></li>
 todas las réplicas (coincidiendo con la insesgabilidad
 teórica).</p></li>
 </ul>
+<p><br></p>
 </div>
 </div>
 <div id="muestras-bootstrap-para-el-estimador-de-momentos" class="section level3">
@@ -1134,6 +1161,7 @@ y poco confiable. Por lo tanto, se recomienda aumentar el tamaño
 muestral para obtener una distribución más concentrada del estimador.
 Con un n mayor, el estimador estaria más centrado alrededor del valor
 real (θ = 0.25) y su varianza disminuiría.</p>
+<p><br></p>
 </div>
 <div id="intervalos-de-confianza-bootstrap." class="section level3">
 <h3>2.2.9 Intervalos de confianza bootstrap.</h3>
@@ -1199,6 +1227,7 @@ res_df &lt;- do.call(rbind, lapply(res_list, function(z){
              longitud_media = z$longitud_media)
 }))
 rownames(res_df) &lt;- NULL</code></pre>
+<p><br></p>
 </div>
 <div id="intervalo-de-confianza-asintótico." class="section level3">
 <h3>2.2.10 Intervalo de confianza asintótico.</h3>
@@ -1299,6 +1328,7 @@ resAsint_df &lt;- do.call(rbind, lapply(res_listAsint, function(z){
              longitud_media = z$longitud_media)
 }))
 rownames(resAsint_df) &lt;- NULL</code></pre>
+<p><br></p>
 </div>
 <div id="comparación-entre-ambos-intervalos." class="section level3">
 <h3>2.2.11 Comparación entre ambos intervalos.</h3>
@@ -1388,7 +1418,7 @@ largos.</p></li>
 <li><p>A medida que aumenta <span class="math inline">\(n\)</span> los
 resultados obtenidos se vuelven casi indistinguibles.</p></li>
 </ul>
-<p><br><br></p>
+<p><br></p>
 </div>
 <div id="comportamiento-del-estimador-de-momentos." class="section level3">
 <h3>2.3.12 Comportamiento del estimador de momentos.</h3>
@@ -1451,6 +1481,7 @@ la prevalencia real sea positiva.</p>
 para una prevalencia.</p>
 <p>Estos ejemplos ilustran que el estimador <span class="math inline">\(\hat{\theta}_{MoM}\)</span> puede ubicarse fuera
 de <span class="math inline">\([0,1]\)</span> para ciertas muestras.</p>
+<p><br></p>
 </div>
 </div>
 <div id="estudio-del-estimador-truncado" class="section level3">
@@ -1659,6 +1690,7 @@ distribución asintótica del estimador de momentos no truncado.</p>
 sesgo en muestras pequeñas, pero el estimador es asintóticamente
 equivalente al estimador de momentos original, preservando sus
 propiedades cuando <span class="math inline">\(n\)</span> es grande.</p>
+<p><br><br></p>
 </div>
 </div>
 </div>
@@ -1782,7 +1814,8 @@ U &lt;- (tita_postHat - tita_preHat)/(sqrt(Var_postHat + Var_preHat))</code></pr
 quiere decir que no se afirma que la vacuna es realmente efectiva. Es
 razonable porque la diferencia real entre prevalencias es pequeña (<span class="math inline">\(0.05\)</span>).</p>
 <ul>
-<li>¿Qué pasa si se achica la muestra?</li>
+<li>¿Qué pasa si se achica la muestra? A continuación se realizan las
+mismas simulaciones variando n.</li>
 </ul>
 <p>Observemos que pasa para <span class="math inline">\(n =
 50\)</span></p>
@@ -1799,9 +1832,6 @@ practicamente inútil, ya que nuetsro test es de nivel asintótico.</p>
 </div>
 <div id="intervalo-de-confianza-de-nivel-asintotico-0.95-para-." class="section level3">
 <h3>3.1.3 Intervalo de confianza de nivel asintotico 0.95 para ∆.</h3>
-</div>
-<div id="intervalo-de-confianza-asintótico-para-la-diferencia-δ" class="section level2">
-<h2>Intervalo de confianza asintótico para la diferencia Δ</h2>
 <p>Usamos el estimador de momentos (no truncado):</p>
 <p><span class="math display">\[
 \hat\theta_A \;=\; \frac{\hat p_A + (Sp - 1)}{Se + Sp - 1},
@@ -1863,6 +1893,7 @@ incertidumbre. Pero podemos ver tambien que el limite superior es
 bastante grande (≈0.50) lo cual muestra que con nuestros datos todavia
 es posible un aumento grande entre pre y post. Y como el limite inferior
 es negativo tambien puede haber una disminucion moderada.</p>
+<p><br></p>
 </div>
 <div id="nivel-empírico-del-test." class="section level2">
 <h2>3.1.4 Nivel empírico del test.</h2>
