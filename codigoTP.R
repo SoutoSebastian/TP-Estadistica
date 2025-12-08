@@ -254,6 +254,7 @@ abline(v = tita, col = "red", lwd = 2)  # valor verdadero
 
 ##### 2.1.9 ####
 
+#Definimos los valores a utilizar.
 tita <- 0.25
 Se <- 0.9
 Sp <- 0.95
@@ -268,15 +269,18 @@ z <- qnorm(0.975)
 res_list <- vector("list",length(ns))
 names(res_list) <- as.character(ns)
 
+#para cada n:
 for (j in seq_along(ns)){
   n <- ns[j]
   cubrimientos <- logical(R)
   longitudes <- numeric(R)
   
+  #repito el experimento R veces 
   for (r in 1:R){
     T <- rbinom(n,1,p_Y)
     boot_est <- numeric(B)
     
+    #genero B muestras bootstrap.
     for (b in 1:B){
       T_boot <- sample(T, size = n, replace = TRUE)
       p_hat_boot <- mean(T_boot)
@@ -290,6 +294,7 @@ for (j in seq_along(ns)){
     longitudes[r] <- (upper - lower)
   }
   
+  #resultados para cada n
   res_list[[j]] <- list(
     n = n,
     cubrimiento = mean(cubrimientos),
@@ -310,11 +315,13 @@ rownames(res_df) <- NULL
 res_listAsint <- vector("list", length(ns))
 names(res_listAsint) <- as.character(ns)
 
+#para cada n:
 for (j in seq_along(ns)){
   n <- ns[j]
   cubrimientos <- logical(R)
   longitudes <- numeric(R)
   
+  #repito el experimento R veces.
   for (r in 1:R){
     T <- rbinom(n, 1, p_Y)
     
@@ -330,6 +337,7 @@ for (j in seq_along(ns)){
     longitudes[r] <- (upper - lower)
   }
   
+  #resultados para cada n.
   res_listAsint[[j]] <- list(
     n = n,
     cubrimiento = mean(cubrimientos),
@@ -418,7 +426,7 @@ for (i in seq_along(n_valores)) {
 resultados
 # Graficos para la distrbucion asintotica
 set.seed(43)
-par(mfrow = c(2, 2))  ## grid para los gráficos
+par(mfrow = c(2, 2))  ## grid para los grC!ficos
 
 for (n in n_valores) {
   # nueva data para cada n
@@ -582,11 +590,11 @@ Sp <- 0.95
 z <- qnorm(0.975)
 
 # Como queremos nivel, definimos prevalencias iguales para pre y post (H0 delta = 0).
-#Además queremos el supremo de los errores de tipo 1, entonces hay que variar tita.
+#AdemC!s queremos el supremo de los errores de tipo 1, entonces hay que variar tita.
 grid_tita <- seq(0.01, 0.99, length.out = 20)
   
 
-#Vector que va a tener el nivel empírico para cada n.
+#Vector que va a tener el nivel empC-rico para cada n.
 nivelN <- numeric(length(ns))
 
 
@@ -626,7 +634,7 @@ for (r in seq_along(ns)){
       rechazos[i] <- abs(U) > z
     }
     
-    #proporción de rechazos.(ignoro nan en caso de que el p estimado sea 0 o 1 
+    #proporciC3n de rechazos.(ignoro nan en caso de que el p estimado sea 0 o 1 
     #pues sucede un div por 0)
     errorTipo1[j] <- mean(rechazos, na.rm = TRUE)                    
     

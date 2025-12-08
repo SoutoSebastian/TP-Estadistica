@@ -3,7 +3,9 @@
 title: "Trabajo Práctico– IECD"
 author: "Grupo 11"
 date: "2025-12-8"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 <br><br>
 
@@ -75,7 +77,9 @@ L(\theta)= \prod_{i=1}^n \theta^{Y_i}(1-\theta)^{1-Y_i}= (1-\theta)^{N_0}\,\thet
 
 La log-verosimilitud resulta entonces
 
-$\hspace{7cm} \ell(\theta) = \ln L(\theta)= N_0 \ln(1-\theta) + N_1 \ln(\theta).$
+\[
+\ell(\theta) = \ln L(\theta)= N_0 \ln(1-\theta) + N_1 \ln(\theta).
+\]
 
 
 Buscamos $\theta \in (0,1)$ tal que
@@ -308,7 +312,7 @@ se maximiza en $p = T_{per}/n$.
 
 Recordemos que $\theta = P(Y=1)$ denota la prevalencia de la enfermedad en la población, mientras que $Y=1$ indica que el individuo está enfermo y $Y=0$ que está sano. La sensibilidad y especificidad del test diagnóstico se definen como
 \[
-Se = P(T=1 \mid Y=1) y \qquad Sp = P(T=0 \mid Y=0),
+Se = P(T=1 \mid Y=1)\quad y \quad Sp = P(T=0 \mid Y=0),
 \]
 donde $T$ es el resultado del test ($T=1$ si el test es positivo, $T=0$ si es negativo). Además, $P(Y=1)=\theta$ y $P(Y=0)=1-\theta$.
 
@@ -403,6 +407,7 @@ abline(h = Se_fijo * theta_fijo + (1 - Sp_fijo) * (1 - theta_fijo),
 
 ##### $\underline{\text{(a) $p$ en función de $\theta$ con $Se$ y $Sp$ fijos.}}$
 
+
 En primer lugar, consideramos la función
 \[
 p(\theta) = Se\,\theta + (1-Sp)(1-\theta),
@@ -422,6 +427,7 @@ p(0.25) = 0.9 \times 0.25 + (1 - 0.95)(1 - 0.25)
 
 ##### $\underline{\text{(b) $p$ en función de $Se$ con $\theta$ y $Sp$ fijos.}}$
 
+
 A continuación, estudiamos $p$ como función de la sensibilidad $Se$, manteniendo fijos $\theta = 0.25$ y $Sp = 0.95$. En este caso,
 \[
 p(Se) = Se \,\theta + (1-Sp)(1-\theta)
@@ -435,6 +441,7 @@ El valor de referencia $Se = 0.9$ se marca en el eje horizontal, junto con la al
 <br>
 
 ##### $\underline{\text{(c) $p$ en función de $Sp$ con $\theta$ y $Se$ fijos.}}$
+
 
 Finalmente, analizamos el comportamiento de $p$ en función de la especificidad $Sp$, manteniendo fijos $\theta = 0.25$ y $Se = 0.9$. En este caso
 \[
@@ -571,7 +578,7 @@ $$
 Por lo tanto, 
 
   \[
-  \frac{1}{0.85^2} ≈ 1.38
+  \frac{1}{0.85^2} \approx 1.38
   \]
 
 
@@ -615,7 +622,7 @@ legend("topright",
 
 Podemos ver que para todos los tamaños muestrales n, el ECM del test imperfecto es mayor que el del test perfecto.
 A medida que n crece, ambos ECM tienden a 0, pero el imperfecto siempre queda más arriba que el perfecto.
-Cuanto más pequeño sea $Se+Sp−1$ (es decir, cuanto peor sea el test), mayor será la brecha entre las dos curvas.
+Cuanto más pequeño sea $Se+Sp-1$ (es decir, cuanto peor sea el test), mayor será la brecha entre las dos curvas.
 
 <br>
 
@@ -624,8 +631,7 @@ Cuanto más pequeño sea $Se+Sp−1$ (es decir, cuanto peor sea el test), mayor 
 #### Comparación: valores teóricos vs simulados (test imperfecto)
 
 
-Para el test imperfecto consideramos un modelo donde la variable observada  
-\(T\) proviene de un test con sensibilidad \(Se\) y especificidad \(Sp\).
+Para el test imperfecto consideramos un modelo donde la variable observada  \(T\) proviene de un test con sensibilidad \(Se\) y especificidad \(Sp\).
 
 La probabilidad real de obtener un test positivo es:
 
@@ -639,7 +645,7 @@ de modo que, para un tamaño muestral \(n\),
 T_1, \ldots, T_n \sim \text{Bernoulli}(p).
 \]
 
-El estimador de momentos corregido para \(\theta\) es:
+El estimador de momentos para \(\theta\) es:
 
 \[
 \hat{\theta} = \frac{\hat{p}_T - (1 - Sp)}{Se + Sp - 1},
@@ -665,7 +671,7 @@ Además, la teoría indica que, como el estimador es insesgado, su varianza es:
 = \frac{p(1 - p)}{n(Se + Sp - 1)^2},
 \]
 
-por lo que el ECM teórico coincide con la varianza teórica.
+y el ECM teórico coincide con la varianza teórica.
 
 
 ```{r}
@@ -806,8 +812,7 @@ legend("topright",
 
 ### 2.1.8 Muestras bootstrap para el estimador de momentos 
 
-Para  θ = 0.25, Se = 0.9 y Sp = 0.95, construyo muestras bootstrap para observar
-la distribucion del estimador de momentos de θ cuando n = 10. 
+Para  $\theta = 0.25$, $S_{e} = 0.9$ y $S_{p} = 0.95$, construyo muestras bootstrap para observar la distribución del estimador de momentos de $\theta$ cuando $n = 10$. 
 
 
 
@@ -842,9 +847,9 @@ abline(v = tita, col = "red", lwd = 2)  # valor verdadero
 
 
 
-La distribución bootstrap del estimador de momentos para $n=10$ muestra una alta dispersión, lo que muestra una fuerte inestabilidad del estimador cuando el tamaño muestral es chico. Además, el centro de la distribución bootstrap es mayor que el valor real de θ, lo que indica la presencia de un sesgo positivo.
+La distribución bootstrap del estimador de momentos para $n=10$ muestra una alta dispersión, lo que muestra una fuerte inestabilidad del estimador cuando el tamaño muestral es chico. Además, el centro de la distribución bootstrap es mayor que el valor real de $\theta$, lo que indica la presencia de un sesgo positivo.
 
-Estos resultados muestran que, con $n=10$, el estimador es altamente variable y poco confiable. Por lo tanto, se recomienda aumentar el tamaño muestral para obtener una distribución más concentrada del estimador. Con un n mayor, el estimador estaria más centrado alrededor del valor real (θ = 0.25) y su varianza disminuiría.
+Estos resultados muestran que, con $n=10$, el estimador es altamente variable y poco confiable. Por lo tanto, se recomienda aumentar el tamaño muestral para obtener una distribución más concentrada del estimador. Con un n mayor, el estimador estaria más centrado alrededor del valor real ($\theta = 0.25$) y su varianza disminuiría.
 
 <br>
 
@@ -1043,7 +1048,7 @@ knitr::kable(resAsint_df, digits = 4, caption = "Intervalos Asintóticos")
 
 * El método asintótico da intervalos ligeramente más largos.
 
-* A medida que aumenta $n$ los resultados obtenidos se vuelven casi indistinguibles.
+* A medida que aumenta $n$ los resultados convergen a los valores esperados.
 
 <br>
 
@@ -1086,7 +1091,7 @@ Entonces,
 Se + Sp - 1 = 0.85.
 \]
 
-$\underline{\text{Ejemplo 1:}}  \hat{\theta}_{MoM} < 0.$
+$\underline{\text{Ejemplo 1:}}\quad  \hat{\theta}_{MoM} < 0.$
 
 Si en una muestra particular no se observan resultados positivos, entonces
 \[
@@ -1101,7 +1106,7 @@ Reemplazando en la fórmula del estimador:
 \]
 En este caso, el estimador toma un valor negativo, aun cuando la prevalencia real sea positiva.
 
-$\underline{\text{Ejemplo 2:}} \hat{\theta}_{MoM} > 1.$
+$\underline{\text{Ejemplo 2:}}\quad \hat{\theta}_{MoM} > 1.$
 
 Si por azar la muestra produce un valor muy alto de $\hat p$, por ejemplo
 \[
@@ -1481,7 +1486,7 @@ U10
 
 Para una muestra tan pequeña el test se vuelve inestable y es practicamente inútil, ya que nuetsro test es de nivel asintótico.
 
-### 3.1.3 Intervalo de confianza de nivel asintotico 0.95 para ∆.
+### 3.1.3 Intervalo de confianza de nivel asintotico 0.95 para $\Delta$.
 
 Usamos el estimador de momentos (no truncado):
 
@@ -1549,7 +1554,7 @@ IC_{95\%}(\Delta)
 [-0.3259,\; 0.5612].
 \]
 
-Podemos ver que el intervalo incluye al 0, por lo tanto no hay evidencia suficiente para decir que hay un cambio real entre pre y post. El intervalo es bastante ancho, se puede decir que hay alta incertidumbre. Pero podemos ver tambien que el limite superior es bastante grande (≈0.50) lo cual muestra que con nuestros datos todavia es posible un aumento grande entre pre y post. Y como el limite inferior es negativo tambien puede haber una disminucion moderada.
+Podemos ver que el intervalo incluye al 0, por lo tanto no hay evidencia suficiente para decir que hay un cambio real entre pre y post. El intervalo es bastante ancho, se puede decir que hay alta incertidumbre. Pero podemos ver tambien que el limite superior es bastante grande ($\approx 0.50$) lo cual muestra que con nuestros datos todavia es posible un aumento grande entre pre y post. Y como el limite inferior es negativo tambien puede haber una disminucion moderada.
 
 <br>
 
