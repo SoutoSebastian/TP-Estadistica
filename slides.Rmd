@@ -53,72 +53,159 @@ $$\hat{\theta}_{per} = \frac{N_1}{n} = \frac{T_{per}}{n}$$
 
 ---
 
-## 1.3 Propiedades del estimador
+## 1.3 Sesgo, Varianza, Error cuadrático medio, consistencia y distribución asintótica
 
-### Sesgo
-$$\mathbb{E}[\hat{\theta}_{per}] = \theta \quad \text{(insesgado)}$$
-
-### Varianza
-$$\operatorname{Var}(\hat{\theta}_{per}) = \frac{\theta(1-\theta)}{n}$$
-
-### Error Cuadrático Medio
-$$\text{ECM}(\hat{\theta}_{per}) = \frac{\theta(1-\theta)}{n}$$
+* **Sesgo:**  
+  El estimador \(\hat{\theta}_{per} = \frac{T_{\text{per}}}{n}\) es insesgado porque
+  \[
+  \mathbb{E}[\hat{\theta}_{per}]
+    = \mathbb{E}\left[\frac{T_{\text{per}}}{n}\right]
+    = \frac{1}{n}\mathbb{E}[T_{\text{per}}]
+    = \frac{n\theta}{n}
+    = \theta.
+  \]
+  Usamos que \(T_{\text{per}} \sim \mathrm{Binomial}(n,\theta)\), por lo que  \(\mathbb{E}[T_{\text{per}}] = n\theta\).
 
 ---
 
-### Consistencia
-$$\hat{\theta}_{per} \xrightarrow{c.s.} \theta$$
+* **Varianza:**  
+  \[
+  \operatorname{Var}(\hat{\theta}_{per})
+    = \operatorname{Var}\left(\frac{T_{\text{per}}}{n}\right)
+    = \frac{1}{n^2}\operatorname{Var}(T_{\text{per}})
+    = \frac{n\theta(1-\theta)}{n^2}
+    = \frac{\theta(1-\theta)}{n}.
+  \]
+  También utilizamos que \(T_{\text{per}}\) es binomial.
+  
+\vspace{0.5cm}
 
-### Distribución asintótica
-$$\sqrt{n}\,(\hat{\theta}_{per} - \theta) \xrightarrow{d} N\bigl(0,\theta(1-\theta)\bigr)$$
+* **Error cuadrático medio (ECM):**  
+  Como el sesgo es cero,
+  \[
+  \text{ECM}(\hat{\theta}_{per})
+    = \operatorname{Var}(\hat{\theta}_{per})
+    + \mathbb{B}^2(\hat{\theta}_{per})
+    = \frac{\theta(1-\theta)}{n}.
+  \]
+
+---
+
+* **Consistencia:**  
+  Observamos que \(\hat{\theta}_{per} = \frac{T_{\text{per}}}{n} = \frac{1}{n}\sum_{i=1}^n Y_i\),  
+  donde \(\mathbb{E}[Y_i] = \theta\) y \(\operatorname{Var}(Y_i)=\theta(1-\theta)\).  
+  Por la Ley Fuerte de los Grandes Números,
+  \[
+  \hat{\theta}_{per} \xrightarrow{c.s.} \theta.
+  \]
+  Por lo tanto, \(\hat{\theta}_{per}\) es **fuertemente consistente**.
+
+\vspace{0.5cm}
+
+* **Distribución asintótica:**  
+  Por el Teorema Central del Límite,
+  \[
+  \sqrt{n}\,(\hat{\theta}_{per} - \theta)
+  \xrightarrow{d} N\bigl(0,\theta(1-\theta)\bigr).
+  \]
 
 ---
 
 ## 1.4 Intervalo de confianza para $\theta$
 
-### Por TCL y Slutsky
-$$\sqrt{n}\,\frac{(\hat{\theta}_{per} - \theta)}{\sqrt{\hat{\theta}_{per}(1-\hat{\theta}_{per})}} \xrightarrow{d} N\bigl(0,1\bigr)$$
+Sabemos que por TCL:
 
-### Intervalo de confianza 95%
-$$IC_{0.95}(\theta) = \hat{\theta}_{per} \pm 1.96\sqrt{\frac{\hat{\theta}_{per}(1-\hat{\theta}_{per})}{n}}$$
+\[
+\sqrt{n}\,\frac{(\hat{\theta}_{per} - \theta)}{\sqrt{\theta(1-\theta)}}
+\xrightarrow{d} N\bigl(0,1\bigr).
+\]
+
+Además, por ley débil de los grandes números:
+
+\[
+\hat{\theta}_{per} \xrightarrow{p} \theta
+\]
+
+---
+
+Entonces, combinando los resultados anteriores con Slutsky:
+
+\[
+\sqrt{n}\,\frac{(\hat{\theta}_{per} - \theta)}{\sqrt{\hat{\theta}_{per}(1-\hat{\theta}_{per})}}
+\xrightarrow{d} N\bigl(0,1\bigr).
+\]
+
+Como $P(Z\ge1.96) = 0.025$, vale lo siguiente:
+
+\[
+P\!\left(-1.96 \le \sqrt{n}\,\frac{\hat{\theta}_{per} - \theta}{\sqrt{\hat{\theta}_{per}(1-\hat{\theta}_{per})}} \le 1.96\right)
+\xrightarrow[n\to\infty]{} 0.95.
+\]
+
+---
+
+Finalmente, se deduce el siguiente intervalo de nivel asintótico 0.95:
+
+\[
+\boxed{IC_{0.95}(\theta) = \hat{\theta}_{per} \pm 1.96\sqrt{\frac{\hat{\theta}_{per}(1-\hat{\theta}_{per})}{n}}}
+\]
 
 ---
 
 ## 1.5 Cubrimiento empírico
 
-### Simulación Monte Carlo
+Para evaluar el cubrimiento empírico del intervalo dado en $1.4$, se llevó a cabo una simulación Monte Carlo para los siguientes valores de n:
 
-```{r, echo=FALSE, eval=TRUE, warning=FALSE}
+\[
+10, 20, 50, 100, 1000, 10000
+\]
+
+
+```{r, echo=FALSE, eval=TRUE, size="tiny"}
+#fijamos la semilla que se va a utilizar durante todo el tp.
 set.seed(43)
-tita <- 0.25
-ns <- c(10, 20, 50, 100, 1000, 10000)
-Nrep <- 5000
-z <- qnorm(0.975)
-cubrimientoN <- numeric(length(ns))
 
+tita <- 0.25
+ns <- c(10, 20, 50, 100, 1000, 10000) #valores de n para los cuales vamos a evaluar la cobertura
+Nrep <- 5000                          #empirica
+z <- qnorm(0.975)
+
+cubrimientoN <- 0
+
+#para cada n:
 for (j in seq_along(ns)){
   n <- ns[j]
-  cubrimiento <- numeric(Nrep)
+  cubrimiento <- 0
   
-  for(i in 1:Nrep){
+  #repito el experimento 5000 veces.
+  for(i in 1:Nrep){                                         
     muestra <- rbinom(1,n,tita)
+    
     estTita <- muestra/n
     termino <- z * sqrt((estTita*(1-estTita))/n)
     intervalo <- c(estTita - termino, estTita + termino)
+    
     cubrimiento[i] <- intervalo[1] <= tita && tita <= intervalo[2]
   }
-  cubrimientoN[j] <- mean(cubrimiento)
+  
+  #promedio de veces que el valor real de tita cayó en el intervalo
+  cubrimientoN[j] <- mean(cubrimiento)                  
 }
 
 cubrimientoEmpirico <- data.frame(n = ns, cubrimiento = cubrimientoN)
 ```
+---
 
-```{r}
-knitr::kable(cubrimientoEmpirico, 
-             col.names = c("n", "Cubrimiento"),
-             digits = 4,
-             caption = "Cubrimiento empírico para diferentes n")
+Y se obtuvieron estos resultados:
+
+```{r, echo=FALSE, eval=TRUE}
+knitr::kable(cubrimientoEmpirico, digits = 4, caption = "Cubrimiento empírico del intervalo")
 ```
+
+---
+
+
+Los resultados obtenidos son coherentes con la teoría. Al tratarse de un intervalo asintótico, el cubrimiento empírico converge hacia el nivel nominal del 0.95 conforme aumenta el tamaño muestral n.
 
 
 ---
@@ -245,49 +332,106 @@ p = 0.225 + 0.05 \times 0.75 = 0.2625
 
 ---
 
-## 2.1.4 Estimador de momentos (MoM) 
+## 2.1.4 Estimador de momentos (MoM)
 
-### Fórmula final
+Por item $2.0.2$, sabemos que:
+
 \[
-\boxed{\hat{\theta}_{MoM} = \frac{\hat{p}_{MoM} + S_p - 1}{S_e + S_p - 1}}
+p = S_{e} \theta + (1-S_{p})(1-\theta)
 \]
 
-### Donde
+Reagrupando:
 \[
-\hat{p}_{MoM} = \frac{T_{per}}{n}
+p = (S_{e}+S_{p}-1)\theta + 1 - S_{p}
+\]
+
+
+Entonces:
+\[
+\theta = \frac{p + S_{p} - 1}{S_{e}+S_{p}-1}
 \]
 
 ---
 
-## 2.1.5 Propiedades del estimador MoM
+Como $\mathbb{E}[T_{i}] = p$, el estimador de momentos de $p$ es $\hat{p}_{MoM} = \frac{T_{per}}{n}$.
 
-### Sesgo
-\[
-\boxed{\mathbb{E}[\hat{\theta}_{MoM}] = \theta}
-\]
-**Conclusión**: Estimador insesgado
+\vspace{0.5cm}
 
-### Varianza
-\[
-\boxed{\operatorname{Var}(\hat{\theta}_{MoM}) = \frac{p(1-p)}{n(S_e+S_p-1)^2}}
-\]
+Finalmente, el estimador plug-in de momentos de $\theta$ es el siguiente:
 
-### Error Cuadrático Medio
 \[
-\boxed{\text{ECM}(\hat{\theta}_{MoM}) = \frac{p(1-p)}{n(S_e+S_p-1)^2}}
+\boxed{\hat{\theta}_{MoM} = \frac{\hat{p}_{MoM} + S_{p} - 1}{S_{e}+S_{p}-1}}
 \]
-(Sesgo = 0 → ECM = Varianza)
 
 ---
 
-## Consistencia y forma de $p$
+## 2.1.5 Sesgo, varianza y ECM
 
-### Consistencia
-\[
-\boxed{\hat{\theta}_{MoM} \xrightarrow{c.s.} \theta}
+* **Sesgo**:
+
+  Primero se observa que: 
+  
+  \[
+  \mathbb{E}[\hat{p}_{MoM}] = \mathbb{E}\left[\frac{T_{\text{per}}}{n}\right]= p = (S_{e}+S_{p}-1)\theta + 1 - S_{p}
+  \]
+  
+  Luego:
+  
+  \[
+  \mathbb{E}[\hat{\theta}_{MoM}] = \mathbb{E}\left[\frac{\hat{p}_{MoM}+S_{p}-1}{S_{e}+S_{p}-1}\right] = \frac{\mathbb{E}[\hat{p}_{MoM}] + S_{p} - 1}{S_{e}+S_{p}-1} = \theta
+  \]
+  
+  Por lo tanto $\hat{\theta}_{MoM}$ es un estimador insesgado de $\theta$.
+
+---
+
+* **Varianza**:
+
+  Primero se observa que:
+
+  \[
+  Var[\hat{p}_{MoM}] = Var\left[\frac{T_{\text{per}}}{n}\right]=\frac{np(1-p)}{n^2} = \frac{p(1-p)}{n}
+  \]
+  
+  Luego:
+  
+  \[
+  \operatorname{Var}[\hat{\theta}_{MoM}] = \operatorname{Var}\left[\frac{\hat{p}_{MoM}+S_{p}-1}{S_{e}+S_{p}-1}\right] = \frac{\operatorname{Var}[\hat{p}_{MoM} + S_{p} -1]}{(S_{e}+S_{p}-1)^2} =
+  \]
+  \[
+  \frac{\operatorname{Var}[\hat{p}_{MoM}]}{(S_{e}+S_{p}-1)^2} = \frac{p(1-p)}{n(S_{e}+S_{p}-1)^2}
 \]
-- $\hat{p}_{MoM} \xrightarrow{c.s.} p$ (Ley fuerte)
-- Función continua de $\hat{p}_{MoM}$
+
+---
+
+* **ECM**:
+  
+  Como el sesgo es 0:
+  
+  \[
+  \text{ECM}(\hat{\theta}_{MoM})
+    = \operatorname{Var}[\hat{\theta}_{MoM}]
+    + \mathbb{B}^2[\hat{\theta}_{MoM}]
+    =\frac{p(1-p)}{n(S_{e}+S_{p}-1)^2}
+  \]
+
+---
+
+* **Consistencia**
+  
+  Observemos que, por ley fuerte de los grandes números:
+  
+  \[
+  \hat{p}_{MoM} = \frac{T_{per}}{n} \xrightarrow{cs} p
+  \]
+  
+  Luego, como $\hat{\theta}_{MoM}$ es una función continua de $\hat{p}_{MoM}$:
+  
+  \[
+  \hat{\theta}_{MoM} \xrightarrow{cs} \frac{p + S_{p}-1}{S_{e}+S_{p}-1} = \theta
+  \]
+  
+  Por lo tanto, $\hat{\theta}_{MoM}$ es fuertemente consistente.
 
 ---
 
@@ -540,222 +684,241 @@ legend("topright", legend = c(expression(theta*" verdadero"), "Media bootstrap")
 
 ---
 
-## IC Bootstrap Percentil - Método
-
-### Objetivo
-Construir IC para $\theta$ usando bootstrap no paramétrico
-
-### Algoritmo
-1. Para cada $n \in \{10, 20, 50, 100, 1000\}$
-2. $R = 700$ réplicas Monte Carlo
-3. $B = 1000$ remuestreos bootstrap
-4. Calcular $\hat{\theta}_{MoM}$ en cada bootstrap
-5. IC = cuantiles 2.5% y 97.5%
-
-### Fórmula bootstrap
-\[
-IC_{\text{boot}}^{0.95} = \left[ Q_{0.025}(\hat{\theta}^*), Q_{0.975}(\hat{\theta}^*) \right]
-\]
-donde $\hat{\theta}^*$ son estimaciones bootstrap
-
----
-
-## IC Asintótico - Resultado final
-
-### Estimador y varianza estimada
-\[
-\hat{\theta}_{MoM} = \frac{\hat{p} + S_p - 1}{S_e + S_p - 1}
-\]
-\[
-\widehat{\operatorname{Var}}(\hat{\theta}_{MoM}) = \frac{\hat{p}(1-\hat{p})}{n(S_e+S_p-1)^2}
-\]
-
-### Intervalo de confianza 95%
-\[
-\boxed{IC_{\text{asint}}^{0.95} = \hat{\theta}_{MoM} \pm 1.96\sqrt{\frac{\hat{p}(1-\hat{p})}{n(S_e+S_p-1)^2}}}
-\]
-
-### Fundamentos
-- **TCL + Método Delta** → Normalidad asintótica
-- **Slutsky** → Reemplazar $p$ por $\hat{p}$
-- **Nivel**: 0.95 asintótico ($z_{0.975} = 1.96$)
-
----
-
-## Resultados: Bootstrap vs Asintótico
-
-### Cubrimiento empírico y longitud
-
-```{r, echo=FALSE}
-# Tabla Bootstrap
-res_df <- data.frame(
-  n = c(10, 20, 50, 100, 1000),
-  cubrimiento = c(0.9329, 0.9186, 0.9314, 0.9429, 0.9514),
-  longitud = c(0.5680, 0.4285, 0.2782, 0.2006, 0.0638)
-)
-
-knitr::kable(res_df, digits = 4, 
-             col.names = c("n", "Cubrimiento", "Longitud media"),
-             caption = "IC Bootstrap Percentil (R=700, B=1000)")
-```
-
----
-
-## Resultados: Intervalos Asintóticos
-
-```{r, echo=FALSE}
-# Tabla Asintótico
-resAsint_df <- data.frame(
-  n = c(10, 20, 50, 100, 1000),
-  cubrimiento = c(0.9257, 0.9186, 0.9200, 0.9414, 0.9457),
-  longitud = c(0.5930, 0.4366, 0.2836, 0.2013, 0.0641)
-)
-
-knitr::kable(resAsint_df, digits = 4,
-             col.names = c("n", "Cubrimiento", "Longitud media"),
-             caption = "IC Asintótico (R=700)")
-```
-
----
-
-### Conclusiones
-1. **Bootstrap más robusto** para $n$ pequeño
-2. **Asintótico adecuado** para $n \geq 50$
-3. **Longitudes similares** en ambos métodos
-4. **Convergencia** cuando $n$ crece
-
----
-
 ## 2.2.9 Intervalos de confianza bootstrap
 
+\vspace{0.5cm}
+
 ### Objetivo
-Construir intervalos de confianza para $\theta$ basados en el estimador de momentos  
-utilizando bootstrap no paramétrico.
+Construir intervalos de confianza para $\theta$ basados en el estimador de momentos utilizando bootstrap no paramétrico.
 
 ### Método
-- A partir de los datos ${T_i}$ se calcula $\hat\theta_{MoM}$ en cada remuestreo.
+- A partir de los datos ${T_i}$, se calcula $\hat\theta_{MoM}$ en cada remuestreo.
+
+\vspace{0.2cm}
+
 - Se generan $B = 1000$ réplicas bootstrap:  
   $\hat\theta^{*(b)}_{MoM}$, $b = 1,\dots,B$.
+  
+\vspace{0.2cm}
+  
 - Intervalo bootstrap percentil:
+
 \[
 IC^{boot}_{0.95} = 
 \big[\, Q_{0.025}(\hat\theta^{*}),\; Q_{0.975}(\hat\theta^{*}) \,\big].
 \]
 
+---
+
 ### Simulación Monte Carlo
 - Replicaciones: $R = 700$.
 - Tamaños muestrales: $n \in \{10, 20, 50, 100, 1000\}$.
 - Para cada réplica se obtiene:
-  - **Cubrimiento empírico**: $\mathbb{1}\{\theta \in IC^{boot}\}$
+  - **Cubrimiento empírico**: $1\{\theta \in IC^{boot}\}$
   - **Longitud**: $IC^{up} - IC^{low}$
 
+```{r, echo = FALSE}
+
+tita_corregida <- function(p_hat, Se, Sp) {
+  (p_hat - (1 - Sp)) / (Se + Sp - 1)
+}
+
+#Definimos los valores a utilizar.
+tita <- 0.25
+Se <- 0.9
+Sp <- 0.95
+p_Y <- Se * tita + (1 - Sp) * (1 - tita)
+
+ns <-  c(10, 20, 50, 100, 1000)
+R <- 700 #replicas Monte Carlo
+B <- 1000 #remuestreos bootstrap
+
+z <- qnorm(0.975)
+
+res_list <- vector("list",length(ns))
+names(res_list) <- as.character(ns)
+
+#para cada n:
+for (j in seq_along(ns)){
+  n <- ns[j]
+  cubrimientos <- logical(R)
+  longitudes <- numeric(R)
+  
+  #repito el experimento R veces 
+  for (r in 1:R){
+     T <- rbinom(n,1,p_Y)
+     boot_est <- numeric(B)
+     
+     #genero B muestras bootstrap.
+     for (b in 1:B){
+       T_boot <- sample(T, size = n, replace = TRUE)
+       p_hat_boot <- mean(T_boot)
+       boot_est[b] <- tita_corregida(p_hat_boot, Se, Sp)
+     }
+     
+     lower <- quantile(boot_est, probs = 0.025, names = FALSE)
+     upper <- quantile(boot_est, probs = 0.975, names = FALSE)
+     
+     cubrimientos[r] <- (lower <= tita) && (tita <= upper)
+     longitudes[r] <- (upper - lower)
+  }
+  
+  #resultados para cada n
+  res_list[[j]] <- list(
+    n = n,
+    cubrimiento = mean(cubrimientos),
+    longitud_media = mean(longitudes)
+  )
+   
+}
+
+res_df <- do.call(rbind, lapply(res_list, function(z){
+  data.frame(n = z$n,
+             cubrimiento = z$cubrimiento,
+             longitud_media = z$longitud_media)
+}))
+rownames(res_df) <- NULL
+```
+
 ---
-
-### Resultados (resumen)
-- Buen cubrimiento para todos los $n$.
-- Robusto para $n$ pequeños.
-- Longitud disminuye al aumentar $n$.
-
----
-
+  
 ## 2.2.10 Intervalo de confianza asintótico
-
-### Idea
-A partir del estimador de momentos:
+  
+Recordemos que: 
+  
+* $\hat{p}_{MoM} = \frac{T_{per}}{n}$
+\vspace{0.1cm}
+* $\mathbb{E}[\hat{p}_{MoM}] = p$
+\vspace{0.1cm}
+* $\operatorname{Var}[\hat{p}_{MoM}] = \frac{p(1-p)}{n}$
+\vspace{0.1cm}
+* $\hat{\theta}_{MoM} = \frac{\hat{p}_{MoM} + S_{p} - 1}{S_{e}+S_{p}-1}$
+\vspace{0.1cm}
+* $\mathbb{E}[\hat{\theta}_{MoM}] = \theta$
+\vspace{0.1cm}
+* $\operatorname{Var}[\hat{\theta}_{MoM}] = \frac{p(1-p)}{n(S_{e}+S_{p}-1)^2}$
+  
+---
+  
+* Entonces por TCL:
+  
 \[
-\hat\theta_{MoM}=\frac{\hat p + Sp - 1}{Se + Sp - 1},
+\sqrt{n} (\hat{p}_{MoM} - p) \xrightarrow{D}  N\bigl(0,(p(1-p))\bigr)
 \]
-donde $\hat p = T_{\text{per}}/n$.
+  
+Defino $g(x) = \frac{x+S_{p}-1}{S_{e}+S_{p}-1}$ y $g'(x) = \frac{1}{S_{e} + S_{p} -1}$. Notar que $g(x)$ es $C^1$.
+  
+\vspace{0.2cm}
 
-### Varianza estimada
+* Por Método Delta:
+  
 \[
-\widehat{\mathrm{Var}}(\hat\theta_{MoM}) =
-\frac{\hat p(1 - \hat p)}{n(Se + Sp - 1)^2}.
+\sqrt{n}(g(\hat{p}_{MoM}) - g(p)) \xrightarrow{D} N\bigl(0, \frac{p(1-p)}{(S_{e}+S_{p}-1)^2}\bigr)
 \]
-
-### Intervalo de confianza asintótico (95%)
-\[
-IC^{asint}_{0.95}
-= 
-\hat\theta_{MoM}
-\pm
-1.96\,
-\sqrt{
-\frac{\hat p(1 - \hat p)}{n(Se + Sp - 1)^2}
-}.
-\]
-
-### Fundamentación teórica
-- TCL aplicado a $\hat p$  
-- Método Delta para la transformación  
-- Slutsky justifica reemplazar $p$ por $\hat p$
 
 ---
 
-## 2.2.10 Resultados: Intervalos Asintóticos
+Luego,
+  
+\[
+\frac{\hat{\theta}_{MoM}-\theta}{\sqrt{\operatorname{Var}[\hat{\theta}_{MoM}]}} \xrightarrow{D} N\bigl(0,1\bigr)
+\]
+  
+  
+* Además $\hat{p}_{MoM} = \frac{T_{per}}{n} \xrightarrow{cs} p$, entonces: 
+  
+\[ 
+\sqrt{\frac{\hat{p}_{MoM}(1-\hat{p}_{MoM})}{p(1-p)}} \xrightarrow{P} 1 
+\]
+  
+debido a que $h(x)= \sqrt{\frac{x(1-x)}{p(1-p)}}$ es continua en $(0,1)$.
+  
+---
+  
+Si $\widehat{\operatorname{Var}}[\hat{\theta}_{MoM}] =\frac{\hat{p}_{MoM}(1-\hat{p}_{MoM})}{n(S_{e}+S_{p}-1)^2}$, usando teorema de Slutsky:
+  
+\[
+\frac{\hat{\theta}_{MoM} - \theta}{\sqrt{\widehat{\operatorname{Var}}[\hat{\theta}_{MoM}]}} = \frac{\hat{\theta}_{MoM} - \theta}{\sqrt{\operatorname{Var}[\hat{\theta}_{MoM}]}\sqrt{\frac{\hat{p}_{MoM}(1-\hat{p}_{MoM})}{p(1-p)}}} \xrightarrow{D}  N\bigl(0,1\bigr)
+\]
+  
+  
+* Por lo tanto, se deduce el siguiente intervalo de nivel asintótico $0.95$:
+  
+\[
+\boxed{IC^{\theta}_{0.95} = \hat{\theta}_{MoM}\pm 1.96\sqrt{\widehat{\operatorname{Var}}[\hat{\theta}_{MoM}]}}
+\]
+  
+donde $\widehat{\operatorname{Var}}[\hat{\theta}_{MoM}] = \frac{\hat{p}_{MoM}(1-\hat{p}_{MoM})}{n(S_{e}+S_{p}-1)^2}$
 
-### Cubrimiento empírico y longitud media
+```{r, echo=FALSE}
+res_listAsint <- vector("list", length(ns))
+names(res_listAsint) <- as.character(ns)
 
-\begin{table}[H]
-\centering
-\begin{tabular}{ccc}
-\hline
-$n$ & Cubrimiento & Longitud media \\
-\hline
-10   & 0.9257 & 0.5930 \\
-20   & 0.9186 & 0.4366 \\
-50   & 0.9200 & 0.2836 \\
-100  & 0.9414 & 0.2013 \\
-1000 & 0.9457 & 0.0641 \\
-\hline
-\end{tabular}
-\end{table}
+#para cada n:
+for (j in seq_along(ns)){
+  n <- ns[j]
+  cubrimientos <- logical(R)
+  longitudes <- numeric(R)
+  
+  #repito el experimento R veces.
+  for (r in 1:R){
+    T <- rbinom(n, 1, p_Y)
+    
+    p_hat <- mean(T)
+    tita_hat <- tita_corregida(p_hat,Se,Sp)
+    est_Var <- (p_hat*(1-p_hat))/(n*(Se+Sp-1)^2)
+    
+    termino <- z*sqrt(est_Var)
+    lower <- tita_hat - termino
+    upper <- tita_hat + termino
+    
+    cubrimientos[r] <- (lower <= tita) && (tita <= upper)
+    longitudes[r] <- (upper - lower)
+  }
+  
+  #resultados para cada n.
+  res_listAsint[[j]] <- list(
+    n = n,
+    cubrimiento = mean(cubrimientos),
+    longitud_media = mean(longitudes)
+  )
+}
 
-### Observaciones
-- Cubrimiento similar al bootstrap para $n \ge 50$.## 2.2.11 Comparación entre IC Bootstrap y Asintótico
-
-### Métricas comparadas
-- **Cubrimiento empírico**
-- **Longitud promedio del intervalo**
-- **Comportamiento según n**
-
-### Resultados generales
-- Ambos métodos alcanzan cubrimiento cercano a 0.95.
-- Para **n pequeño**, el *bootstrap percentil*:
-  - Tiene **mejor cubrimiento**.
-  - Produce intervalos **ligeramente más cortos**.
-- El IC asintótico depende de la aproximación normal:
-  - Se vuelve confiable recién para **n ≥ 50**.
-- Para n grande, ambos intervalos **convergen** y son casi indistinguibles.
+resAsint_df <- do.call(rbind, lapply(res_listAsint, function(z){
+  data.frame(n = z$n,
+             cubrimiento = z$cubrimiento,
+             longitud_media = z$longitud_media)
+}))
+rownames(resAsint_df) <- NULL
+```
 
 ---
 
-## 2.2.11 Comparación: Bootstrap vs Asintótico
+## 2.2.11 Comparación entre ambos intervalos
 
-### Cubrimiento y longitud media (R = 700)
+Luego de realizar las simulaciones pertinentes, comparemos los resultados obtenidos.
 
-\begin{table}[H]
-\centering
-\begin{tabular}{ccccc}
-\hline
-$n$ & Cub. Boot & Len. Boot & Cub. Asint & Len. Asint \\
-\hline
-10   & 0.9329 & 0.5680 & 0.9257 & 0.5930 \\
-20   & 0.9186 & 0.4285 & 0.9186 & 0.4366 \\
-50   & 0.9314 & 0.2782 & 0.9200 & 0.2836 \\
-100  & 0.9429 & 0.2006 & 0.9414 & 0.2013 \\
-1000 & 0.9514 & 0.0638 & 0.9457 & 0.0641 \\
-\hline
-\end{tabular}
-\end{table}
+```{r, echo=FALSE, eval=TRUE}
+knitr::kable(res_df, digits = 4, caption = "Bootstrap Percentil")
+```
 
-### Conclusión
-- Bootstrap es **más robusto** para muestras chicas.
-- Asintótico funciona bien a partir de tamaños moderados.
-- En ambos casos, la longitud disminuye con n.
+---
 
-- Intervalo ligeramente más largo que el bootstrap.
-- A medida que $n$ crece, ambos métodos se vuelven casi indistinguibles.
+```{r, echo=FALSE, eval=TRUE}
+knitr::kable(resAsint_df, digits = 4, caption = "Intervalos Asintóticos")
+```
+
+---
+
+* El bootstrap parece ser más robusto en muestras pequeñas, lo cual es esperable porque no depende de aproximaciones normales ni del método delta.
+
+\vspace{0.3cm}
+
+* El método asintótico da intervalos ligeramente más largos.
+
+\vspace{0.3cm}
+
+* A medida que aumenta $n$ los resultados convergen a los valores esperados.
 
 ---
 
@@ -917,7 +1080,26 @@ El estimador truncado:
 ## Distribución del estimador truncado
 
 ```{r, echo = FALSE}
-set.seed(43)
+n_valores <- c(10, 100, 1000)
+N_rep <- 10000
+theta_verdadera <- 0.25
+Se_fijo         <- 0.9
+Sp_fijo         <- 0.95
+p_verdadera <- Se_fijo * theta_verdadera + (1 - Sp_fijo) * (1 - theta_verdadera)
+
+theta_mom <- function(T_obs, n, Se = Se_fijo, Sp = Sp_fijo) {
+  p_muestral <- T_obs / n
+  theta_mom_est <- (p_muestral + Sp - 1) / (Se + Sp - 1)
+  return(theta_mom_est)
+}
+
+# Estimador truncado de theta
+theta_trunc <- function(T_obs, n, Se = Se_fijo, Sp = Sp_fijo) {
+  theta_mom_est <- theta_mom(T_obs, n, Se, Sp)
+  theta_trunc_est <- pmin(1, pmax(0, theta_mom_est))
+  return(theta_trunc_est)
+}
+
 par(mfrow = c(2, 2))  ## grid para los gráficos
 
 for (n in n_valores) {
