@@ -21,7 +21,14 @@ Análisis de propiedades estadísticas de tests diagnósticos:
 
 ---
 
-# Parte I: Test perfecto (baseline)
+\centering
+\vspace{2cm}
+\Huge
+**Parte I**  
+\Large
+Test perfecto (baseline)
+
+---
 
 ## 1.1 Distribución de $T_{per}$
 
@@ -113,14 +120,14 @@ $$\hat{\theta}_{per} = \frac{N_1}{n} = \frac{T_{per}}{n}$$
 
 ## 1.4 Intervalo de confianza para $\theta$
 
-Sabemos que por TCL:
+* Sabemos que por TCL:
 
 \[
 \sqrt{n}\,\frac{(\hat{\theta}_{per} - \theta)}{\sqrt{\theta(1-\theta)}}
 \xrightarrow{d} N\bigl(0,1\bigr).
 \]
 
-Además, por ley débil de los grandes números:
+* Además, por ley débil de los grandes números:
 
 \[
 \hat{\theta}_{per} \xrightarrow{p} \theta
@@ -128,7 +135,7 @@ Además, por ley débil de los grandes números:
 
 ---
 
-Entonces, combinando los resultados anteriores con Slutsky:
+* Entonces, combinando los resultados anteriores con Slutsky:
 
 \[
 \sqrt{n}\,\frac{(\hat{\theta}_{per} - \theta)}{\sqrt{\hat{\theta}_{per}(1-\hat{\theta}_{per})}}
@@ -144,7 +151,7 @@ P\!\left(-1.96 \le \sqrt{n}\,\frac{\hat{\theta}_{per} - \theta}{\sqrt{\hat{\thet
 
 ---
 
-Finalmente, se deduce el siguiente intervalo de nivel asintótico 0.95:
+* Finalmente, se deduce el siguiente intervalo de nivel asintótico 0.95:
 
 \[
 \boxed{IC_{0.95}(\theta) = \hat{\theta}_{per} \pm 1.96\sqrt{\frac{\hat{\theta}_{per}(1-\hat{\theta}_{per})}{n}}}
@@ -154,7 +161,7 @@ Finalmente, se deduce el siguiente intervalo de nivel asintótico 0.95:
 
 ## 1.5 Cubrimiento empírico
 
-Para evaluar el cubrimiento empírico del intervalo dado en $1.4$, se llevó a cabo una simulación Monte Carlo para los siguientes valores de n:
+* Para evaluar el cubrimiento empírico del intervalo dado en $1.4$, se llevó a cabo una simulación Monte Carlo para los siguientes valores de n:
 
 \[
 10, 20, 50, 100, 1000, 10000
@@ -196,7 +203,7 @@ cubrimientoEmpirico <- data.frame(n = ns, cubrimiento = cubrimientoN)
 ```
 ---
 
-Y se obtuvieron estos resultados:
+* Y se obtuvieron estos resultados:
 
 ```{r, echo=FALSE, eval=TRUE}
 knitr::kable(cubrimientoEmpirico, digits = 4, caption = "Cubrimiento empírico del intervalo")
@@ -205,12 +212,18 @@ knitr::kable(cubrimientoEmpirico, digits = 4, caption = "Cubrimiento empírico d
 ---
 
 
-Los resultados obtenidos son coherentes con la teoría. Al tratarse de un intervalo asintótico, el cubrimiento empírico converge hacia el nivel nominal del 0.95 conforme aumenta el tamaño muestral n.
-
+* Los resultados obtenidos son coherentes con la teoría. Al tratarse de un intervalo asintótico, el cubrimiento empírico converge hacia el nivel nominal del 0.95 conforme aumenta el tamaño muestral n.
 
 ---
 
-# Parte II: Test imperfecto con $S_e$ y $S_p$ conocidos
+\centering
+\vspace{2cm}
+\Huge
+**Parte II**  
+\Large
+Test imperfecto con $S_e$ y $S_p$ conocidos
+
+---
 
 ## 2.0.1 Estimación de $p$ con $T_{per}$
 
@@ -334,7 +347,7 @@ p = 0.225 + 0.05 \times 0.75 = 0.2625
 
 ## 2.1.4 Estimador de momentos (MoM)
 
-Por item $2.0.2$, sabemos que:
+* Por item $2.0.2$, sabemos que:
 
 \[
 p = S_{e} \theta + (1-S_{p})(1-\theta)
@@ -353,11 +366,11 @@ Entonces:
 
 ---
 
-Como $\mathbb{E}[T_{i}] = p$, el estimador de momentos de $p$ es $\hat{p}_{MoM} = \frac{T_{per}}{n}$.
+* Como $\mathbb{E}[T_{i}] = p$, el estimador de momentos de $p$ es $\hat{p}_{MoM} = \frac{T_{per}}{n}$.
 
 \vspace{0.5cm}
 
-Finalmente, el estimador plug-in de momentos de $\theta$ es el siguiente:
+* Finalmente, el estimador plug-in de momentos de $\theta$ es el siguiente:
 
 \[
 \boxed{\hat{\theta}_{MoM} = \frac{\hat{p}_{MoM} + S_{p} - 1}{S_{e}+S_{p}-1}}
@@ -1159,4 +1172,270 @@ qqline(theta_trunc_sim)
 
 ---
 
+\centering
+\vspace{2cm}
+\Huge
+**Parte III**  
+\Large
+Dos muestras (pre-post intervención)
 
+---
+
+* En esta sección analizamos si la prevalencia verdadera de la enfermedad cambió después de implementar una campaña de vacunación. Para ello se toman dos muestras independientes:
+
+- Una **antes** de la campaña, de tamaño \( n_{\text{pre}} \), con número de test positivos \( X_{\text{pre}} \).
+- Otra **después**, de tamaño \( n_{\text{post}} \), con número de test positivos \( X_{\text{post}} \).
+
+En ambos casos se utiliza el mismo test diagnóstico imperfecto, caracterizado por su **sensibilidad** \( Se \) y **especificidad** \( Sp \).
+
+---
+
+* Los conteos observados siguen:
+\[
+X_{\text{pre}} \sim \text{Binomial}(n_{\text{pre}}, p_{\text{pre}}), \quad 
+X_{\text{post}} \sim \text{Binomial}(n_{\text{post}}, p_{\text{post}})
+\]
+donde  
+\[
+p_A = (Se + Sp - 1)\theta_A + (1 - Sp), \qquad A \in \{\text{pre}, \text{post}\}
+\]
+
+* Nuestro objetivo es inferir la **diferencia de prevalencias verdaderas**:
+\[
+\boxed{\Delta = \theta_{\text{post}} - \theta_{\text{pre}}}
+\]
+
+---
+
+## 3.1.1 Test de Hipótesis
+
+Se quiere plantear un test de nivel aproximado $0.05$ para las siguientes hipótesis, basándose en el estimador $\hat{\theta}_{MoM}$:
+
+\[
+H_{0} : \Delta = 0 \quad \text{vs.} \quad H_{1} : \Delta \neq 0
+\]
+
+---
+
+Tenemos:
+
+\[
+\hat{\theta}_{post} = \frac{\hat{p}_{post} + S_{p} - 1}{S_{e}+S_{p}-1} \quad \text{y} \quad \hat{\theta}_{pre} = \frac{\hat{p}_{pre} + S_{p} - 1}{S_{e}+S_{p}-1}
+\]
+
+Y por el item $2.1.10$, se deduce que:
+
+\[
+\hat{\theta}_{post} \approx N\bigl(\theta_{post},\; \widehat{\operatorname{Var}}(\hat{\theta}_{post})\bigr)
+\quad\text{y}\quad
+\hat{\theta}_{pre} \approx N\bigl(\theta_{pre},\; \widehat{\operatorname{Var}}(\hat{\theta}_{pre})\bigr)
+\]
+
+---
+
+\[
+\Rightarrow\quad
+\hat{\theta}_{post} - \hat{\theta}_{pre}
+\approx
+N\!\Bigl(\theta_{post}-\theta_{pre},\; \widehat{\operatorname{Var}}(\hat{\theta}_{post}) + \widehat{\operatorname{Var}}(\hat{\theta}_{pre})\Bigr)
+\]
+
+\[
+U_{\Delta}(X_{pre},X_{post})
+=
+\frac{\hat{\theta}_{post} - \hat{\theta}_{pre} - \Delta}
+     {\sqrt{\widehat{\operatorname{Var}}(\hat{\theta}_{post}) + \widehat{\operatorname{Var}}(\hat{\theta}_{pre})}}
+\approx N(0,1)
+\]
+
+
+* Tenemos un pivote decreciente en $\Delta$ con distribución aproximada conocida independiente de $\Delta$. Entonces, utilizando método del pivote, resulta el siguiente test de nivel aproximado 0.05.
+
+\[
+\Phi(X_{pre},X_{post}) =
+\begin{cases}
+1 & \text{si } \bigl|U_{0}(X_{pre},X_{post})\bigr| > z_{1-\alpha/2} = z_{0.975} \approx 1.96, \\
+0 & \text{c.c.}
+\end{cases}
+\]
+
+---
+
+## 3.1.2 Aplicación en caso ficticio
+
+Vamos a aplicar el test dado en el item anterior a un caso ficticio con $n_{pre} = n_{post} = 100$, $S_{e} = 0.9$, $S_{p} = 0.95$, $\theta_{pre} = 0.2$, $\theta_{post} = 0.15$ y $\alpha = 0.05$.
+
+---
+
+* El estadístico observado tiene el siguiente valor:
+
+```{r, echo=FALSE, eval=TRUE}
+# Definimos valores y calculamos U (sin mostrar código)
+n_pre <- 100
+n_post <- 100
+Se <- 0.9
+Sp <- 0.95
+tita_pre <- 0.2
+tita_post <- 0.15
+
+p_pre <- (Se + Sp - 1)* tita_pre + (1 - Sp)
+p_post <- (Se + Sp - 1)* tita_post + (1 - Sp)
+
+set.seed(123)  # Para reproducibilidad
+Xpre <- rbinom(n_pre, 1, p_pre)
+Xpost <- rbinom(n_post, 1, p_post)
+
+p_preHat <- mean(Xpre)
+p_postHat <- mean(Xpost)
+
+tita_preHat <- (p_preHat + Sp - 1)/(Se + Sp - 1)
+tita_postHat <- (p_postHat + Sp - 1)/(Se + Sp - 1)
+
+Var_preHat <- (p_preHat*(1-p_preHat))/(n_pre*(Se+Sp-1)^2)
+Var_postHat <- (p_postHat*(1-p_postHat))/(n_post*(Se+Sp-1)^2)
+
+U <- (tita_postHat - tita_preHat)/(sqrt(Var_postHat + Var_preHat))
+
+cat("U =", round(U, 4))
+```
+
+Por lo tanto, no hay evidencia suficiente como para rechazar $H_{0}$ a nivel aproximado 0.05. Esto quiere decir que no se afirma que la vacuna es realmente efectiva. Es razonable porque la diferencia real entre prevalencias es pequeña ($0.05$).
+
+---
+
+* ¿Qué pasa si achicamos la muestra? 
+
+- Para $n = 50$, obtenemos el siguiente resultado:
+
+```{r, echo=FALSE, eval=TRUE}
+n_pre <- 50
+n_post <- 50
+
+set.seed(123)
+Xpre <- rbinom(n_pre, 1, p_pre)
+Xpost <- rbinom(n_post, 1, p_post)
+
+p_preHat <- mean(Xpre)
+p_postHat <- mean(Xpost)
+
+tita_preHat <- (p_preHat + Sp - 1)/(Se + Sp - 1)
+tita_postHat <- (p_postHat + Sp - 1)/(Se + Sp - 1)
+
+Var_preHat <- (p_preHat*(1-p_preHat))/(n_pre*(Se+Sp-1)^2)
+Var_postHat <- (p_postHat*(1-p_postHat))/(n_post*(Se+Sp-1)^2)
+
+U50 <- (tita_postHat - tita_preHat)/(sqrt(Var_postHat + Var_preHat))
+
+cat("U (n=50) =", round(U50, 4))
+```
+
+El valor del estadístico observado sigue estando en la región de aceptación. Igualmente, al haber menos muestras la varianza aumenta y el resultado es distinto de 0.
+
+- Para $n = 10$, obtenemos el siguiente resultado:
+
+```{r, echo=FALSE, eval=TRUE}
+n_pre <- 10
+n_post <- 10
+
+set.seed(123)
+Xpre <- rbinom(n_pre, 1, p_pre)
+Xpost <- rbinom(n_post, 1, p_post)
+
+p_preHat <- mean(Xpre)
+p_postHat <- mean(Xpost)
+
+tita_preHat <- (p_preHat + Sp - 1)/(Se + Sp - 1)
+tita_postHat <- (p_postHat + Sp - 1)/(Se + Sp - 1)
+
+Var_preHat <- (p_preHat*(1-p_preHat))/(n_pre*(Se+Sp-1)^2)
+Var_postHat <- (p_postHat*(1-p_postHat))/(n_post*(Se+Sp-1)^2)
+
+U10 <- (tita_postHat - tita_preHat)/(sqrt(Var_postHat + Var_preHat))
+
+cat("U (n=10) =", round(U10, 4))
+```
+
+Para una muestra tan pequeña el test se vuelve inestable y es practicamente inútil, ya que nuetsro test es de nivel asintótico.
+
+---
+
+## 3.1.4 Nivel empírico del test.
+
+Se quiere calcular el nivel empírico del test dado en $3.1.2$. Para ello, se define una grilla de valores de $n$ para calcular el nivel para cada valor. Se sabe que el nivel de un test está definido por el supremo de los errores de tipo 1. Entonces, también se define una grilla de valores de $\theta$ y se realizan las simulaciones pertinentes.
+
+```{r, echo=FALSE}
+#Definimos los valores a utilizar.
+Nrep <- 2000
+ns <- c(10, 20, 50, 100, 1000, 10000)
+alpha <- 0.05
+Se <- 0.9
+Sp <- 0.95
+z <- qnorm(0.975)
+
+# Como queremos nivel, definimos prevalencias iguales para pre y post (H0 delta = 0).
+#Además queremos el supremo de los errores de tipo 1, entonces hay que variar tita.
+grid_tita <- seq(0.01, 0.99, length.out = 20)
+  
+
+#Vector que va a tener el nivel empírico para cada n.
+nivelN <- numeric(length(ns))
+
+
+#para cada n:
+for (r in seq_along(ns)){
+  n <- ns[r]
+  
+  #vector que va a tener error de tipo 1 para cada tita.
+  errorTipo1 <- numeric(length(grid_tita))
+  
+  #para cada tita:
+  for (j in seq_along(grid_tita)){
+    tita <- grid_tita[j]
+    p <- (Se + Sp - 1)* tita + (1 - Sp)
+    
+    #vector que va a tener si rechazo o no el test en cada pos.
+    rechazos <- numeric(Nrep)
+    
+    #repito el experimento Nrep veces:
+    for(i in 1:Nrep){                                        
+      Xpre <- rbinom(n,1,p)
+      Xpost <- rbinom(n,1,p)
+      
+      #Ahora calculamos U(Xpre, Xpost):
+      p_preHat <- mean(Xpre)
+      p_postHat <- mean(Xpost)
+      
+      tita_preHat <- (p_preHat + Sp - 1)/(Se + Sp - 1)
+      tita_postHat <- (p_postHat + Sp - 1)/(Se + Sp - 1)
+      
+      Var_preHat <- (p_preHat*(1-p_preHat))/(n*(Se+Sp-1)^2)
+      Var_postHat <- (p_postHat*(1-p_postHat))/(n*(Se+Sp-1)^2)
+      
+      U <- (tita_postHat - tita_preHat)/(sqrt(Var_postHat + Var_preHat)) 
+      
+      #rechazo o no H0.
+      rechazos[i] <- abs(U) > z
+    }
+    
+    #proporción de rechazos.(ignoro nan en caso de que el p estimado sea 0 o 1 
+    #pues sucede un div por 0)
+    errorTipo1[j] <- mean(rechazos, na.rm = TRUE)                    
+    
+  }
+  
+  nivelN[r] <- max(errorTipo1)
+}
+
+nivelEmpirico <- data.frame(n = ns, nivel = nivelN)
+
+```
+
+---
+
+* Se obtuvieron los siguientes resultados:
+
+```{r, echo=FALSE}
+knitr::kable(nivelEmpirico, digits = 4, caption = "Nivel empírico del test")
+```
+
+Se observa claramente el comportamiento asintótico del test. A medida que aumenta n, el nivel del test se acerca a 0.05.
