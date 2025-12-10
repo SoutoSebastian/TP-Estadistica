@@ -32,33 +32,162 @@ Test perfecto (baseline)
 
 ---
 
-## 1.1 Distribución de $T_{per}$
+# 1.1 Distribución de $T_{per}$
 
-### Contexto
-- Población con prevalencia $\theta = P(Y=1)$
-- Test perfecto: $Se = Sp = 1$
-- $Y_i \sim \text{Bernoulli}(\theta)$, i.i.d.
+## Motivación
 
-### Variable de interés
-$$T_{per} = \sum_{i=1}^n Y_i$$
+- Estudiamos primero un caso ideal: el test diagnóstico **no comete errores**.
+- Esto equivale a suponer:
+  \[
+  Se = 1, \qquad Sp = 1.
+  \]
+- En este escenario, el resultado del test coincide exactamente con el estado verdadero $Y$.
+- Objetivo del punto 1.1:
+  \[
+  \text{Mostrar que } T_{per} \sim \text{Binomial}(n,\theta).
+  \]
 
-### Distribución
-$$T_{per} \sim \text{Binomial}(n,\theta)$$
+---
 
-$$\boxed{P(T_{per} = k) = \binom{n}{k}\theta^{k}(1-\theta)^{n-k}}$$
+## Modelo del estado verdadero
+
+- Cada individuo $i$ puede estar enfermo ($Y_i = 1$) o sano ($Y_i = 0$).
+- Modelamos:
+  \[
+  Y_i \sim \text{Bernoulli}(\theta), \qquad i = 1,\dots,n,
+  \]
+  donde $\theta = P(Y = 1)$ es la prevalencia verdadera.
+- Como $Se = Sp = 1$:
+  - lo que observamos en el test coincide exactamente con $Y_i$;
+  - no hay error de medición.
+  
+---
+
+## Número de individuos enfermos en la muestra
+
+- Definimos:
+  \[
+  T_{per} = \sum_{i=1}^n Y_i.
+  \]
+
+- Interpretación:
+  - $T_{per}$ cuenta la cantidad de personas enfermas en la muestra.
+  - Es la suma de $n$ variables Bernoulli independientes con el mismo parámetro $\theta$.
+  
+---
+
+## Resultado
+
+- La suma de $n$ variables Bernoulli independientes con parámetro $\theta$ sigue una binomial:
+  \[
+  T_{per} \sim \text{Binomial}(n,\theta).
+  \]
+
+- Para $k = 0,1,\dots,n$:
+  \[
+  P(T_{per} = k)
+    = \binom{n}{k} \theta^k (1 - \theta)^{n-k}.
+  \]
+
+De esta forma, $T_{per} \sim \text{Binomial}(n, \theta)$
 
 ---
 
 ## 1.2 Estimador de Máxima Verosimilitud
 
-### Función de verosimilitud
-$$L(\theta) = \prod_{i=1}^n \theta^{Y_i}(1-\theta)^{1-Y_i} = (1-\theta)^{N_0}\,\theta^{N_1}$$
+## Planteo
 
-### Log-verosimilitud
-$$\ell(\theta) = N_0 \ln(1-\theta) + N_1 \ln(\theta)$$
+- Seguimos en el caso de **test perfecto**:
+  \[
+  Y_i \sim \text{Bernoulli}(\theta), \quad i = 1,\dots,n,
+  \]
+  independientes e idénticamente distribuidas.
+- Definimos:
+  \[
+  T_{per} = \sum_{i=1}^n Y_i.
+  \]
+- Nuestro objetivo en este punto es encontrar el **estimador de máxima verosimilitud (EMV)** de $\theta$.
 
-### Estimador EMV
-$$\hat{\theta}_{per} = \frac{N_1}{n} = \frac{T_{per}}{n}$$
+- Notación útil:
+  - $N_1 = \sum_{i=1}^n Y_i = T_{per}$: número de enfermos en la muestra.
+  - $N_0 = n - N_1$: número de sanos en la muestra.
+
+---
+
+## Función de verosimilitud
+
+- Dada la muestra $Y_1,\dots,Y_n$, la función de verosimilitud es:
+  \[
+  L(\theta)
+    = \prod_{i=1}^n P_\theta(Y_i)
+    = \prod_{i=1}^n \theta^{Y_i} (1-\theta)^{1-Y_i}.
+  \]
+
+- Reagrupando términos:
+  \[
+  L(\theta)
+    = \theta^{\sum_{i=1}^n Y_i}
+      (1-\theta)^{\sum_{i=1}^n (1-Y_i)}
+    = \theta^{N_1} (1-\theta)^{N_0}.
+  \]
+
+- Trabajamos con la **log-verosimilitud**:
+  \[
+  \ell(\theta) = \log L(\theta)
+    = N_1 \log(\theta) + N_0 \log(1-\theta).
+  \]
+
+---
+
+- Derivamos la log-verosimilitud respecto de $\theta$:
+  \[
+  \ell'(\theta)
+    = \frac{d}{d\theta}\big[\,N_1 \log(\theta) + N_0 \log(1-\theta)\,\big]
+    = \frac{N_1}{\theta} - \frac{N_0}{1-\theta}.
+  \]
+
+- Buscamos $\hat{\theta}$ tal que $\ell'(\hat{\theta}) = 0$:
+  \[
+  \frac{N_1}{\hat{\theta}} - \frac{N_0}{1-\hat{\theta}} = 0
+  \quad\Longrightarrow\quad
+  \frac{N_1}{\hat{\theta}} = \frac{N_0}{1-\hat{\theta}}.
+  \]
+
+- Despejando:
+  \[
+  N_1 (1-\hat{\theta}) = N_0 \hat{\theta}
+  \quad\Longrightarrow\quad
+  N_1 = (N_0 + N_1)\hat{\theta} = n\,\hat{\theta}.
+  \]
+
+- Por lo tanto:
+  \[
+  \hat{\theta}_{per} = \frac{N_1}{n}.
+  \]
+
+---
+
+## Verificación de máximo e interpretación
+
+- Segunda derivada:
+  \[
+  \ell''(\theta)
+    = -\frac{N_1}{\theta^2} - \frac{N_0}{(1-\theta)^2} < 0
+    \quad \text{para todo } \theta \in (0,1).
+  \]
+- Luego, el punto crítico encontrado corresponde a un **máximo global** de la verosimilitud.
+
+- Como $N_1 = T_{per}$, podemos escribir:
+  \[
+  \hat{\theta}_{per}
+    = \frac{N_1}{n}
+    = \frac{T_{per}}{n}.
+  \]
+
+### Interpretación
+
+- El EMV de $\theta$ es simplemente la **proporción muestral de individuos enfermos**.
+- En el caso de test perfecto, el estimador natural de la prevalencia es la cantidad de enfermos observados / tamaño de la muestra.
 
 ---
 
@@ -229,121 +358,334 @@ Test imperfecto con $S_e$ y $S_p$ conocidos
 
 ## 2.0.1 Estimación de $p$ con $T_{per}$
 
-### Estimador de $p$
-$$\hat{p} = \frac{T_{per}}{n}$$
+## Nuevo escenario
 
-### Distribución
-$$T_{per} \sim \text{Binomial}(n, p)$$
+- Ahora el test **no es perfecto**.
+- Características del test:
+  \[
+  Se = P(T = 1 \mid Y = 1), \qquad Sp = P(T = 0 \mid Y = 0).
+  \]
+- El resultado observado del test se llama $T$ (1 = positivo, 0 = negativo).
 
-### Propiedades
-- $\mathbb{E}[\hat{p}] = p$
-- $\operatorname{Var}(\hat{p}) = \frac{p(1-p)}{n}$
-- $\hat{p}$ es EMV de $p$
+- En este punto definimos:
+  \[
+  p = P(T = 1)
+  \]
+  es decir, la **probabilidad de que el test dé positivo**.
+  
+---
+
+## Datos observados
+
+- Tomamos una muestra de tamaño $n$.
+- Para cada individuo observamos el resultado del test:
+  \[
+  T_1, T_2, \dots, T_n \sim \text{i.i.d. Bernoulli}(p).
+  \]
+
+- Definimos:
+  \[
+  T_{per} = \sum_{i=1}^n T_i,
+  \]
+  que ahora representa **la cantidad de tests positivos**, no la cantidad de enfermos reales.
+
+- Entonces:
+  \[
+  T_{per} \sim \text{Binomial}(n,p).
+  \]
+  
+---
+
+## Construcción del estimador
+
+- La esperanza de la variable binomial es:
+  \[
+  E[T_{per}] = np.
+  \]
+
+- El estimador natural es la proporción de tests positivos observados:
+  \[
+  \hat{p} = \frac{T_{per}}{n}.
+  \]
+
+### Propiedades inmediatas
+
+- Es el **estimador de máxima verosimilitud** para $p$.
+- Es el **estimador de momentos** para $p$.
+- Es simplemente:
+  \[
+  \hat{p} = \text{proporción muestral de tests positivos}.
+  \]
+
+---
+
+## Interpretación
+
+- En el caso imperfecto, $\hat{p}$ NO es un estimador directo de la prevalencia.
+- $\hat{p}$ mide qué fracción de la muestra obtuvo un resultado positivo en el test
+
+- Más adelante usaremos la relación entre $p$, $\theta$, $Se$ y $Sp$ para estimar $\theta$.
+
+- Esta relación clave será:
+  \[
+  p = P(T = 1) = Se \cdot \theta + (1 - Sp)(1 - \theta).
+  \]
+  *(Item 2.0.2)*
+
+- Por ahora, lo único que necesitamos es:
+  \[
+  \hat{p} = \frac{T_{per}}{n}.
+  \]
 
 ---
 
 ## 2.0.2 $p$ como función de $\theta$, $S_{e}$ y $S_{p}$.
 
+## Objetivo
+
+- Queremos expresar:
+  \[
+  p = P(T = 1)
+  \]
+  en función de:
+  - la prevalencia verdadera $\theta = P(Y=1)$,
+  - la sensibilidad $Se$,
+  - la especificidad $Sp$.
+
+- Esta relación permitirá, más adelante, **estimar $\theta$** usando el test imperfecto.
+
+---
+
+## Paso 1: Probabilidad total
+
 \[
-\boxed{p = Se\,\theta + (1-Sp)(1-\theta)}
+p = P(T = 1)
 \]
 
-### Formas equivalentes
-\[
-p = (Se + Sp - 1)\,\theta + (1-Sp)
-\]
+Descomponemos según el estado verdadero $Y$:
 
 \[
-\theta = \frac{p + Sp - 1}{Se + Sp - 1}
+P(T = 1)
+  = P(T = 1 \mid Y = 1)P(Y=1)
+  + P(T = 1 \mid Y = 0)P(Y=0).
 \]
 
-### Casos límite
+Reemplazamos:
+
+- $P(T=1 \mid Y=1) = Se$,
+- $P(Y=1) = \theta$,
+- $P(Y=0) = 1 - \theta$,
+- $P(T=1 \mid Y=0) = 1 - Sp$.
+
+Obtenemos:
+
 \[
-\theta = 0 \Rightarrow p = 1 - Sp
+p = Se \cdot \theta + (1 - Sp)(1 - \theta).
 \]
+
+---
+
+## Forma final
+
+Podemos escribir:
+
 \[
-\theta = 1 \Rightarrow p = Se
+p = (Se + Sp - 1)\,\theta + (1 - Sp).
 \]
+
+### Observaciones
+
+- La expresión es **lineal en $\theta$**.
+- El coeficiente $(Se + Sp - 1)$ determina la “calidad” del test.
+  - Si $Se + Sp - 1 = 0$, el test **no aporta información** (p = 1 - Sp).
+  - Si $Se + Sp - 1 > 0$, el test permite recuperar parte de la prevalencia.
+- El término constante $(1 - Sp)$ es la **probabilidad de falso positivo** cuando $$\theta$ = 0$.
+
+---
+
+## ¿Qué nos dice esta fórmula?
+
+- El test puede dar positivo por dos razones:
+  1. **Verdadero positivo**: la persona está enferma y el test la detecta.
+     \[
+     Se \cdot \theta
+     \]
+  2. **Falso positivo**: la persona está sana pero el test falla.
+     \[
+     (1 - Sp)(1 - \theta)
+     \]
+
+- Por eso, la probabilidad total de test positivo es:
+  \[
+  p = \text{Verdaderos positivos} + \text{Falsos positivos}.
+  \]
 
 ---
 
 ## 2.0.3 Comportamiento de $p = P(T=1)$
 
-### Fórmula base
-\[
-p(\theta,Se,Sp) = Se\,\theta + (1-Sp)(1-\theta)
-\]
+## Recordatorio
 
-### Valores de referencia
-\[
-Se = 0.9, \quad Sp = 0.95, \quad \theta = 0.25
-\]
-\[
-p(0.25) = 0.2625
-\]
+- Tenemos:
+  \[
+  p = P(T = 1) = Se \cdot \theta + (1 - Sp)(1 - \theta).
+  \]
+- También:
+  \[
+  p(\theta, Se, Sp) = (Se + Sp - 1)\,\theta + (1 - Sp).
+  \]
+
+- En este punto queremos ver cómo cambia $p$ en función de:
+  1. $\theta$ (prevalencia),
+  2. $Se$ (sensibilidad),
+  3. $Sp$ (especificidad),
+
+  fijando los otros dos parámetros.
+  
+---
+
+## Caso (a): variamos $\theta$, fijamos $Se$ y $Sp$
+
+- Fijamos:
+  \[
+  Se = 0.9, \qquad Sp = 0.95.
+  \]
+- En función de $\theta$:
+  \[
+  p(\theta) = Se \cdot \theta + (1 - Sp)(1 - \theta).
+  \]
+
+- Esto es una **función lineal y creciente** en $\theta$.
+
+- Valores extremos:
+  - Si $\theta \to 0$:
+    \[
+    p(\theta) \approx 1 - Sp = 0.05
+    \quad \text{(sólo falsos positivos).}
+    \]
+  - Si $\theta = 1$:
+    \[
+    p(1) = Se = 0.9
+    \quad \text{(todos enfermos, sólo verdaderos positivos).}
+    \]
+
+- Para $\theta = 0.25$:
+  \[
+  p(0.25) = 0.9 \times 0.25 + 0.05 \times 0.75 = 0.2625.
+  \]
 
 ---
 
-## $p$ vs $\theta$ (fijos $Se$, $Sp$)
+```{r, echo=FALSE}
 
-### Comportamiento
-- **Lineal creciente** en $\theta$
+## Valores fijos
+Se_fijo  <- 0.9
+Sp_fijo  <- 0.95
+theta_fijo <- 0.25
+
+## a
+theta_grid <- seq(0, 1, length.out = 1000)
+p_theta <- Se_fijo * theta_grid + (1 - Sp_fijo) * (1 - theta_grid)
+
+plot(theta_grid, p_theta, type = "l",
+     xlab = expression(theta),
+     ylab = "p",
+     main = "Probabilidad de test positivo vs. theta")
+abline(v = theta_fijo, col = "gray", lty = 2)
+abline(h = Se_fijo * theta_fijo + (1 - Sp_fijo) * (1 - theta_fijo),
+       col = "gray", lty = 2)
 
 
-### Límites
-\[
-\theta = 0 \Rightarrow p = 1 - Sp = 0.05
-\]
-\[
-\theta = 1 \Rightarrow p = Se = 0.9
-\]
-
-### Interpretación
-- **$\theta$ bajo**: $p$ dominada por falsos positivos
-- **$\theta$ alto**: $p$ dominada por verdaderos positivos
-
----
-
-## $p$ vs $Se$ (fijos $\theta$, $Sp$)
-
-### Comportamiento
-- **Lineal creciente** en $Se$
-- Pendiente: $\theta = 0.25$
-
-### Efecto
-- **$Se$ baja**: Pocos verdaderos positivos
-- **$Se$ alta**: Mejor detección → $p$ mayor
-
-### Para $Se = 0.9$:
-\[
-p = 0.9 \times 0.25 + 0.05 \times 0.75 = 0.2625
-\]
+```
 
 ---
 
-## $p$ vs $Sp$ (fijos $\theta$, $Se$)
+## Caso (b): variamos $Se$, fijamos $\theta$ y $Sp$
 
-### Comportamiento
-- **Lineal decreciente** en $Sp$
-- Pendiente: $-(1-\theta) = -0.75$
+- Fijamos:
+  \[
+  \theta = 0.25, \qquad Sp = 0.95.
+  \]
 
-### Efecto
-- **$Sp$ baja**: Muchos falsos positivos → $p$ alto
-- **$Sp$ alta**: Menos falsos positivos → $p$ bajo
+- En función de $Se$:
+  \[
+  p(Se) = Se \cdot \theta + (1 - Sp)(1 - \theta)
+        = 0.25 \cdot Se + 0.05 \cdot 0.75.
+  \]
 
-### Para $Sp = 0.95$:
-\[
-p = 0.225 + 0.05 \times 0.75 = 0.2625
-\]
+- Es una función **lineal y creciente** en $Se$.
+
+- Interpretación:
+  - Si $Se$ es muy baja, el test casi no detecta enfermos $\rightarrow$ $p$ se mantiene cerca del nivel de falsos positivos.
+  - A medida que aumenta $Se$, sube la proporción de **verdaderos positivos**, y por eso aumenta $p$.
 
 ---
 
-## Conclusiones clave
+```{r, echo=FALSE}
+## b
+Se_grid <- seq(0, 1, length.out = 1000)
+p_Se <- Se_grid * theta_fijo + (1 - Sp_fijo) * (1 - theta_fijo)
 
-### Relaciones lineales
-1. **$p \nearrow$ con $\theta$** 
-2. **$p \nearrow$ con $Se$** 
-3. **$p \searrow$ con $Sp$** 
+plot(Se_grid, p_Se, type = "l",
+     xlab = "Se",
+     ylab = "p",
+     main = "Probabilidad de test positivo vs. sensibilidad")
+abline(v = Se_fijo, col = "gray", lty = 2)
+abline(h = Se_fijo * theta_fijo + (1 - Sp_fijo) * (1 - theta_fijo),
+       col = "gray", lty = 2)
+```
+
+---
+
+## Caso (c): variamos $Sp$, fijamos $\theta$ y $Se$
+
+- Fijamos:
+  \[
+  \theta = 0.25, \qquad Se = 0.9.
+  \]
+
+- En función de $Sp$:
+  \[
+  p(Sp) = Se \cdot \theta + (1 - Sp)(1 - \theta)
+        = 0.9 \cdot 0.25 + (1 - Sp)\cdot 0.75.
+  \]
+
+- Es una función **lineal y decreciente** en $Sp$.
+
+- Interpretación:
+  - Si $Sp$ es baja $\rightarrow$ muchos falsos positivos $\rightarrow$ $p$ es alto, aunque la prevalencia no sea muy grande.
+  - Al aumentar $Sp$, se reducen los falsos positivos $\rightarrow$ disminuye $p$.
+
+---
+
+```{r,echo=FALSE}
+
+## c
+Sp_grid <- seq(0, 1, length.out = 1000)
+p_Sp <- Se_fijo * theta_fijo + (1 - Sp_grid) * (1 - theta_fijo)
+
+plot(Sp_grid, p_Sp, type = "l",
+     xlab = "Sp",
+     ylab = "p",
+     main = "Probabilidad de test positivo vs. especificidad")
+abline(v = Sp_fijo, col = "gray", lty = 2)
+abline(h = Se_fijo * theta_fijo + (1 - Sp_fijo) * (1 - theta_fijo),
+       col = "gray", lty = 2)
+
+```
+
+---
+
+## Comportamiento de $p$
+
+- $p$ vs $\theta$ (con $Se, Sp$ fijos):
+  - Recta **creciente**; va de $1-Sp$ hasta $Se$.
+
+- $p$ vs $Se$ (con $\theta, Sp$ fijos):
+  - Recta **creciente**; al aumentar $Se$ suben los verdaderos positivos.
+
+- $p$ vs $Sp$ (con $\theta, Se$ fijos):
+  - Recta **decreciente**; al aumentar $Sp$ bajan los falsos positivos.
 
 ---
 
@@ -956,169 +1298,148 @@ knitr::kable(resAsint_df, digits = 4, caption = "Intervalos Asintóticos")
 
 ## 2.3.12 Comportamiento del estimador de momentos
 
-### Definición
-El estimador de momentos se obtiene de:
+## El estimador puede quedar fuera de $[0,1]$
+
+Recordemos el estimador de momentos:
 \[
-p = Se\,\theta + (1-Sp)(1-\theta)
-\]
-y reemplazando \(p\) por \(\hat p = T_{\text{per}}/n\):
-\[
-\hat{\theta}_{MoM} =
-\frac{\hat p + Sp - 1}{Se + Sp - 1}.
+\hat{\theta}_{MoM} = \frac{\hat{p} + Sp - 1}{Se + Sp - 1}.
 \]
 
-### Observación clave
-- Aunque \(\hat p \in [0,1]\), la transformación es **lineal**, por lo que  
-  \(\hat\theta_{MoM}\) **puede salir de \([0,1]\)**.
-- Esto ocurre cuando la muestra tiene demasiados o muy pocos positivos.
+- La prevalencia verdadera satisface:
+  \[
+  0 \le \theta \le 1.
+  \]
 
-### Condiciones
+- Sin embargo, **el estimador $\hat{\theta}_{MoM}$ NO necesariamente cumple**  
+  \[
+  0 \le \hat{\theta}_{MoM} \le 1.
+  \]
+
+---
+
+### ¿Por qué ocurre esto?
+
+- Porque $\hat{p}$ es una proporción muestral sujeta a variabilidad.
+- Cuando la muestra es pequeña o el test es poco informativo  
+  ($Se + Sp - 1$ cercano a 0), la fórmula puede devolver:
+  - valores **negativos**, o
+  - valores **mayores a 1**.
+
+### Consecuencia
+
+- Aparece la necesidad de un **estimador truncado** para garantizar valores válidos.
+
+---
+
+## Casos típicos
+
+1. **$\hat{p}$ muy bajo** pero el test tiene muchos falsos positivos  
+   $\rightarrow$ el numerador puede volverse negativo.
+
+2. **$\hat{p}$ muy alto** pero el test tiene baja sensibilidad  
+   $\rightarrow$ el estimador puede superar 1.
+
+3. **Muestras pequeñas ($n$ chico)**  
+   $\rightarrow$ mayor variabilidad en $\hat{p}$ $\rightarrow$ más frecuencias fuera de $[0,1]$.
+
+4. **Test débil** ($Se + Sp - 1$ pequeño):  
+   $\rightarrow$ divide por un número muy chico $\rightarrow$ el estimador “explota”.
+   
+---
+
+# Ejemplo concreto
+
+Supongamos un test con:
+
+- $Se = 0.90$
+- $Sp = 0.95$
+
+Entonces:
+
 \[
-\hat\theta_{MoM} < 0
-\quad\Longleftrightarrow\quad
-\hat p < 1 - Sp,
+Se + Sp - 1 = 0.90 + 0.95 - 1 = 0.85.
 \]
+
+Tomemos una muestra donde la proporción de tests positivos es muy baja:
+
 \[
-\hat\theta_{MoM} > 1
-\quad\Longleftrightarrow\quad
-\hat p > Se.
+\hat{p} = 0.02.
+\]
+
+Calculemos el estimador de momentos:
+
+\[
+\hat{\theta}_{MoM}
+= \frac{\hat{p} + Sp - 1}{Se + Sp - 1}
+= \frac{0.02 + 0.95 - 1}{0.85}
+= \frac{-0.03}{0.85}
+\approx -0.035.
 \]
 
 ---
 
-## Ejemplos numéricos
+### Interpretación
 
-### Valores de referencia
-\[
-Se = 0.9, \quad Sp = 0.95,
-\qquad
-1 - Sp = 0.05, \quad Se + Sp - 1 = 0.85.
-\]
+- La prevalencia **no puede ser negativa**, pero el estimador de momentos sí puede producir valores $< 0$.
+- Esto sucede porque $\hat{p}$ es muy bajo y el test genera falsos positivos.
+- **Motiva el uso del estimador truncado**, que en este caso devolvería:
 
-### Ejemplo 1: \(\hat\theta_{MoM} < 0\)
-Si no hay positivos en la muestra:
 \[
-\hat p = 0.
+\hat{\theta}_{trunc} = 0.
 \]
-Entonces:
-\[
-\hat\theta_{MoM}
-= \frac{0 + 0.95 - 1}{0.85}
-= \frac{-0.05}{0.85}
-\approx -0.0588.
-\]
-
-### Ejemplo 2: \(\hat\theta_{MoM} > 1\)
-Si la muestra da un valor extremo:
-\[
-\hat p = 0.95,
-\]
-entonces:
-\[
-\hat\theta_{MoM}
-= \frac{0.95 + 0.95 - 1}{0.85}
-= \frac{0.90}{0.85}
-\approx 1.0588.
-\]
-
-### Conclusión
-- El estimador puede quedar fuera del intervalo válido para una probabilidad.
-- Motivación para introducir el **estimador truncado**.
 
 ---
 
 ## 2.3.13 Estudio del estimador truncado
 
-### Motivación
-El estimador de momentos puede tomar valores fuera de \([0,1]\).  
-Para evitar valores imposibles se define el estimador **truncado**:
+## Definición del estimador truncado
 
-### Definición
 \[
-\hat\theta_{\text{trunc}} =
+\hat{\theta}_{trunc} =
 \begin{cases}
-\hat\theta_{\text{MoM}}, & 0 \le \hat\theta_{\text{MoM}} \le 1,\\[6pt]
-0, & \hat\theta_{\text{MoM}} < 0,\\[6pt]
-1, & \hat\theta_{\text{MoM}} > 1.
+\hat{\theta}_{MoM}, & 0 \le \hat{\theta}_{MoM} \le 1,\\[4pt]
+0, & \hat{\theta}_{MoM} < 0,\\[4pt]
+1, & \hat{\theta}_{MoM} > 1.
 \end{cases}
 \]
 
-### Interpretación
-- Coincide con \(\hat\theta_{MoM}\) cuando este es válido.
-- Recorta valores negativos a 0 y mayores a 1 a 1.
-- Introduce **sesgo** para muestras pequeñas, pero evita valores inaceptables.
+Este estimador **siempre produce valores válidos**.
 
 ---
 
-## Simulación Monte Carlo del estimador truncado
+## Queremos estudiar, para $n = 10, 100, 1000$:
 
-### Parámetros usados
-- \(\theta = 0.25\), \(Se = 0.9\), \(Sp = 0.95\)
-- Tamaños muestrales: \(n = 10,\,100,\,1000\)
-- Réplicas: \(N_{\text{rep}} = 10000\)
+1. **Sesgo** de $\hat{\theta}_{trunc}$
+2. **Varianza**
+3. **ECM**
+4. **Distribución aproximada**
 
-### Para cada réplica:
-1. Generar \(T \sim \text{Binomial}(n, p_{verdadera})\)
-2. Calcular \(\hat\theta_{\text{trunc}}\)
-3. Estimar:
-   - media  
-   - sesgo  
-   - varianza  
-   - ECM = Sesgo\(^2\) + Var
+## Parámetros usados
 
-### Tabla de resultados
-\begin{table}[H]
-\centering
-\begin{tabular}{ccccc}
-\hline
-$n$ & media & sesgo & var & ECM \\
-\hline
-10   & 0.2485 & -0.00149 & 0.02463 & 0.02463 \\
-100  & 0.25005 & 0.000048 & 0.002685 & 0.002685 \\
-1000 & 0.25007 & 0.000067 & 0.000263 & 0.000263 \\
-\hline
-\end{tabular}
-\end{table}
+- $\theta = 0.25$
+- $Se = 0.90$
+- $Sp = 0.95$
+
+Simulamos $N_{rep}$ réplicas (típicamente 10,000).
 
 ---
 
-## Análisis del estimador truncado
-
-### Sesgo
-- Para \(n = 10\), el estimador muestra sesgo apreciable.  
-  Esto ocurre porque \(\hat\theta_{MoM}\) cae a menudo por debajo de 0 y se trunca.
-- El sesgo → 0 cuando \(n\) aumenta (coincide con el estimador original).
-
-### Varianza
-- Disminuye al crecer \(n\).
-- Para \(n = 10\) es elevada por la alta variabilidad de \(\hat p\).
-- Para \(n = 1000\) es muy baja y estable.
-
-### ECM
-\[
-ECM = \text{Sesgo}^2 + \text{Var}.
-\]
-- Para muestras pequeñas, ECM grande por sesgo + varianza.
-- Para muestras grandes, el ECM es muy pequeño.
-
-### Conclusión
-El estimador truncado:
-- **es consistente**,  
-- **es asintóticamente equivalente** al estimador de momentos,  
-- pero **distorsiona muestras pequeñas** debido al truncamiento.
-
----
-
-## Distribución del estimador truncado
-
-```{r, echo = FALSE}
-n_valores <- c(10, 100, 1000)
-N_rep <- 10000
+```{r, echo=FALSE}
+# Parámetros
 theta_verdadera <- 0.25
 Se_fijo         <- 0.9
 Sp_fijo         <- 0.95
+
+# Probabilidad verdadera de test positivo bajo el modelo
 p_verdadera <- Se_fijo * theta_verdadera + (1 - Sp_fijo) * (1 - theta_verdadera)
 
+# Número de réplicas para Monte Carlo
+N_rep <- 10000
+
+
+# Funciones para los estimadores
+
+# Estimador de momentos de theta
 theta_mom <- function(T_obs, n, Se = Se_fijo, Sp = Sp_fijo) {
   p_muestral <- T_obs / n
   theta_mom_est <- (p_muestral + Sp - 1) / (Se + Sp - 1)
@@ -1131,6 +1452,77 @@ theta_trunc <- function(T_obs, n, Se = Se_fijo, Sp = Sp_fijo) {
   theta_trunc_est <- pmin(1, pmax(0, theta_mom_est))
   return(theta_trunc_est)
 }
+
+## Tamaños muestrales a estudiar
+n_valores <- c(10, 100, 1000)
+
+## Data frame para almacenar resultados
+resultados <- data.frame(
+  n     = n_valores,
+  media = NA_real_,
+  sesgo = NA_real_,
+  var   = NA_real_,
+  ECM   = NA_real_
+)
+
+for (i in seq_along(n_valores)) {
+  n <- n_valores[i]
+  # Simular T_obs ~ Binomial(n, p_verdadera) N_rep veces
+  T_sim <- rbinom(N_rep, size = n, prob = p_verdadera)
+  # Estimaciones truncadas
+  theta_trunc_sim <- theta_trunc(T_sim, n)
+  # media
+  media_hat <- mean(theta_trunc_sim)
+  # sesgo
+  sesgo_hat <- media_hat - theta_verdadera
+  # varianza
+  var_hat <- var(theta_trunc_sim)
+  # ECM
+  ECM_hat <- mean((theta_trunc_sim - theta_verdadera)^2)
+  
+  # resultados
+  resultados$media[i] <- media_hat
+  resultados$sesgo[i] <- sesgo_hat
+  resultados$var[i]   <- var_hat
+  resultados$ECM[i]   <- ECM_hat
+}
+
+```
+
+## Resultados
+
+Se obtiene lo siguiente:
+```{r}
+knitr::kable(resultados, digits = 9, caption = "Resultados")
+```
+
+---
+
+De esta forma, se observa lo siguiente:
+
+- $\underline{\text{Sesgo:}}$
+Para $n=10$ el estimador presenta un sesgo notable. Esto se debe a que el estimador de momentos frecuentemente cae por debajo de $0$ y es truncado a cero, lo cual desplaza el valor medio del estimador hacia la región central del intervalo. A medida que el tamaño muestral aumenta, la frecuencia de truncamientos disminuye y el sesgo se aproxima a cero. En consecuencia, el estimador truncado es asintóticamente insesgado.
+
+
+- $\underline{\text{Varianza:}}$
+La varianza disminuye al crecer $n$, como es esperable para un estimador consistente. Para $n=10$ la varianza es elevada debido a la alta variabilidad de $\hat p$, mientras que para $n=1000$ el estimador muestra muy poca dispersión.
+
+---
+
+- $\underline{\text{Error cuadrático medio:}}$
+El ECM refleja el compromiso entre sesgo y varianza:
+\[
+ECM = \operatorname{Sesgo}^2 + \operatorname{Var}.
+\]
+Para tamaños muestrales pequeños, el ECM se ve afectado tanto por el sesgo inducido por el truncamiento como por la alta varianza. Para tamaños muestrales grandes, el ECM resulta muy pequeño, consistente con la convergencia del estimador.
+
+---
+
+- $\underline{\text{Distribución asintótica:}}$
+observemos los siguientes gráficos para la distribución asintótica:
+
+```{r, echo=FALSE}
+set.seed(43)
 
 par(mfrow = c(2, 2))  ## grid para los gráficos
 
@@ -1157,7 +1549,11 @@ par(mfrow = c(1, 1))
 n <- 1000
 T_sim <- rbinom(N_rep, size = n, prob = p_verdadera)
 theta_trunc_sim <- theta_trunc(T_sim, n)
+```
 
+---
+
+```{r, echo=FALSE}
 qqnorm(theta_trunc_sim,
        main = expression(paste("QQ-plot de ", hat(theta)[trunc], " para n=1000")),
        xlab= "",
@@ -1168,26 +1564,9 @@ qqline(theta_trunc_sim)
 
 ---
 
-### Observaciones de la simulación
-- Para \(n = 10\):  
-  - La distribución muestra **acumulación en 0 y 1**.  
-  - No es aproximadamente normal.
-- Para \(n = 100\):  
-  - La masa en los bordes disminuye.  
-  - La distribución empieza a ser unimodal y más suave.
-- Para \(n = 1000\):  
-  - El truncamiento ocurre con probabilidad casi nula.  
-  - La distribución es bien aproximada por una normal:
-\[
-\hat\theta_{\text{trunc}} \approx
-\mathcal{N}\left(
-\theta,\;
-\frac{p(1-p)}{n(Se+Sp-1)^2}
-\right).
-\]
+Para $n$ pequeños, la distribución empírica de $\hat\theta_{\text{trunc}}$ muestra acumulación de masa en los puntos $0$ y $1$, debido al truncamiento. Por ello, la distribución no es aproximadamente normal. Sin embargo, para $n$ grandes el truncamiento ocurre con probabilidad prácticamente nula, y la distribución empírica se aproxima bien a una normal, coincidiendo en este caso con la distribución asintótica del estimador de momentos no truncado.
 
-### Conclusión general
-- Para muestras grandes, el estimador truncado **preserva la distribución asintótica del MoM**.
+Para finalizar, estos resultados,  en conjunto, muestran que el truncamiento introduce sesgo en muestras pequeñas, pero el estimador es asintóticamente equivalente al estimador de momentos original, preservando sus propiedades cuando $n$ es grande.
 
 ---
 
