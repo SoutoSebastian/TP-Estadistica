@@ -32,9 +32,9 @@ Test perfecto (baseline)
 
 ---
 
-# 1.1 Distribución de $T_{per}$
+## 1.1 Distribución de $T_{per}$
 
-## Motivación
+### Motivación
 
 - Estudiamos primero un caso ideal: el test diagnóstico **no comete errores**.
 - Esto equivale a suponer:
@@ -49,7 +49,7 @@ Test perfecto (baseline)
 
 ---
 
-## Modelo del estado verdadero
+### Modelo del estado verdadero
 
 - Cada individuo $i$ puede estar enfermo ($Y_i = 1$) o sano ($Y_i = 0$).
 - Modelamos:
@@ -63,7 +63,7 @@ Test perfecto (baseline)
   
 ---
 
-## Número de individuos enfermos en la muestra
+### Número de individuos enfermos en la muestra
 
 - Definimos:
   \[
@@ -76,7 +76,7 @@ Test perfecto (baseline)
   
 ---
 
-## Resultado
+### Resultado
 
 - La suma de $n$ variables Bernoulli independientes con parámetro $\theta$ sigue una binomial:
   \[
@@ -95,7 +95,7 @@ De esta forma, $T_{per} \sim \text{Binomial}(n, \theta)$
 
 ## 1.2 Estimador de Máxima Verosimilitud
 
-## Planteo
+### Planteo
 
 - Seguimos en el caso de **test perfecto**:
   \[
@@ -114,7 +114,7 @@ De esta forma, $T_{per} \sim \text{Binomial}(n, \theta)$
 
 ---
 
-## Función de verosimilitud
+### Función de verosimilitud
 
 - Dada la muestra $Y_1,\dots,Y_n$, la función de verosimilitud es:
   \[
@@ -167,7 +167,7 @@ De esta forma, $T_{per} \sim \text{Binomial}(n, \theta)$
 
 ---
 
-## Verificación de máximo e interpretación
+### Verificación de máximo e interpretación
 
 - Segunda derivada:
   \[
@@ -358,7 +358,7 @@ Test imperfecto con $S_e$ y $S_p$ conocidos
 
 ## 2.0.1 Estimación de $p$ con $T_{per}$
 
-## Nuevo escenario
+### Nuevo escenario
 
 - Ahora el test **no es perfecto**.
 - Características del test:
@@ -375,7 +375,7 @@ Test imperfecto con $S_e$ y $S_p$ conocidos
   
 ---
 
-## Datos observados
+### Datos observados
 
 - Tomamos una muestra de tamaño $n$.
 - Para cada individuo observamos el resultado del test:
@@ -396,7 +396,7 @@ Test imperfecto con $S_e$ y $S_p$ conocidos
   
 ---
 
-## Construcción del estimador
+### Construcción del estimador
 
 - La esperanza de la variable binomial es:
   \[
@@ -408,7 +408,7 @@ Test imperfecto con $S_e$ y $S_p$ conocidos
   \hat{p} = \frac{T_{per}}{n}.
   \]
 
-### Propiedades inmediatas
+#### Propiedades inmediatas
 
 - Es el **estimador de máxima verosimilitud** para $p$.
 - Es el **estimador de momentos** para $p$.
@@ -419,7 +419,7 @@ Test imperfecto con $S_e$ y $S_p$ conocidos
 
 ---
 
-## Interpretación
+### Interpretación
 
 - En el caso imperfecto, $\hat{p}$ NO es un estimador directo de la prevalencia.
 - $\hat{p}$ mide qué fracción de la muestra obtuvo un resultado positivo en el test
@@ -441,7 +441,7 @@ Test imperfecto con $S_e$ y $S_p$ conocidos
 
 ## 2.0.2 $p$ como función de $\theta$, $S_{e}$ y $S_{p}$.
 
-## Objetivo
+### Objetivo
 
 - Queremos expresar:
   \[
@@ -456,7 +456,7 @@ Test imperfecto con $S_e$ y $S_p$ conocidos
 
 ---
 
-## Paso 1: Probabilidad total
+### Paso 1: Probabilidad total
 
 \[
 p = P(T = 1)
@@ -485,7 +485,7 @@ p = Se \cdot \theta + (1 - Sp)(1 - \theta).
 
 ---
 
-## Forma final
+### Forma final
 
 Podemos escribir:
 
@@ -503,7 +503,7 @@ p = (Se + Sp - 1)\,\theta + (1 - Sp).
 
 ---
 
-## ¿Qué nos dice esta fórmula?
+### ¿Qué nos dice esta fórmula?
 
 - El test puede dar positivo por dos razones:
   1. **Verdadero positivo**: la persona está enferma y el test la detecta.
@@ -524,7 +524,7 @@ p = (Se + Sp - 1)\,\theta + (1 - Sp).
 
 ## 2.0.3 Comportamiento de $p = P(T=1)$
 
-## Recordatorio
+### Recordatorio
 
 - Tenemos:
   \[
@@ -676,7 +676,7 @@ abline(h = Se_fijo * theta_fijo + (1 - Sp_fijo) * (1 - theta_fijo),
 
 ---
 
-## Comportamiento de $p$
+### Comportamiento de $p$
 
 - $p$ vs $\theta$ (con $Se, Sp$ fijos):
   - Recta **creciente**; va de $1-Sp$ hasta $Se$.
@@ -863,106 +863,129 @@ legend("topright", legend=c("Test imperfecto", "Test perfecto"),
 \text{ECM}_{\text{teórico}} = \operatorname{Var}_{\text{teórica}} \quad (\text{sesgo}=0)
 \]
 
+```{r, echo=FALSE}
+R <- 10000
+ns <- c(10, 20, 50, 100, 200) 
+
+# Función estimador de momentos
+tita_corregida <- function(p_hat, Se, Sp) {
+  (p_hat - (1 - Sp)) / (Se + Sp - 1)
+}
+
+# resultados
+resultados_imp <- data.frame(
+  n = ns,
+  bias_sim = NA,
+  var_sim  = NA,
+  ecm_sim  = NA,
+  var_teo  = NA,
+  ecm_teo  = NA
+)
+
+for (i in seq_along(ns)) {
+  n <- ns[i]
+  est_imp <- numeric(R)
+
+  # Probabilidad real del test positivo
+  p_Y <- Se*tita + (1 - Sp)*(1 - tita)
+
+  for (r in 1:R) {
+
+    # 1) Genero la muestra de T correctamente
+    T <- rbinom(n, 1, p_Y)
+
+    # 2) Estimador de momentos
+    p_hat <- mean(T)
+    est_imp[r] <- tita_corregida(p_hat, Se, Sp)
+  }
+
+  # --- Estadísticos simulados ---
+  bias_sim <- mean(est_imp) - tita
+  var_sim  <- var(est_imp)
+  ecm_sim  <- mean((est_imp - tita)^2)
+
+  # --- Valores teóricos ---
+  p_true <- p_Y
+  denom  <- Se + Sp - 1
+  var_teo <- (p_true*(1 - p_true)) / (n * denom^2)
+  ecm_teo <- var_teo   # insesgado
+
+  # --- Guardar ---
+  resultados_imp$bias_sim[i] <- bias_sim
+  resultados_imp$var_sim[i]  <- var_sim
+  resultados_imp$ecm_sim[i]  <- ecm_sim
+  resultados_imp$var_teo[i]  <- var_teo
+  resultados_imp$ecm_teo[i]  <- ecm_teo
+}
+
+```
+
 ---
 
 ## Sesgo: Simulado vs Teórico (=0)
 
-```{r, echo=FALSE, fig.height=4}
-# Código adaptado para mostrar solo el gráfico
-tita <- 0.25
-Se <- 0.9
-Sp <- 0.95
-ns <- c(10, 20, 50, 100, 200)
-R <- 10000
+```{r, echo=FALSE}
 
-resultados <- data.frame(n = ns, bias_sim = NA)
-
-for (i in seq_along(ns)) {
-  n <- ns[i]
-  p_Y <- Se*tita + (1 - Sp)*(1 - tita)
-  est_imp <- numeric(R)
-  
-  for (r in 1:R) {
-    T <- rbinom(n, 1, p_Y)
-    p_hat <- mean(T)
-    est_imp[r] <- (p_hat - (1 - Sp)) / (Se + Sp - 1)
-  }
-  resultados$bias_sim[i] <- mean(est_imp) - tita
-}
-
-plot(resultados$n, resultados$bias_sim, type="b", pch=19,
+## SESGO (teórico = 0)
+plot(resultados_imp$n, resultados_imp$bias_sim,
+     type="b", pch=19,
      xlab="n", ylab="Sesgo",
      main="Sesgo: Simulado vs Teórico",
-     ylim=range(resultados$bias_sim))
+     ylim=c(min(resultados_imp$bias_sim), max(resultados_imp$bias_sim)))
+
+# línea de sesgo teórico = 0
 abline(h = 0, col="blue", lwd=2, lty=2)
-legend("topright", legend=c("Sesgo sim.", "Sesgo teórico (0)"),
+
+legend("topright",
+       legend=c("Sesgo sim.", "Sesgo teórico (0)"),
        col=c("black","blue"), pch=c(19, NA), lty=c(1,2))
+
 ```
 
 ---
 
 ## Varianza: Simulado vs Teórica
 
-```{r, echo=FALSE, fig.height=4}
-# Cálculos para varianza
-var_teo <- numeric(length(ns))
-var_sim <- numeric(length(ns))
+```{r, echo=FALSE}
 
-for (i in seq_along(ns)) {
-  n <- ns[i]
-  p_Y <- Se*tita + (1 - Sp)*(1 - tita)
-  est_imp <- numeric(R)
-  
-  for (r in 1:R) {
-    T <- rbinom(n, 1, p_Y)
-    p_hat <- mean(T)
-    est_imp[r] <- (p_hat - (1 - Sp)) / (Se + Sp - 1)
-  }
-  var_sim[i] <- var(est_imp)
-  var_teo[i] <- (p_Y*(1 - p_Y)) / (n * (Se + Sp - 1)^2)
-}
-
-plot(ns, var_sim, type="b", pch=19, xlab="n", ylab="Varianza",
+## VARIANZA
+plot(resultados_imp$n, resultados_imp$var_sim,
+     type="b", pch=19,
+     xlab="n", ylab="Varianza",
      main="Varianza: Simulado vs Teórica",
-     ylim=c(0, max(var_sim, var_teo)))
-lines(ns, var_teo, type="b", pch=17, col="blue")
-legend("topright", legend=c("Var sim.", "Var teórica"),
+     ylim=c(0, max(resultados_imp$var_sim, resultados_imp$var_teo)))
+
+lines(resultados_imp$n, resultados_imp$var_teo,
+      type="b", pch=17, col="blue")
+
+legend("topright",
+       legend=c("Var sim.", "Var teórica"),
        col=c("black","blue"), pch=c(19,17))
+
+
 ```
 
 ---
 
 ## ECM: Simulado vs Teórico
 
-```{r, echo=FALSE, fig.height=4}
+```{r, echo=FALSE}
 
-# Cálculos para varianza
-var_teo <- numeric(length(ns))
-var_sim <- numeric(length(ns))
+## ECM
+plot(resultados_imp$n, resultados_imp$ecm_sim,
+     type="b", pch=19,
+     xlab="n", ylab="ECM",
+     main="ECM: Simulado vs Teórico",
+     ylim=c(0, max(resultados_imp$ecm_sim, resultados_imp$ecm_teo)))
 
-for (i in seq_along(ns)) {
-  n <- ns[i]
-  p_Y <- Se*tita + (1 - Sp)*(1 - tita)
-  est_imp <- numeric(R)
-  
-  for (r in 1:R) {
-    T <- rbinom(n, 1, p_Y)
-    p_hat <- mean(T)
-    est_imp[r] <- (p_hat - (1 - Sp)) / (Se + Sp - 1)
-  }
-  var_sim[i] <- var(est_imp)
-  var_teo[i] <- (p_Y*(1 - p_Y)) / (n * (Se + Sp - 1)^2)
-}
+lines(resultados_imp$n, resultados_imp$ecm_teo,
+      type="b", pch=17, col="blue")
 
-plot(ns, var_sim, type="b", pch=19, xlab="n", ylab="Varianza",
-     main="Varianza: Simulado vs Teórica",
-     ylim=c(0, max(var_sim, var_teo)))
-lines(ns, var_teo, type="b", pch=17, col="blue")
-legend("topright", legend=c("Var sim.", "Var teórica"),
+legend("topright",
+       legend=c("ECM sim.", "ECM teórico"),
        col=c("black","blue"), pch=c(19,17))
 
 ```
-
 
 ---
 
@@ -1001,37 +1024,33 @@ legend("topright", legend=c("Var sim.", "Var teórica"),
 
 ## Distribución bootstrap ($n=10$)
 
-```{r, echo=FALSE, fig.height=4.5}
-tita <- 0.25
-Se <- 0.9
-Sp <- 0.95
-n <- 10
-B <- 5000
+```{r, echo=FALSE}
 
-# Probabilidad real
+n <- 10     # tamaño de la muestra
+B <- 5000   # cantidad de réplicas bootstrap
+
+# Probabilidad real de T = 1 bajo test imperfecto
 p_Y <- Se * tita + (1 - Sp) * (1 - tita)
 
-# Muestra original
-set.seed(123)  # Para reproducibilidad
-T_original <- rbinom(n, 1, p_Y)
+# Genero una muestra original de T
+T <- rbinom(n, 1, p_Y)
 
-# Bootstrap
+# Bootstrap no paramétrico
 boot_est <- numeric(B)
+
 for (b in 1:B) {
-  T_boot <- sample(T_original, size = n, replace = TRUE)
+  T_boot <- sample(T, size = n, replace = TRUE)
   p_hat_boot <- mean(T_boot)
-  boot_est[b] <- (p_hat_boot - (1 - Sp)) / (Se + Sp - 1)
+  boot_est[b] <- tita_corregida(p_hat_boot, Se, Sp)
 }
 
 # Histograma
-hist(boot_est, breaks = 15, freq = TRUE, col = "lightblue",
-     main = "Distribución bootstrap - n = 10",
-     xlab = expression(hat(theta)["MoM"]), 
-     ylab = "Frecuencia", border = "darkblue")
-abline(v = tita, col = "red", lwd = 3, lty = 2)
-abline(v = mean(boot_est), col = "darkgreen", lwd = 2, lty = 2)
-legend("topright", legend = c(expression(theta*" verdadero"), "Media bootstrap"),
-       col = c("red", "darkgreen"), lwd = c(3, 2), lty = c(2, 2), cex = 0.8)
+hist(boot_est, breaks = 15, freq = TRUE,
+     main = "Distribución bootstrap del estimador de momentos (n = 10)",
+     xlab = expression(hat(theta)["bootstrap"]))
+
+abline(v = tita, col = "red", lwd = 2)  # valor verdadero
+
 ```
 
 ---
@@ -1298,7 +1317,7 @@ knitr::kable(resAsint_df, digits = 4, caption = "Intervalos Asintóticos")
 
 ## 2.3.12 Comportamiento del estimador de momentos
 
-## El estimador puede quedar fuera de $[0,1]$
+### El estimador puede quedar fuera de $[0,1]$
 
 Recordemos el estimador de momentos:
 \[
@@ -1347,7 +1366,7 @@ Recordemos el estimador de momentos:
    
 ---
 
-# Ejemplo concreto
+## Ejemplo concreto
 
 Supongamos un test con:
 
@@ -1392,7 +1411,7 @@ Calculemos el estimador de momentos:
 
 ## 2.3.13 Estudio del estimador truncado
 
-## Definición del estimador truncado
+### Definición del estimador truncado
 
 \[
 \hat{\theta}_{trunc} =
@@ -1407,14 +1426,14 @@ Este estimador **siempre produce valores válidos**.
 
 ---
 
-## Queremos estudiar, para $n = 10, 100, 1000$:
+### Queremos estudiar, para $n = 10, 100, 1000$:
 
 1. **Sesgo** de $\hat{\theta}_{trunc}$
 2. **Varianza**
 3. **ECM**
 4. **Distribución aproximada**
 
-## Parámetros usados
+### Parámetros usados
 
 - $\theta = 0.25$
 - $Se = 0.90$
@@ -1489,10 +1508,10 @@ for (i in seq_along(n_valores)) {
 
 ```
 
-## Resultados
+### Resultados
 
 Se obtiene lo siguiente:
-```{r}
+```{r, echo=FALSE}
 knitr::kable(resultados, digits = 9, caption = "Resultados")
 ```
 
@@ -1522,7 +1541,6 @@ Para tamaños muestrales pequeños, el ECM se ve afectado tanto por el sesgo ind
 observemos los siguientes gráficos para la distribución asintótica:
 
 ```{r, echo=FALSE}
-set.seed(43)
 
 par(mfrow = c(2, 2))  ## grid para los gráficos
 
@@ -1667,8 +1685,8 @@ Vamos a aplicar el test dado en el item anterior a un caso ficticio con $n_{pre}
 
 * El estadístico observado tiene el siguiente valor:
 
-```{r, echo=FALSE, eval=TRUE}
-# Definimos valores y calculamos U (sin mostrar código)
+```{r, echo=FALSE}
+#Definimos los valores.
 n_pre <- 100
 n_post <- 100
 Se <- 0.9
@@ -1676,13 +1694,18 @@ Sp <- 0.95
 tita_pre <- 0.2
 tita_post <- 0.15
 
+#Calculamos p_pre y p_post:
+
 p_pre <- (Se + Sp - 1)* tita_pre + (1 - Sp)
 p_post <- (Se + Sp - 1)* tita_post + (1 - Sp)
 
-set.seed(123)  # Para reproducibilidad
+
+#Generamos ambas muestras (pre y post):
+
 Xpre <- rbinom(n_pre, 1, p_pre)
 Xpost <- rbinom(n_post, 1, p_post)
 
+#Ahora calculamos U(Xpre, Xpost):
 p_preHat <- mean(Xpre)
 p_postHat <- mean(Xpost)
 
@@ -1692,7 +1715,9 @@ tita_postHat <- (p_postHat + Sp - 1)/(Se + Sp - 1)
 Var_preHat <- (p_preHat*(1-p_preHat))/(n_pre*(Se+Sp-1)^2)
 Var_postHat <- (p_postHat*(1-p_postHat))/(n_post*(Se+Sp-1)^2)
 
+
 U <- (tita_postHat - tita_preHat)/(sqrt(Var_postHat + Var_preHat))
+
 
 cat("U =", round(U, 4))
 ```
@@ -1705,14 +1730,26 @@ Por lo tanto, no hay evidencia suficiente como para rechazar $H_{0}$ a nivel apr
 
 - Para $n = 50$, obtenemos el siguiente resultado:
 
-```{r, echo=FALSE, eval=TRUE}
+```{r, echo=FALSE}
 n_pre <- 50
 n_post <- 50
+Se <- 0.9
+Sp <- 0.95
+tita_pre <- 0.2
+tita_post <- 0.15
 
-set.seed(123)
+#Calculamos p_pre y p_post:
+
+p_pre <- (Se + Sp - 1)* tita_pre + (1 - Sp)
+p_post <- (Se + Sp - 1)* tita_post + (1 - Sp)
+
+
+#Generamos ambas muestras (pre y post):
+
 Xpre <- rbinom(n_pre, 1, p_pre)
 Xpost <- rbinom(n_post, 1, p_post)
 
+#Ahora calculamos U(Xpre, Xpost):
 p_preHat <- mean(Xpre)
 p_postHat <- mean(Xpost)
 
@@ -1722,7 +1759,10 @@ tita_postHat <- (p_postHat + Sp - 1)/(Se + Sp - 1)
 Var_preHat <- (p_preHat*(1-p_preHat))/(n_pre*(Se+Sp-1)^2)
 Var_postHat <- (p_postHat*(1-p_postHat))/(n_post*(Se+Sp-1)^2)
 
+
 U50 <- (tita_postHat - tita_preHat)/(sqrt(Var_postHat + Var_preHat))
+
+
 
 cat("U (n=50) =", round(U50, 4))
 ```
@@ -1731,14 +1771,26 @@ El valor del estadístico observado sigue estando en la región de aceptación. 
 
 - Para $n = 10$, obtenemos el siguiente resultado:
 
-```{r, echo=FALSE, eval=TRUE}
+```{r, echo = FALSE}
 n_pre <- 10
 n_post <- 10
+Se <- 0.9
+Sp <- 0.95
+tita_pre <- 0.2
+tita_post <- 0.15
 
-set.seed(123)
+#Calculamos p_pre y p_post:
+
+p_pre <- (Se + Sp - 1)* tita_pre + (1 - Sp)
+p_post <- (Se + Sp - 1)* tita_post + (1 - Sp)
+
+
+#Generamos ambas muestras (pre y post):
+
 Xpre <- rbinom(n_pre, 1, p_pre)
 Xpost <- rbinom(n_post, 1, p_post)
 
+#Ahora calculamos U(Xpre, Xpost):
 p_preHat <- mean(Xpre)
 p_postHat <- mean(Xpost)
 
@@ -1747,6 +1799,7 @@ tita_postHat <- (p_postHat + Sp - 1)/(Se + Sp - 1)
 
 Var_preHat <- (p_preHat*(1-p_preHat))/(n_pre*(Se+Sp-1)^2)
 Var_postHat <- (p_postHat*(1-p_postHat))/(n_post*(Se+Sp-1)^2)
+
 
 U10 <- (tita_postHat - tita_preHat)/(sqrt(Var_postHat + Var_preHat))
 
