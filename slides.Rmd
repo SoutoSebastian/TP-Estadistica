@@ -1,8 +1,10 @@
 ---
 title: "Trabajo Práctico – IECD"
 author: "Grupo 11"
-date: "2025-12-8"
-output: beamer_presentation
+date: "2025-12-08"
+output:
+  beamer_presentation: default
+  ioslides_presentation: default
 ---
 
 ```{r setup, include=FALSE}
@@ -591,16 +593,32 @@ legend("topright", legend=c("Var sim.", "Var teórica"),
 ## ECM: Simulado vs Teórico
 
 ```{r, echo=FALSE, fig.height=4}
-# Cálculos para ECM
-ecm_sim <- numeric(length(ns))
-ecm_teo <- var_teo  # insesgado
 
-plot(ns, ecm_sim, type="b", pch=19, xlab="n", ylab="ECM",
-     main="ECM: Simulado vs Teórico",
-     ylim=c(0, max(ecm_sim, ecm_teo)))
-lines(ns, ecm_teo, type="b", pch=17, col="blue")
-legend("topright", legend=c("ECM sim.", "ECM teórico"),
+# Cálculos para varianza
+var_teo <- numeric(length(ns))
+var_sim <- numeric(length(ns))
+
+for (i in seq_along(ns)) {
+  n <- ns[i]
+  p_Y <- Se*tita + (1 - Sp)*(1 - tita)
+  est_imp <- numeric(R)
+  
+  for (r in 1:R) {
+    T <- rbinom(n, 1, p_Y)
+    p_hat <- mean(T)
+    est_imp[r] <- (p_hat - (1 - Sp)) / (Se + Sp - 1)
+  }
+  var_sim[i] <- var(est_imp)
+  var_teo[i] <- (p_Y*(1 - p_Y)) / (n * (Se + Sp - 1)^2)
+}
+
+plot(ns, var_sim, type="b", pch=19, xlab="n", ylab="Varianza",
+     main="Varianza: Simulado vs Teórica",
+     ylim=c(0, max(var_sim, var_teo)))
+lines(ns, var_teo, type="b", pch=17, col="blue")
+legend("topright", legend=c("Var sim.", "Var teórica"),
        col=c("black","blue"), pch=c(19,17))
+
 ```
 
 
@@ -614,15 +632,15 @@ legend("topright", legend=c("ECM sim.", "ECM teórico"),
 3. **ECM simulada aprox ECM teórico** → Fórmulas correctas
 
 ### Comportamiento observado
-- **Convergencia**: A mayor $n$, mejor ajuste teórico-simulado
+- **Convergencia**: A mayor $n$, mejor ajuste entre lo simulado y lo teorico
 - **Consistencia**: Var/ECM decrecen como $1/n$
 - **Robustez**: Fórmulas teóricas válidas aún para $n$ pequeño
 
 ### Implicaciones
 - **Expresiones teóricas** son confiables
-- **Estimador MoM** se comporta según teoría
+- **Estimador MoM** se comporta según la teoría
 - **Simulación** valida aproximaciones asintóticas
-
+  
 ---
 
 ## 2.1.8 Bootstrap para $\hat{\theta}_{MoM}$ ($n=10$)
@@ -694,6 +712,7 @@ legend("topright", legend = c(expression(theta*" verdadero"), "Media bootstrap")
 2. **Sesgo positivo** 
 3. **Distribución asimétrica** hacia derecha
 4. **Valores fuera de [0,1]** posibles
+5. Se recomienda aumentar $n$ (mas centrado al valor real y disminuir var)
 
 ---
 
@@ -1356,6 +1375,89 @@ cat("U (n=10) =", round(U10, 4))
 ```
 
 Para una muestra tan pequeña el test se vuelve inestable y es practicamente inútil, ya que nuetsro test es de nivel asintótico.
+
+---
+
+## 3.1.3 Intervalo de confianza de nivel asintotico 0.95 para $\Delta$
+
+Usamos el estimador de momentos (no truncado):
+
+\[
+\hat\theta_A \;=\; \frac{\hat p_A + (Sp - 1)}{Se + Sp - 1}, 
+\qquad A \in \{\text{pre}, \text{post}\},
+\]
+
+donde \(\hat p_A = X_A / n_A\) y \(X_A\) es el número de tests positivos observados.
+
+
+El pivote utilizado es:
+
+\[
+Z \;=\; 
+\frac{
+\widehat{\Delta} - \Delta
+}{
+\sqrt{
+\widehat{Var}(\hat\theta_{\text{post}}) +
+\widehat{Var}(\hat\theta_{\text{pre}})
+}
+},
+\]
+
+el cual tiene distribución aproximada \(N(0,1)\).
+
+---
+
+El intervalo de confianza asintótico al 95% para la diferencia
+
+\[
+\Delta = \theta_{\text{post}} - \theta_{\text{pre}}
+\]
+
+es
+
+\[
+\widehat{\Delta} \;\pm\;
+1.96 \sqrt{
+\widehat{Var}(\hat\theta_{\text{post}}) +
+\widehat{Var}(\hat\theta_{\text{pre}})
+}.
+\]
+
+donde \(\widehat{\Delta} = \hat\theta_{\text{post}} - \hat\theta_{\text{pre}}\).
+
+```{r, echo=FALSE, eval=TRUE}
+
+# Estimador de Delta y su desvío estándar
+DeltaHat <- tita_postHat - tita_preHat
+se_Delta <- sqrt(Var_preHat + Var_postHat)
+
+# Intervalo asintotico 95%
+z <- qnorm(0.975)
+IC_lower <- DeltaHat - z * se_Delta
+IC_upper <- DeltaHat + z * se_Delta
+
+cat("DeltaHat =", round(DeltaHat, 4), "\n")
+cat("IC 95% para Delta: [", round(IC_lower, 4), ",", round(IC_upper, 4), "]\n")
+
+```
+
+El intervalo calculado fue:
+
+\[
+IC_{95\%}(\Delta)
+=
+[-0.3259,\; 0.5612].
+\]
+
+---
+
+### Observaciones
+
+- **Incluye al 0**, no hay evidencia suficiente para decir que hay un cambio real entre pre y post. 
+- **Intervalo bastante ancho**, hay alta incertidumbre.
+- **Limite superior es bastante grande** puede haber aumento grande entre pre y post.
+- **Limite inferior negativo**, tambien puede haber una disminucion moderada.
 
 ---
 
