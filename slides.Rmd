@@ -353,60 +353,6 @@ Test imperfecto con $S_e$ y $S_p$ conocidos
 
 ---
 
-## 2.0.1 Estimación de $p$ con $T_{per}$
-
-### Nuevo escenario
-
-- Ahora el test **no es perfecto**.
-- Características del test:
-  \[
-  Se = P(T = 1 \mid Y = 1), \qquad Sp = P(T = 0 \mid Y = 0).
-  \]
-- El resultado observado del test se llama $T$ (1 = positivo, 0 = negativo).
-
-- En este punto definimos:
-  \[
-  p = P(T = 1)
-  \]
-  es decir, la **probabilidad de que el test dé positivo**.
-  
----
-
-### Datos observados
-
-- Tomamos una muestra de tamaño $n$.
-- Para cada individuo observamos el resultado del test:
-  \[
-  T_1, T_2, \dots, T_n \sim \text{i.i.d. Bernoulli}(p).
-  \]
-
-- Definimos:
-  \[
-  T_{per} = \sum_{i=1}^n T_i,
-  \]
-  que ahora representa **la cantidad de tests positivos**, no la cantidad de enfermos reales.
-
-- Entonces:
-  \[
-  T_{per} \sim \text{Binomial}(n,p).
-  \]
-  
----
-
-### Construcción del estimador
-
-- La esperanza de la variable binomial es:
-  \[
-  E[T_{per}] = np.
-  \]
-
-- El estimador natural es la proporción de tests positivos observados:
-  \[
-  \hat{p} = \frac{T_{per}}{n}.
-  \]
-
----
-
 ## 2.0.2 $p$ como función de $\theta$, $S_{e}$ y $S_{p}$.
 
 ### Objetivo
@@ -466,25 +412,6 @@ p = (Se + Sp - 1)\,\theta + (1 - Sp).
   - Si $Se + Sp - 1 = 0$, el test **no aporta información** (p = 1 - Sp).
   - Si $Se + Sp - 1 > 0$, el test permite recuperar parte de la prevalencia.
 - El término constante $(1 - Sp)$ es la **probabilidad de falso positivo** cuando $$\theta$ = 0$.
-
----
-
-### ¿Qué nos dice esta fórmula?
-
-- El test puede dar positivo por dos razones:
-  1. **Verdadero positivo**: la persona está enferma y el test la detecta.
-     \[
-     Se \cdot \theta
-     \]
-  2. **Falso positivo**: la persona está sana pero el test falla.
-     \[
-     (1 - Sp)(1 - \theta)
-     \]
-
-- Por eso, la probabilidad total de test positivo es:
-  \[
-  p = \text{Verdaderos positivos} + \text{Falsos positivos}.
-  \]
 
 ---
 
@@ -1289,53 +1216,6 @@ Recordemos el estimador de momentos:
 
 ---
 
-### ¿Por qué ocurre esto?
-
-- Cuando la muestra es pequeña o el test es poco informativo  
-  ($Se + Sp - 1$ cercano a 0), la fórmula puede devolver:
-  - valores **negativos**, o
-  - valores **mayores a 1**.
-
----
-
-### Ejemplo concreto
-
-Supongamos un test con:
-
-- $Se = 0.90$
-- $Sp = 0.95$
-
-Entonces:
-
-\[
-Se + Sp - 1 = 0.90 + 0.95 - 1 = 0.85.
-\]
-
-Tomemos una muestra donde la proporción de tests positivos es muy baja:
-
-\[
-\hat{p} = 0.02.
-\]
-
-Calculemos el estimador de momentos:
-
-\[
-\hat{\theta}_{MoM}
-= \frac{\hat{p} + Sp - 1}{Se + Sp - 1}
-= \frac{0.02 + 0.95 - 1}{0.85}
-= \frac{-0.03}{0.85}
-\approx -0.035.
-\]
-
----
-
-### Interpretación
-
-- La prevalencia **no puede ser negativa**, pero el estimador de momentos sí puede producir valores $< 0$.
-- Esto sucede porque $\hat{p}$ es muy bajo y el test genera falsos positivos.
-
----
-
 ## 2.3.13 Estudio del estimador truncado
 
 ### Definición del estimador truncado
@@ -1486,10 +1366,6 @@ qqnorm(theta_trunc_sim,
 qqline(theta_trunc_sim)
 
 ```
-
----
-
-Para finalizar, estos resultados,  en conjunto, muestran que el truncamiento introduce sesgo en muestras pequeñas, pero el estimador es asintóticamente equivalente al estimador de momentos original, preservando sus propiedades cuando $n$ es grande.
 
 ---
 
