@@ -11,9 +11,9 @@ output:
 knitr::opts_chunk$set(echo = FALSE)
 ```
 
-# Introducción
+## Introducción
 
-## Objetivo del trabajo
+### Objetivo del trabajo
 
 Análisis de propiedades estadísticas de tests diagnósticos:
 
@@ -34,7 +34,7 @@ Test perfecto (baseline)
 
 ## 1.1 Distribución de $T_{per}$
 
-## Motivación
+### Motivación
 
 - Estudiamos primero un caso ideal: el test diagnóstico **no comete errores**.
 - Esto equivale a suponer:
@@ -49,7 +49,7 @@ Test perfecto (baseline)
 
 ---
 
-## Modelo del estado verdadero
+### Modelo del estado verdadero
 
 - Cada individuo $i$ puede estar enfermo ($Y_i = 1$) o sano ($Y_i = 0$).
 - Modelamos:
@@ -73,7 +73,7 @@ Test perfecto (baseline)
   
 ---
 
-## Resultado
+### Resultado
 
 - La suma de $n$ variables Bernoulli independientes con parámetro $\theta$ sigue una binomial:
   \[
@@ -92,7 +92,7 @@ De esta forma, $T_{per} \sim \text{Binomial}(n, \theta)$
 
 ## 1.2 Estimador de Máxima Verosimilitud
 
-## Planteo
+### Planteo
 
 - Seguimos en el caso de **test perfecto**:
   \[
@@ -111,7 +111,7 @@ De esta forma, $T_{per} \sim \text{Binomial}(n, \theta)$
 
 ---
 
-## Función de verosimilitud
+### Función de verosimilitud
 
 - Dada la muestra $Y_1,\dots,Y_n$, la función de verosimilitud es:
   \[
@@ -164,7 +164,7 @@ De esta forma, $T_{per} \sim \text{Binomial}(n, \theta)$
 
 ---
 
-## Verificación de máximo e interpretación
+### Verificación de máximo e interpretación
 
 - Segunda derivada:
   \[
@@ -355,7 +355,7 @@ Test imperfecto con $S_e$ y $S_p$ conocidos
 
 ## 2.0.1 Estimación de $p$ con $T_{per}$
 
-## Nuevo escenario
+### Nuevo escenario
 
 - Ahora el test **no es perfecto**.
 - Características del test:
@@ -372,7 +372,7 @@ Test imperfecto con $S_e$ y $S_p$ conocidos
   
 ---
 
-## Datos observados
+### Datos observados
 
 - Tomamos una muestra de tamaño $n$.
 - Para cada individuo observamos el resultado del test:
@@ -393,7 +393,7 @@ Test imperfecto con $S_e$ y $S_p$ conocidos
   
 ---
 
-## Construcción del estimador
+### Construcción del estimador
 
 - La esperanza de la variable binomial es:
   \[
@@ -409,7 +409,7 @@ Test imperfecto con $S_e$ y $S_p$ conocidos
 
 ## 2.0.2 $p$ como función de $\theta$, $S_{e}$ y $S_{p}$.
 
-## Objetivo
+### Objetivo
 
 - Queremos expresar:
   \[
@@ -422,7 +422,7 @@ Test imperfecto con $S_e$ y $S_p$ conocidos
 
 ---
 
-## Paso 1: Probabilidad total
+### Paso 1: Probabilidad total
 
 \[
 p = P(T = 1)
@@ -451,7 +451,7 @@ p = Se \cdot \theta + (1 - Sp)(1 - \theta).
 
 ---
 
-## Forma final
+### Forma final
 
 Podemos escribir:
 
@@ -469,7 +469,7 @@ p = (Se + Sp - 1)\,\theta + (1 - Sp).
 
 ---
 
-## ¿Qué nos dice esta fórmula?
+### ¿Qué nos dice esta fórmula?
 
 - El test puede dar positivo por dos razones:
   1. **Verdadero positivo**: la persona está enferma y el test la detecta.
@@ -490,7 +490,7 @@ p = (Se + Sp - 1)\,\theta + (1 - Sp).
 
 ## 2.0.3 Comportamiento de $p = P(T=1)$
 
-## Recordatorio
+### Recordatorio
 
 - Tenemos:
   \[
@@ -1270,7 +1270,7 @@ knitr::kable(resAsint_df, digits = 4, caption = "Intervalos Asintóticos")
 
 ## 2.3.12 Comportamiento del estimador de momentos
 
-## El estimador puede quedar fuera de $[0,1]$
+### El estimador puede quedar fuera de $[0,1]$
 
 Recordemos el estimador de momentos:
 \[
@@ -1298,7 +1298,7 @@ Recordemos el estimador de momentos:
 
 ---
 
-# Ejemplo concreto
+### Ejemplo concreto
 
 Supongamos un test con:
 
@@ -1338,7 +1338,7 @@ Calculemos el estimador de momentos:
 
 ## 2.3.13 Estudio del estimador truncado
 
-## Definición del estimador truncado
+### Definición del estimador truncado
 
 \[
 \hat{\theta}_{trunc} =
@@ -1353,14 +1353,14 @@ Este estimador **siempre produce valores válidos**.
 
 ---
 
-## Queremos estudiar, para $n = 10, 100, 1000$:
+### Queremos estudiar, para $n = 10, 100, 1000$:
 
 1. **Sesgo** de $\hat{\theta}_{trunc}$
 2. **Varianza**
 3. **ECM**
 4. **Distribución aproximada**
 
-## Parámetros usados
+### Parámetros usados
 
 - $\theta = 0.25$
 - $Se = 0.90$
@@ -1435,7 +1435,7 @@ for (i in seq_along(n_valores)) {
 
 ```
 
-## Resultados
+### Resultados
 
 Se obtiene lo siguiente:
 ```{r}
@@ -1448,7 +1448,6 @@ knitr::kable(resultados, digits = 9, caption = "Resultados")
 observemos los siguientes gráficos para la distribución asintótica:
 
 ```{r, echo=FALSE}
-set.seed(43)
 
 par(mfrow = c(2, 2))  ## grid para los gráficos
 
