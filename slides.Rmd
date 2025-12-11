@@ -34,7 +34,7 @@ Test perfecto (baseline)
 
 ## 1.1 Distribución de $T_{per}$
 
-### Motivación
+## Motivación
 
 - Estudiamos primero un caso ideal: el test diagnóstico **no comete errores**.
 - Esto equivale a suponer:
@@ -49,7 +49,7 @@ Test perfecto (baseline)
 
 ---
 
-### Modelo del estado verdadero
+## Modelo del estado verdadero
 
 - Cada individuo $i$ puede estar enfermo ($Y_i = 1$) o sano ($Y_i = 0$).
 - Modelamos:
@@ -57,9 +57,6 @@ Test perfecto (baseline)
   Y_i \sim \text{Bernoulli}(\theta), \qquad i = 1,\dots,n,
   \]
   donde $\theta = P(Y = 1)$ es la prevalencia verdadera.
-- Como $Se = Sp = 1$:
-  - lo que observamos en el test coincide exactamente con $Y_i$;
-  - no hay error de medición.
   
 ---
 
@@ -76,7 +73,7 @@ Test perfecto (baseline)
   
 ---
 
-### Resultado
+## Resultado
 
 - La suma de $n$ variables Bernoulli independientes con parámetro $\theta$ sigue una binomial:
   \[
@@ -95,7 +92,7 @@ De esta forma, $T_{per} \sim \text{Binomial}(n, \theta)$
 
 ## 1.2 Estimador de Máxima Verosimilitud
 
-### Planteo
+## Planteo
 
 - Seguimos en el caso de **test perfecto**:
   \[
@@ -114,7 +111,7 @@ De esta forma, $T_{per} \sim \text{Binomial}(n, \theta)$
 
 ---
 
-### Función de verosimilitud
+## Función de verosimilitud
 
 - Dada la muestra $Y_1,\dots,Y_n$, la función de verosimilitud es:
   \[
@@ -167,7 +164,7 @@ De esta forma, $T_{per} \sim \text{Binomial}(n, \theta)$
 
 ---
 
-### Verificación de máximo e interpretación
+## Verificación de máximo e interpretación
 
 - Segunda derivada:
   \[
@@ -358,7 +355,7 @@ Test imperfecto con $S_e$ y $S_p$ conocidos
 
 ## 2.0.1 Estimación de $p$ con $T_{per}$
 
-### Nuevo escenario
+## Nuevo escenario
 
 - Ahora el test **no es perfecto**.
 - Características del test:
@@ -375,7 +372,7 @@ Test imperfecto con $S_e$ y $S_p$ conocidos
   
 ---
 
-### Datos observados
+## Datos observados
 
 - Tomamos una muestra de tamaño $n$.
 - Para cada individuo observamos el resultado del test:
@@ -396,7 +393,7 @@ Test imperfecto con $S_e$ y $S_p$ conocidos
   
 ---
 
-### Construcción del estimador
+## Construcción del estimador
 
 - La esperanza de la variable binomial es:
   \[
@@ -408,40 +405,11 @@ Test imperfecto con $S_e$ y $S_p$ conocidos
   \hat{p} = \frac{T_{per}}{n}.
   \]
 
-#### Propiedades inmediatas
-
-- Es el **estimador de máxima verosimilitud** para $p$.
-- Es el **estimador de momentos** para $p$.
-- Es simplemente:
-  \[
-  \hat{p} = \text{proporción muestral de tests positivos}.
-  \]
-
----
-
-### Interpretación
-
-- En el caso imperfecto, $\hat{p}$ NO es un estimador directo de la prevalencia.
-- $\hat{p}$ mide qué fracción de la muestra obtuvo un resultado positivo en el test
-
-- Más adelante usaremos la relación entre $p$, $\theta$, $Se$ y $Sp$ para estimar $\theta$.
-
-- Esta relación clave será:
-  \[
-  p = P(T = 1) = Se \cdot \theta + (1 - Sp)(1 - \theta).
-  \]
-  *(Item 2.0.2)*
-
-- Por ahora, lo único que necesitamos es:
-  \[
-  \hat{p} = \frac{T_{per}}{n}.
-  \]
-
 ---
 
 ## 2.0.2 $p$ como función de $\theta$, $S_{e}$ y $S_{p}$.
 
-### Objetivo
+## Objetivo
 
 - Queremos expresar:
   \[
@@ -452,17 +420,15 @@ Test imperfecto con $S_e$ y $S_p$ conocidos
   - la sensibilidad $Se$,
   - la especificidad $Sp$.
 
-- Esta relación permitirá, más adelante, **estimar $\theta$** usando el test imperfecto.
-
 ---
 
-### Paso 1: Probabilidad total
+## Paso 1: Probabilidad total
 
 \[
 p = P(T = 1)
 \]
 
-Descomponemos según el estado verdadero $Y$:
+Utilizamos proba total:
 
 \[
 P(T = 1)
@@ -485,7 +451,7 @@ p = Se \cdot \theta + (1 - Sp)(1 - \theta).
 
 ---
 
-### Forma final
+## Forma final
 
 Podemos escribir:
 
@@ -503,7 +469,7 @@ p = (Se + Sp - 1)\,\theta + (1 - Sp).
 
 ---
 
-### ¿Qué nos dice esta fórmula?
+## ¿Qué nos dice esta fórmula?
 
 - El test puede dar positivo por dos razones:
   1. **Verdadero positivo**: la persona está enferma y el test la detecta.
@@ -524,7 +490,7 @@ p = (Se + Sp - 1)\,\theta + (1 - Sp).
 
 ## 2.0.3 Comportamiento de $p = P(T=1)$
 
-### Recordatorio
+## Recordatorio
 
 - Tenemos:
   \[
@@ -673,19 +639,6 @@ abline(h = Se_fijo * theta_fijo + (1 - Sp_fijo) * (1 - theta_fijo),
        col = "gray", lty = 2)
 
 ```
-
----
-
-### Comportamiento de $p$
-
-- $p$ vs $\theta$ (con $Se, Sp$ fijos):
-  - Recta **creciente**; va de $1-Sp$ hasta $Se$.
-
-- $p$ vs $Se$ (con $\theta, Sp$ fijos):
-  - Recta **creciente**; al aumentar $Se$ suben los verdaderos positivos.
-
-- $p$ vs $Sp$ (con $\theta, Se$ fijos):
-  - Recta **decreciente**; al aumentar $Sp$ bajan los falsos positivos.
 
 ---
 
@@ -1317,7 +1270,7 @@ knitr::kable(resAsint_df, digits = 4, caption = "Intervalos Asintóticos")
 
 ## 2.3.12 Comportamiento del estimador de momentos
 
-### El estimador puede quedar fuera de $[0,1]$
+## El estimador puede quedar fuera de $[0,1]$
 
 Recordemos el estimador de momentos:
 \[
@@ -1338,35 +1291,14 @@ Recordemos el estimador de momentos:
 
 ### ¿Por qué ocurre esto?
 
-- Porque $\hat{p}$ es una proporción muestral sujeta a variabilidad.
 - Cuando la muestra es pequeña o el test es poco informativo  
   ($Se + Sp - 1$ cercano a 0), la fórmula puede devolver:
   - valores **negativos**, o
   - valores **mayores a 1**.
 
-### Consecuencia
-
-- Aparece la necesidad de un **estimador truncado** para garantizar valores válidos.
-
 ---
 
-## Casos típicos
-
-1. **$\hat{p}$ muy bajo** pero el test tiene muchos falsos positivos  
-   $\rightarrow$ el numerador puede volverse negativo.
-
-2. **$\hat{p}$ muy alto** pero el test tiene baja sensibilidad  
-   $\rightarrow$ el estimador puede superar 1.
-
-3. **Muestras pequeñas ($n$ chico)**  
-   $\rightarrow$ mayor variabilidad en $\hat{p}$ $\rightarrow$ más frecuencias fuera de $[0,1]$.
-
-4. **Test débil** ($Se + Sp - 1$ pequeño):  
-   $\rightarrow$ divide por un número muy chico $\rightarrow$ el estimador “explota”.
-   
----
-
-## Ejemplo concreto
+# Ejemplo concreto
 
 Supongamos un test con:
 
@@ -1401,17 +1333,12 @@ Calculemos el estimador de momentos:
 
 - La prevalencia **no puede ser negativa**, pero el estimador de momentos sí puede producir valores $< 0$.
 - Esto sucede porque $\hat{p}$ es muy bajo y el test genera falsos positivos.
-- **Motiva el uso del estimador truncado**, que en este caso devolvería:
-
-\[
-\hat{\theta}_{trunc} = 0.
-\]
 
 ---
 
 ## 2.3.13 Estudio del estimador truncado
 
-### Definición del estimador truncado
+## Definición del estimador truncado
 
 \[
 \hat{\theta}_{trunc} =
@@ -1426,14 +1353,14 @@ Este estimador **siempre produce valores válidos**.
 
 ---
 
-### Queremos estudiar, para $n = 10, 100, 1000$:
+## Queremos estudiar, para $n = 10, 100, 1000$:
 
 1. **Sesgo** de $\hat{\theta}_{trunc}$
 2. **Varianza**
 3. **ECM**
 4. **Distribución aproximada**
 
-### Parámetros usados
+## Parámetros usados
 
 - $\theta = 0.25$
 - $Se = 0.90$
@@ -1508,32 +1435,12 @@ for (i in seq_along(n_valores)) {
 
 ```
 
-### Resultados
+## Resultados
 
 Se obtiene lo siguiente:
-```{r, echo=FALSE}
+```{r}
 knitr::kable(resultados, digits = 9, caption = "Resultados")
 ```
-
----
-
-De esta forma, se observa lo siguiente:
-
-- $\underline{\text{Sesgo:}}$
-Para $n=10$ el estimador presenta un sesgo notable. Esto se debe a que el estimador de momentos frecuentemente cae por debajo de $0$ y es truncado a cero, lo cual desplaza el valor medio del estimador hacia la región central del intervalo. A medida que el tamaño muestral aumenta, la frecuencia de truncamientos disminuye y el sesgo se aproxima a cero. En consecuencia, el estimador truncado es asintóticamente insesgado.
-
-
-- $\underline{\text{Varianza:}}$
-La varianza disminuye al crecer $n$, como es esperable para un estimador consistente. Para $n=10$ la varianza es elevada debido a la alta variabilidad de $\hat p$, mientras que para $n=1000$ el estimador muestra muy poca dispersión.
-
----
-
-- $\underline{\text{Error cuadrático medio:}}$
-El ECM refleja el compromiso entre sesgo y varianza:
-\[
-ECM = \operatorname{Sesgo}^2 + \operatorname{Var}.
-\]
-Para tamaños muestrales pequeños, el ECM se ve afectado tanto por el sesgo inducido por el truncamiento como por la alta varianza. Para tamaños muestrales grandes, el ECM resulta muy pequeño, consistente con la convergencia del estimador.
 
 ---
 
@@ -1541,6 +1448,7 @@ Para tamaños muestrales pequeños, el ECM se ve afectado tanto por el sesgo ind
 observemos los siguientes gráficos para la distribución asintótica:
 
 ```{r, echo=FALSE}
+set.seed(43)
 
 par(mfrow = c(2, 2))  ## grid para los gráficos
 
@@ -1581,8 +1489,6 @@ qqline(theta_trunc_sim)
 ```
 
 ---
-
-Para $n$ pequeños, la distribución empírica de $\hat\theta_{\text{trunc}}$ muestra acumulación de masa en los puntos $0$ y $1$, debido al truncamiento. Por ello, la distribución no es aproximadamente normal. Sin embargo, para $n$ grandes el truncamiento ocurre con probabilidad prácticamente nula, y la distribución empírica se aproxima bien a una normal, coincidiendo en este caso con la distribución asintótica del estimador de momentos no truncado.
 
 Para finalizar, estos resultados,  en conjunto, muestran que el truncamiento introduce sesgo en muestras pequeñas, pero el estimador es asintóticamente equivalente al estimador de momentos original, preservando sus propiedades cuando $n$ es grande.
 
